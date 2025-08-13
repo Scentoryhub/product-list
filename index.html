@@ -104,6 +104,13 @@
         opacity: 1;
         transition: opacity 0.3s ease;
         border-radius: 0 0 8px 8px;
+        display: flex;             /* 启用 Flexbox */
+        justify-content: center;   /* 水平居中 */
+        align-items: center;       /* 垂直居中 */
+        font-size: 1.2rem;         /* 稍微增大字体，使其更显眼 */
+        font-weight: 700;          /* 加粗 */
+        letter-spacing: 1px;       /* 增加字母间距 */
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); /* 添加文字阴影 */
       }
       .item:hover .caption {
         opacity: 1;
@@ -163,12 +170,19 @@
           opacity: 1;
         }
       }
+    .TOP {
+        display: flex;
+        justify-content: center; /* 水平居中 */
+        align-items: center; /* 垂直居中 */
+        font-weight: 800;
+        font-size: large;
+      }
     </style>
   </head>
   <body>
-    <header>LV $49</header>
-    <header>other brands $35</header>
-    <header>Free Shipping Wholesale Price Will Be Cheaper</header>
+    <div class="TOP">LV $49</div>
+    <div class="TOP">other brands $35</div>
+    <div class="TOP">Free Shipping Wholesale Price Cheaper</div>
 
     <div class="navbar">
       <button data-brand="All" class="active">All Brands</button>
@@ -184,6 +198,7 @@
       <button data-brand="Versace">Versace</button>
       <button data-brand="Jean Paul Gaultier">Jean Paul Gaultier</button>
       <button data-brand="Maison Francis Kurkdjian">MFK</button>
+      <button data-brand="Other">Other</button>
     </div>
 
     <div class="gallery" id="gallery">
@@ -523,6 +538,13 @@
       const gallery = document.getElementById('gallery');
       const items = gallery.querySelectorAll('.item');
 
+      // 定义所有有独立按钮的品牌
+      const dedicatedBrands = [
+        'Valentino', 'Dior', 'Chanel', 'YSL', 'Tom Ford', 'Creed',
+        'Louis Vuitton', 'Gucci', 'Prada', 'Versace', 'Jean Paul Gaultier',
+        'Maison Francis Kurkdjian'
+      ];
+
       navbar.addEventListener('click', (e) => {
         const button = e.target.closest('button');
         if (!button) return;
@@ -535,10 +557,21 @@
         const brand = button.getAttribute('data-brand');
 
         items.forEach(item => {
-          if (brand === 'All' || item.getAttribute('data-brand') === brand) {
+          const itemBrand = item.getAttribute('data-brand');
+          if (brand === 'All') {
             item.classList.remove('hidden');
+          } else if (brand === 'Other') {
+            if (dedicatedBrands.includes(itemBrand)) {
+              item.classList.add('hidden');
+            } else {
+              item.classList.remove('hidden');
+            }
           } else {
-            item.classList.add('hidden');
+            if (itemBrand === brand) {
+              item.classList.remove('hidden');
+            } else {
+              item.classList.add('hidden');
+            }
           }
         });
       });
