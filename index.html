@@ -58,31 +58,18 @@
         cursor: pointer;
         font-size: 1rem;
         border-radius: 20px;
-        transition: background-color 0.3s ease, color 0.3s ease;
+        transition: all 0.3s ease;
+        transform: scale(1);
       }
       .navbar button:hover {
         background: #eee;
       }
-      /* 保持原有的按钮样式，但添加 transform 过渡 */
-      .navbar button {
-        background: #fff;
-        border: 1px solid #ccc;
-        padding: 8px 12px;
-        margin: 5px;
-        cursor: pointer;
-        font-size: 1rem;
-        border-radius: 20px;
-        transition: all 0.3s ease; /* 新增: all 0.3s ease */
-        transform: scale(1); /* 默认大小 */
-      }
-
-      /* 按钮点击后的激活状态 */
       .navbar button.active {
         background: #000;
         color: #fff;
         border-color: #000;
-        transform: scale(1.1); /* 新增: 放大效果 */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 可选: 添加阴影 */
+        transform: scale(1.1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       }
       .gallery {
         max-width: 1200px;
@@ -192,13 +179,11 @@
         font-size: 1.1rem;
         color: #555;
       }
-      
-      /* 一键到顶部的按钮样式 */
       .back-to-top {
-        display: none; /* 默认隐藏 */
-        position: fixed; /* 固定位置 */
-        bottom: 20px; /* 距离底部 20px */
-        right: 20px; /* 距离右侧 20px */
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
         background-color: #000;
         color: white;
         border: none;
@@ -252,6 +237,7 @@
       <button data-brand="Carolina Herrera">Carolina Herrera</button>
       <button data-brand="Other">Other Brands</button>
     </div>
+
     <div class="gallery" id="gallery">
       <div
         class="item"
@@ -641,7 +627,7 @@
         data-brand="Other"
       >
         <img src="images/perfume41.jpg" alt="A41" loading="lazy" />
-        <div class="caption">A41 - Paco Rabanne</div>
+        <div class="caption">A41 - Xerjoff</div>
       </div>
       <div
         class="item"
@@ -961,9 +947,9 @@
       <p>Ship from California</p>
     </div>
 
-    <button id="back-to-top" class="back-to-top" aria-label="Back to top">&#x25B2;</button>
-
-</body>
+    <button id="back-to-top" class="back-to-top" aria-label="Back to top">
+      &#x25B2;
+    </button>
 
     <script>
       // Modal Logic
@@ -1029,8 +1015,8 @@
         "Parfums de Marly",
         "Giorgio Armani",
         "Carolina Herrera",
+        "Xerjoff",
       ];
-      
 
       navbar.addEventListener("click", (e) => {
         const button = e.target.closest("button");
@@ -1067,23 +1053,22 @@
           }
         });
       });
-      // 一键到顶部的按钮逻辑
-      const backToTopButton = document.getElementById('back-to-top');
 
-      // 当页面滚动时，检查滚动位置
-      window.addEventListener('scroll', () => {
-        if (window.pageYOffset > 300) { // 当页面向下滚动超过 300px 时显示按钮
-          backToTopButton.style.display = 'block';
+      // Back to top button logic
+      const backToTopButton = document.getElementById("back-to-top");
+
+      window.addEventListener("scroll", () => {
+        if (window.pageYOffset > 300) {
+          backToTopButton.style.display = "block";
         } else {
-          backToTopButton.style.display = 'none';
-               }
-        });
+          backToTopButton.style.display = "none";
+        }
+      });
 
-      // 当点击按钮时，平滑滚动到页面顶部
-      backToTopButton.addEventListener('click', () => {
+      backToTopButton.addEventListener("click", () => {
         window.scrollTo({
           top: 0,
-          behavior: 'smooth' // 平滑滚动效果
+          behavior: "smooth",
         });
       });
     </script>
