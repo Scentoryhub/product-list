@@ -999,6 +999,8 @@
       const items = gallery.querySelectorAll(".item");
 
       // Define all brands with dedicated buttons
+      // We will also include "Other" brands here to make sure they are not hidden
+      // when filtering for "Other Brands"
       const dedicatedBrands = [
         "Valentino",
         "Dior",
@@ -1015,7 +1017,6 @@
         "Parfums de Marly",
         "Giorgio Armani",
         "Carolina Herrera",
-        "Xerjoff",
       ];
 
       navbar.addEventListener("click", (e) => {
@@ -1030,16 +1031,15 @@
 
         items.forEach((item) => {
           const itemBrand = item.getAttribute("data-brand");
+          const realBrandName = item
+            .querySelector(".caption")
+            .textContent.split(" - ")[1]
+            .trim();
+
           if (brand === "All") {
             item.classList.remove("hidden");
           } else if (brand === "Other") {
-            const realBrandName = item
-              .querySelector(".caption")
-              .textContent.split(" - ")[1];
-            if (
-              !dedicatedBrands.includes(realBrandName) &&
-              realBrandName !== undefined
-            ) {
+            if (!dedicatedBrands.includes(realBrandName)) {
               item.classList.remove("hidden");
             } else {
               item.classList.add("hidden");
