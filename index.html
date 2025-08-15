@@ -104,12 +104,12 @@
         opacity: 1;
         transition: opacity 0.3s ease;
         border-radius: 0 0 8px 8px;
-        display: flex;             /* 启用 Flexbox */
-        justify-content: center;   /* 水平居中 */
-        align-items: center;       /* 垂直居中 */
-        font-size: 1.2rem;         /* 稍微增大字体，使其更显眼 */
-        font-weight: 700;          /* 加粗 */
-        letter-spacing: 1px;       /* 增加字母间距 */
+        display: flex; /* 启用 Flexbox */
+        justify-content: center; /* 水平居中 */
+        align-items: center; /* 垂直居中 */
+        font-size: 1.2rem; /* 稍微增大字体，使其更显眼 */
+        font-weight: 700; /* 加粗 */
+        letter-spacing: 1px; /* 增加字母间距 */
         text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); /* 添加文字阴影 */
       }
       .item:hover .caption {
@@ -170,12 +170,18 @@
           opacity: 1;
         }
       }
+      .top {
+        text-align: center;
+        font-weight: 800;
+        font-size: larger;
+      }
     </style>
   </head>
   <body>
-    <header>LV $49</header>
-    <header>other brands $35</header>
-    <header>Free Shipping Wholesale Price Will Be Cheaper</header>
+    <div class="top">LV $49</div>
+    <div class="top">other brands $35</div>
+    <div class="top">Free Shipping</div>
+    <div class="top">Wholesale Price Cheaper</div>
 
     <div class="navbar">
       <button data-brand="All" class="active">All Brands</button>
@@ -190,280 +196,691 @@
       <button data-brand="Prada">Prada</button>
       <button data-brand="Versace">Versace</button>
       <button data-brand="Jean Paul Gaultier">Jean Paul Gaultier</button>
-      <button data-brand="Maison Francis Kurkdjian">MFK</button>
+      <button data-brand="Maison Francis Kurkdjian">
+        Maison Francis Kurkdjian
+      </button>
+      <button data-brand="Parfums de Marly">Parfums de Marly</button>
       <button data-brand="Other">Other</button>
     </div>
 
     <div class="gallery" id="gallery">
-      <div class="item" tabindex="0" data-name="A01" data-img="images/perfume1.jpg" data-brand="Valentino">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A01"
+        data-img="images/perfume1.jpg"
+        data-brand="Valentino"
+      >
         <img src="images/perfume1.jpg" alt="A01" loading="lazy" />
         <div class="caption">A1</div>
       </div>
-      <div class="item" tabindex="0" data-name="A02" data-img="images/perfume2.jpg" data-brand="Valentino">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A02"
+        data-img="images/perfume2.jpg"
+        data-brand="Valentino"
+      >
         <img src="images/perfume2.jpg" alt="A02" loading="lazy" />
         <div class="caption">A2</div>
       </div>
-      <div class="item" tabindex="0" data-name="A03" data-img="images/perfume3.jpg" data-brand="Valentino">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A03"
+        data-img="images/perfume3.jpg"
+        data-brand="Valentino"
+      >
         <img src="images/perfume3.jpg" alt="A03" loading="lazy" />
         <div class="caption">A3</div>
       </div>
-      <div class="item" tabindex="0" data-name="A04" data-img="images/perfume4.jpg" data-brand="Dior">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A04"
+        data-img="images/perfume4.jpg"
+        data-brand="Dior"
+      >
         <img src="images/perfume4.jpg" alt="A04" loading="lazy" />
         <div class="caption">A4</div>
       </div>
-      <div class="item" tabindex="0" data-name="A05" data-img="images/perfume5.jpg" data-brand="Lancôme">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A05"
+        data-img="images/perfume5.jpg"
+        data-brand="Lancôme"
+      >
         <img src="images/perfume5.jpg" alt="A05" loading="lazy" />
         <div class="caption">A5</div>
       </div>
-      <div class="item" tabindex="0" data-name="A06" data-img="images/perfume6.jpg" data-brand="Chanel">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A06"
+        data-img="images/perfume6.jpg"
+        data-brand="Chanel"
+      >
         <img src="images/perfume6.jpg" alt="A06" loading="lazy" />
         <div class="caption">A6</div>
       </div>
-      <div class="item" tabindex="0" data-name="A07" data-img="images/perfume7.jpg" data-brand="YSL">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A07"
+        data-img="images/perfume7.jpg"
+        data-brand="YSL"
+      >
         <img src="images/perfume7.jpg" alt="A07" loading="lazy" />
         <div class="caption">A7</div>
       </div>
-      <div class="item" tabindex="0" data-name="A08" data-img="images/perfume8.jpg" data-brand="Paco Rabanne">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A08"
+        data-img="images/perfume8.jpg"
+        data-brand="Paco Rabanne"
+      >
         <img src="images/perfume8.jpg" alt="A08" loading="lazy" />
         <div class="caption">A8</div>
       </div>
-      <div class="item" tabindex="0" data-name="A09" data-img="images/perfume9.jpg" data-brand="Creed">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A09"
+        data-img="images/perfume9.jpg"
+        data-brand="Creed"
+      >
         <img src="images/perfume9.jpg" alt="A09" loading="lazy" />
         <div class="caption">A9</div>
       </div>
-      <div class="item" tabindex="0" data-name="A10" data-img="images/perfume10.jpg" data-brand="Jean Paul Gaultier">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A10"
+        data-img="images/perfume10.jpg"
+        data-brand="Jean Paul Gaultier"
+      >
         <img src="images/perfume10.jpg" alt="A10" loading="lazy" />
         <div class="caption">A10</div>
       </div>
-      <div class="item" tabindex="0" data-name="A11" data-img="images/perfume11.jpg" data-brand="Maison Francis Kurkdjian">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A11"
+        data-img="images/perfume11.jpg"
+        data-brand="Maison Francis Kurkdjian"
+      >
         <img src="images/perfume11.jpg" alt="A11" loading="lazy" />
         <div class="caption">A11</div>
       </div>
-      <div class="item" tabindex="0" data-name="A12" data-img="images/perfume12.jpg" data-brand="YSL">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A12"
+        data-img="images/perfume12.jpg"
+        data-brand="YSL"
+      >
         <img src="images/perfume12.jpg" alt="A12" loading="lazy" />
         <div class="caption">A12</div>
       </div>
-      <div class="item" tabindex="0" data-name="A13" data-img="images/perfume13.jpg" data-brand="Chanel">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A13"
+        data-img="images/perfume13.jpg"
+        data-brand="Chanel"
+      >
         <img src="images/perfume13.jpg" alt="A13" loading="lazy" />
         <div class="caption">A13</div>
       </div>
-      <div class="item" tabindex="0" data-name="A14" data-img="images/perfume14.jpg" data-brand="Dior">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A14"
+        data-img="images/perfume14.jpg"
+        data-brand="Dior"
+      >
         <img src="images/perfume14.jpg" alt="A14" loading="lazy" />
         <div class="caption">A14</div>
       </div>
-      <div class="item" tabindex="0" data-name="A15" data-img="images/perfume15.jpg" data-brand="Versace">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A15"
+        data-img="images/perfume15.jpg"
+        data-brand="Versace"
+      >
         <img src="images/perfume15.jpg" alt="A15" loading="lazy" />
         <div class="caption">A15</div>
       </div>
-      <div class="item" tabindex="0" data-name="A18" data-img="images/perfume18.jpg" data-brand="Prada">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A18"
+        data-img="images/perfume18.jpg"
+        data-brand="Prada"
+      >
         <img src="images/perfume18.jpg" alt="A18" loading="lazy" />
         <div class="caption">A18</div>
       </div>
-      <div class="item" tabindex="0" data-name="A19" data-img="images/perfume19.jpg" data-brand="Tom Ford">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A19"
+        data-img="images/perfume19.jpg"
+        data-brand="Tom Ford"
+      >
         <img src="images/perfume19.jpg" alt="A19" loading="lazy" />
         <div class="caption">A19</div>
       </div>
-      <div class="item" tabindex="0" data-name="A20" data-img="images/perfume20.jpg" data-brand="Giorgio Armani">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A20"
+        data-img="images/perfume20.jpg"
+        data-brand="Giorgio Armani"
+      >
         <img src="images/perfume20.jpg" alt="A20" loading="lazy" />
         <div class="caption">A20</div>
       </div>
-      <div class="item" tabindex="0" data-name="A21" data-img="images/perfume21.jpg" data-brand="Giorgio Armani">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A21"
+        data-img="images/perfume21.jpg"
+        data-brand="Giorgio Armani"
+      >
         <img src="images/perfume21.jpg" alt="A21" loading="lazy" />
         <div class="caption">A21</div>
       </div>
-      <div class="item" tabindex="0" data-name="A22" data-img="images/perfume22.jpg" data-brand="Tom Ford">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A22"
+        data-img="images/perfume22.jpg"
+        data-brand="Tom Ford"
+      >
         <img src="images/perfume22.jpg" alt="A22" loading="lazy" />
         <div class="caption">A22</div>
       </div>
-      <div class="item" tabindex="0" data-name="A23" data-img="images/perfume23.jpg" data-brand="Creed">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A23"
+        data-img="images/perfume23.jpg"
+        data-brand="Creed"
+      >
         <img src="images/perfume23.jpg" alt="A23" loading="lazy" />
         <div class="caption">A23</div>
       </div>
-      <div class="item" tabindex="0" data-name="A24" data-img="images/perfume24.jpg" data-brand="Tom Ford">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A24"
+        data-img="images/perfume24.jpg"
+        data-brand="Tom Ford"
+      >
         <img src="images/perfume24.jpg" alt="A24" loading="lazy" />
         <div class="caption">A24</div>
       </div>
-      <div class="item" tabindex="0" data-name="A25" data-img="images/perfume25.jpg" data-brand="Dior">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A25"
+        data-img="images/perfume25.jpg"
+        data-brand="Dior"
+      >
         <img src="images/perfume25.jpg" alt="A25" loading="lazy" />
         <div class="caption">A25</div>
       </div>
-      <div class="item" tabindex="0" data-name="A26" data-img="images/perfume26.jpg" data-brand="Parfums de Marly">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A26"
+        data-img="images/perfume26.jpg"
+        data-brand="Parfums de Marly"
+      >
         <img src="images/perfume26.jpg" alt="A26" loading="lazy" />
         <div class="caption">A26</div>
       </div>
-      <div class="item" tabindex="0" data-name="A27" data-img="images/perfume27.jpg" data-brand="Gucci">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A27"
+        data-img="images/perfume27.jpg"
+        data-brand="Gucci"
+      >
         <img src="images/perfume27.jpg" alt="A27" loading="lazy" />
         <div class="caption">A27</div>
       </div>
-      <div class="item" tabindex="0" data-name="A28" data-img="images/perfume28.jpg" data-brand="Versace">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A28"
+        data-img="images/perfume28.jpg"
+        data-brand="Versace"
+      >
         <img src="images/perfume28.jpg" alt="A28" loading="lazy" />
         <div class="caption">A28</div>
       </div>
-      <div class="item" tabindex="0" data-name="A29" data-img="images/perfume29.jpg" data-brand="Chanel">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A29"
+        data-img="images/perfume29.jpg"
+        data-brand="Chanel"
+      >
         <img src="images/perfume29.jpg" alt="A29" loading="lazy" />
         <div class="caption">A29</div>
       </div>
-      <div class="item" tabindex="0" data-name="A30" data-img="images/perfume30.jpg" data-brand="YSL">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A30"
+        data-img="images/perfume30.jpg"
+        data-brand="YSL"
+      >
         <img src="images/perfume30.jpg" alt="A30" loading="lazy" />
         <div class="caption">A30</div>
       </div>
-      <div class="item" tabindex="0" data-name="A31" data-img="images/perfume31.jpg" data-brand="Dior">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A31"
+        data-img="images/perfume31.jpg"
+        data-brand="Dior"
+      >
         <img src="images/perfume31.jpg" alt="A31" loading="lazy" />
         <div class="caption">A31</div>
       </div>
-      <div class="item" tabindex="0" data-name="A32" data-img="images/perfume32.jpg" data-brand="Giorgio Armani">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A32"
+        data-img="images/perfume32.jpg"
+        data-brand="Giorgio Armani"
+      >
         <img src="images/perfume32.jpg" alt="A32" loading="lazy" />
         <div class="caption">A32</div>
       </div>
-      <div class="item" tabindex="0" data-name="A33" data-img="images/perfume33.jpg" data-brand="Louis Vuitton">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A33"
+        data-img="images/perfume33.jpg"
+        data-brand="Louis Vuitton"
+      >
         <img src="images/perfume33.jpg" alt="A33" loading="lazy" />
         <div class="caption">A33</div>
       </div>
-      <div class="item" tabindex="0" data-name="A34" data-img="images/perfume34.jpg" data-brand="Valentino">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A34"
+        data-img="images/perfume34.jpg"
+        data-brand="Valentino"
+      >
         <img src="images/perfume34.jpg" alt="A34" loading="lazy" />
         <div class="caption">A34</div>
       </div>
-      <div class="item" tabindex="0" data-name="A35" data-img="images/perfume35.jpg" data-brand="Valentino">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A35"
+        data-img="images/perfume35.jpg"
+        data-brand="Valentino"
+      >
         <img src="images/perfume35.jpg" alt="A35" loading="lazy" />
         <div class="caption">A35</div>
       </div>
-      <div class="item" tabindex="0" data-name="A36" data-img="images/perfume36.jpg" data-brand="Louis Vuitton">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A36"
+        data-img="images/perfume36.jpg"
+        data-brand="Louis Vuitton"
+      >
         <img src="images/perfume36.jpg" alt="A36" loading="lazy" />
         <div class="caption">A36</div>
       </div>
-      <div class="item" tabindex="0" data-name="A37" data-img="images/perfume37.jpg" data-brand="Carolina Herrera">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A37"
+        data-img="images/perfume37.jpg"
+        data-brand="Carolina Herrera"
+      >
         <img src="images/perfume37.jpg" alt="A37" loading="lazy" />
         <div class="caption">A37</div>
       </div>
-      <div class="item" tabindex="0" data-name="A38" data-img="images/perfume38.jpg" data-brand="Carolina Herrera">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A38"
+        data-img="images/perfume38.jpg"
+        data-brand="Carolina Herrera"
+      >
         <img src="images/perfume38.jpg" alt="A38" loading="lazy" />
         <div class="caption">A38</div>
       </div>
-      <div class="item" tabindex="0" data-name="A39" data-img="images/perfume39.jpg" data-brand="Louis Vuitton">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A39"
+        data-img="images/perfume39.jpg"
+        data-brand="Louis Vuitton"
+      >
         <img src="images/perfume39.jpg" alt="A39" loading="lazy" />
         <div class="caption">A39</div>
       </div>
-      <div class="item" tabindex="0" data-name="A40" data-img="images/perfume40.jpg" data-brand="Valentino">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A40"
+        data-img="images/perfume40.jpg"
+        data-brand="Valentino"
+      >
         <img src="images/perfume40.jpg" alt="A40" loading="lazy" />
         <div class="caption">A40</div>
       </div>
-      <div class="item" tabindex="0" data-name="A41" data-img="images/perfume41.jpg" data-brand="Paco Rabanne">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A41"
+        data-img="images/perfume41.jpg"
+        data-brand="Paco Rabanne"
+      >
         <img src="images/perfume41.jpg" alt="A41" loading="lazy" />
         <div class="caption">A41</div>
       </div>
-      <div class="item" tabindex="0" data-name="A42" data-img="images/perfume42.jpg" data-brand="Kilian">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A42"
+        data-img="images/perfume42.jpg"
+        data-brand="Parfums de Marly"
+      >
         <img src="images/perfume42.jpg" alt="A42" loading="lazy" />
         <div class="caption">A42</div>
       </div>
-      <div class="item" tabindex="0" data-name="A43" data-img="images/perfume43.jpg" data-brand="Chanel">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A43"
+        data-img="images/perfume43.jpg"
+        data-brand="Chanel"
+      >
         <img src="images/perfume43.jpg" alt="A43" loading="lazy" />
         <div class="caption">A43</div>
       </div>
-      <div class="item" tabindex="0" data-name="A44" data-img="images/perfume44.jpg" data-brand="Creed">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A44"
+        data-img="images/perfume44.jpg"
+        data-brand="Creed"
+      >
         <img src="images/perfume44.jpg" alt="A44" loading="lazy" />
         <div class="caption">A44</div>
       </div>
-      <div class="item" tabindex="0" data-name="A45" data-img="images/perfume45.jpg" data-brand="YSL">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A45"
+        data-img="images/perfume45.jpg"
+        data-brand="YSL"
+      >
         <img src="images/perfume45.jpg" alt="A45" loading="lazy" />
         <div class="caption">A45</div>
       </div>
-      <div class="item" tabindex="0" data-name="A46" data-img="images/perfume46.jpg" data-brand="Louis Vuitton">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A46"
+        data-img="images/perfume46.jpg"
+        data-brand="Louis Vuitton"
+      >
         <img src="images/perfume46.jpg" alt="A46" loading="lazy" />
         <div class="caption">A46</div>
       </div>
-      <div class="item" tabindex="0" data-name="A47" data-img="images/perfume47.jpg" data-brand="Carolina Herrera">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A47"
+        data-img="images/perfume47.jpg"
+        data-brand="Carolina Herrera"
+      >
         <img src="images/perfume47.jpg" alt="A47" loading="lazy" />
         <div class="caption">A47</div>
       </div>
-      <div class="item" tabindex="0" data-name="A48" data-img="images/perfume48.jpg" data-brand="Marc Jacobs">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A48"
+        data-img="images/perfume48.jpg"
+        data-brand="Marc Jacobs"
+      >
         <img src="images/perfume48.jpg" alt="A48" loading="lazy" />
         <div class="caption">A48</div>
       </div>
-      <div class="item" tabindex="0" data-name="A49" data-img="images/perfume49.jpg" data-brand="Valentino">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A49"
+        data-img="images/perfume49.jpg"
+        data-brand="Valentino"
+      >
         <img src="images/perfume49.jpg" alt="A49" loading="lazy" />
         <div class="caption">A49</div>
       </div>
-      <div class="item" tabindex="0" data-name="A50" data-img="images/perfume50.jpg" data-brand="Gucci">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A50"
+        data-img="images/perfume50.jpg"
+        data-brand="Gucci"
+      >
         <img src="images/perfume50.jpg" alt="A50" loading="lazy" />
         <div class="caption">A50</div>
       </div>
-      <div class="item" tabindex="0" data-name="A51" data-img="images/perfume51.jpg" data-brand="Prada">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A51"
+        data-img="images/perfume51.jpg"
+        data-brand="Prada"
+      >
         <img src="images/perfume51.jpg" alt="A51" loading="lazy" />
         <div class="caption">A51</div>
       </div>
-      <div class="item" tabindex="0" data-name="A52" data-img="images/perfume52.jpg" data-brand="Jean Paul Gaultier">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A52"
+        data-img="images/perfume52.jpg"
+        data-brand="Jean Paul Gaultier"
+      >
         <img src="images/perfume52.jpg" alt="A52" loading="lazy" />
         <div class="caption">A52</div>
       </div>
-      <div class="item" tabindex="0" data-name="A53" data-img="images/perfume53.jpg" data-brand="Initio Parfums Privés">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A53"
+        data-img="images/perfume53.jpg"
+        data-brand="Initio Parfums Privés"
+      >
         <img src="images/perfume53.jpg" alt="A53" loading="lazy" />
         <div class="caption">A53</div>
       </div>
-      <div class="item" tabindex="0" data-name="A54" data-img="images/perfume54.jpg" data-brand="Lattafa Perfumes">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A54"
+        data-img="images/perfume54.jpg"
+        data-brand="Lattafa Perfumes"
+      >
         <img src="images/perfume54.jpg" alt="A54" loading="lazy" />
         <div class="caption">A54</div>
       </div>
-      <div class="item" tabindex="0" data-name="A55" data-img="images/perfume55.jpg" data-brand="Lattafa Perfumes">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A55"
+        data-img="images/perfume55.jpg"
+        data-brand="Lattafa Perfumes"
+      >
         <img src="images/perfume55.jpg" alt="A55" loading="lazy" />
         <div class="caption">A55</div>
       </div>
-      <div class="item" tabindex="0" data-name="A56" data-img="images/perfume56.jpg" data-brand="Jean Paul Gaultier">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A56"
+        data-img="images/perfume56.jpg"
+        data-brand="Jean Paul Gaultier"
+      >
         <img src="images/perfume56.jpg" alt="A56" loading="lazy" />
         <div class="caption">A56</div>
       </div>
-      <div class="item" tabindex="0" data-name="A57" data-img="images/perfume57.jpg" data-brand="YSL">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A57"
+        data-img="images/perfume57.jpg"
+        data-brand="YSL"
+      >
         <img src="images/perfume57.jpg" alt="A57" loading="lazy" />
         <div class="caption">A57</div>
       </div>
-      <div class="item" tabindex="0" data-name="A58" data-img="images/perfume58.jpg" data-brand="Chanel">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A58"
+        data-img="images/perfume58.jpg"
+        data-brand="Chanel"
+      >
         <img src="images/perfume58.jpg" alt="A58" loading="lazy" />
         <div class="caption">A58</div>
       </div>
-      <div class="item" tabindex="0" data-name="A59" data-img="images/perfume59.jpg" data-brand="Versace">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A59"
+        data-img="images/perfume59.jpg"
+        data-brand="Versace"
+      >
         <img src="images/perfume59.jpg" alt="A59" loading="lazy" />
         <div class="caption">A59</div>
       </div>
-      <div class="item" tabindex="0" data-name="A60" data-img="images/perfume60.jpg" data-brand="Chanel">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A60"
+        data-img="images/perfume60.jpg"
+        data-brand="Chanel"
+      >
         <img src="images/perfume60.jpg" alt="A60" loading="lazy" />
         <div class="caption">A60</div>
       </div>
-      <div class="item" tabindex="0" data-name="A61" data-img="images/perfume61.jpg" data-brand="Giorgio Armani">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A61"
+        data-img="images/perfume61.jpg"
+        data-brand="Giorgio Armani"
+      >
         <img src="images/perfume61.jpg" alt="A61" loading="lazy" />
         <div class="caption">A61</div>
       </div>
-      <div class="item" tabindex="0" data-name="A62" data-img="images/perfume62.jpg" data-brand="Ralph Lauren">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A62"
+        data-img="images/perfume62.jpg"
+        data-brand="Ralph Lauren"
+      >
         <img src="images/perfume62.jpg" alt="A62" loading="lazy" />
         <div class="caption">A62</div>
       </div>
-      <div class="item" tabindex="0" data-name="A63" data-img="images/perfume63.jpg" data-brand="Jean Paul Gaultier">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A63"
+        data-img="images/perfume63.jpg"
+        data-brand="Jean Paul Gaultier"
+      >
         <img src="images/perfume63.jpg" alt="A63" loading="lazy" />
         <div class="caption">A63</div>
       </div>
-      <div class="item" tabindex="0" data-name="A64" data-img="images/perfume64.jpg" data-brand="Creed">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A64"
+        data-img="images/perfume64.jpg"
+        data-brand="Creed"
+      >
         <img src="images/perfume64.jpg" alt="A64" loading="lazy" />
         <div class="caption">A64</div>
       </div>
-      <div class="item" tabindex="0" data-name="A65" data-img="images/perfume65.jpg" data-brand="Maison Francis Kurkdjian">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A65"
+        data-img="images/perfume65.jpg"
+        data-brand="Maison Francis Kurkdjian"
+      >
         <img src="images/perfume65.jpg" alt="A65" loading="lazy" />
         <div class="caption">A65</div>
       </div>
-      <div class="item" tabindex="0" data-name="A66" data-img="images/perfume66.jpg" data-brand="Giorgio Armani">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A66"
+        data-img="images/perfume66.jpg"
+        data-brand="Giorgio Armani"
+      >
         <img src="images/perfume66.jpg" alt="A66" loading="lazy" />
         <div class="caption">A66</div>
       </div>
-      <div class="item" tabindex="0" data-name="A67" data-img="images/perfume67.jpg" data-brand="Gucci">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A67"
+        data-img="images/perfume67.jpg"
+        data-brand="Gucci"
+      >
         <img src="images/perfume67.jpg" alt="A67" loading="lazy" />
         <div class="caption">A67</div>
       </div>
-      <div class="item" tabindex="0" data-name="A68" data-img="images/perfume68.jpg" data-brand="Parfums de Marly">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A68"
+        data-img="images/perfume68.jpg"
+        data-brand="Parfums de Marly"
+      >
         <img src="images/perfume68.jpg" alt="A68" loading="lazy" />
         <div class="caption">A68</div>
       </div>
-      <div class="item" tabindex="0" data-name="A69" data-img="images/perfume69.jpg" data-brand="Dior">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A69"
+        data-img="images/perfume69.jpg"
+        data-brand="Dior"
+      >
         <img src="images/perfume69.jpg" alt="A69" loading="lazy" />
         <div class="caption">A69</div>
       </div>
-      <div class="item" tabindex="0" data-name="A70" data-img="images/perfume70.jpg" data-brand="Jean Paul Gaultier">
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A70"
+        data-img="images/perfume70.jpg"
+        data-brand="Jean Paul Gaultier"
+      >
         <img src="images/perfume70.jpg" alt="A70" loading="lazy" />
         <div class="caption">A70</div>
       </div>
@@ -527,43 +944,53 @@
       });
 
       // 导航栏筛选逻辑
-      const navbar = document.querySelector('.navbar');
-      const gallery = document.getElementById('gallery');
-      const items = gallery.querySelectorAll('.item');
+      const navbar = document.querySelector(".navbar");
+      const gallery = document.getElementById("gallery");
+      const items = gallery.querySelectorAll(".item");
 
       // 定义所有有独立按钮的品牌
       const dedicatedBrands = [
-        'Valentino', 'Dior', 'Chanel', 'YSL', 'Tom Ford', 'Creed',
-        'Louis Vuitton', 'Gucci', 'Prada', 'Versace', 'Jean Paul Gaultier',
-        'Maison Francis Kurkdjian'
+        "Valentino",
+        "Dior",
+        "Chanel",
+        "YSL",
+        "Tom Ford",
+        "Creed",
+        "Louis Vuitton",
+        "Gucci",
+        "Prada",
+        "Versace",
+        "Jean Paul Gaultier",
+        "Maison Francis Kurkdjian",
+        "Parfums de Marly",
       ];
 
-      navbar.addEventListener('click', (e) => {
-        const button = e.target.closest('button');
+      navbar.addEventListener("click", (e) => {
+        const button = e.target.closest("button");
         if (!button) return;
 
         // 移除所有按钮的 active 类，并为被点击的按钮添加 active 类
-        const buttons = navbar.querySelectorAll('button');
-        buttons.forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
+        const buttons = navbar.querySelectorAll("button");
+        buttons.forEach((btn) => btn.classList.remove("active"));
+        button.classList.add("active");
 
-        const brand = button.getAttribute('data-brand');
+        const brand = button.getAttribute("data-brand");
 
-        items.forEach(item => {
-          const itemBrand = item.getAttribute('data-brand');
-          if (brand === 'All') {
-            item.classList.remove('hidden');
-          } else if (brand === 'Other') {
+        items.forEach((item) => {
+          const itemBrand = item.getAttribute("data-brand");
+          if (brand === "All") {
+            item.classList.remove("hidden");
+          } else if (brand === "Other") {
             if (dedicatedBrands.includes(itemBrand)) {
-              item.classList.add('hidden');
+              item.classList.add("hidden");
             } else {
-              item.classList.remove('hidden');
+              item.classList.remove("hidden");
             }
           } else {
             if (itemBrand === brand) {
-              item.classList.remove('hidden');
+              item.classList.remove("hidden");
             } else {
-              item.classList.add('hidden');
+              item.classList.add("hidden");
             }
           }
         });
