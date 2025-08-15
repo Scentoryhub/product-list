@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>perfume list</title>
+    <title>Perfume List</title>
     <style>
-      /* 重置 */
+      /* Reset */
       * {
         box-sizing: border-box;
       }
@@ -13,7 +13,7 @@
         margin: 0;
         padding: 0;
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        background: #fff;
+        background: #f4f4f4;
         color: #111;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
@@ -26,40 +26,72 @@
         letter-spacing: 2px;
         color: #222;
         border-bottom: 1px solid #eee;
+        background-color: #fff;
       }
-      .navbar {
+      .price-info {
         text-align: center;
         padding: 10px 0;
+        background: #fff;
+        margin-bottom: 20px;
         border-bottom: 1px solid #eee;
-        background: #f8f8f8;
+      }
+      .price-info p {
+        margin: 5px 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333;
+      }
+      .navbar {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        padding: 10px 15px;
+        border-bottom: 1px solid #eee;
+        background: #fff;
+        margin-bottom: 20px;
       }
       .navbar button {
         background: #fff;
         border: 1px solid #ccc;
         padding: 8px 12px;
-        margin: 0 5px;
+        margin: 5px;
         cursor: pointer;
         font-size: 1rem;
-        border-radius: 5px;
-        transition: background-color 0.3s ease;
+        border-radius: 20px;
+        transition: background-color 0.3s ease, color 0.3s ease;
       }
       .navbar button:hover {
         background: #eee;
       }
+      /* 保持原有的按钮样式，但添加 transform 过渡 */
+      .navbar button {
+        background: #fff;
+        border: 1px solid #ccc;
+        padding: 8px 12px;
+        margin: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+        border-radius: 20px;
+        transition: all 0.3s ease; /* 新增: all 0.3s ease */
+        transform: scale(1); /* 默认大小 */
+      }
+
+      /* 按钮点击后的激活状态 */
       .navbar button.active {
         background: #000;
         color: #fff;
         border-color: #000;
+        transform: scale(1.1); /* 新增: 放大效果 */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 可选: 添加阴影 */
       }
       .gallery {
         max-width: 1200px;
-        margin: 20px auto;
+        margin: 0 auto;
         padding: 0 10px;
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 15px;
       }
-      /* PC端4列 */
       @media (min-width: 768px) {
         .gallery {
           grid-template-columns: repeat(4, 1fr);
@@ -72,13 +104,13 @@
         cursor: pointer;
         overflow: hidden;
         border-radius: 8px;
-        box-shadow: 0 6px 15px rgb(0 0 0 / 0.08);
-        background: #fafafa;
-        transition: transform 0.3s ease;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+        background: #fff;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
       }
       .item:hover {
-        transform: scale(1.03);
-        box-shadow: 0 12px 24px rgb(0 0 0 / 0.12);
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
       }
       .item.hidden {
         display: none;
@@ -91,31 +123,14 @@
         border-radius: 8px 8px 0 0;
       }
       .caption {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: rgba(102, 100, 100, 0.55);
-        color: #fff;
-        padding: 8px 12px;
+        background: #fff;
+        color: #333;
+        padding: 12px;
         font-size: 1rem;
         font-weight: 600;
         text-align: center;
-        opacity: 1;
-        transition: opacity 0.3s ease;
-        border-radius: 0 0 8px 8px;
-        display: flex; /* 启用 Flexbox */
-        justify-content: center; /* 水平居中 */
-        align-items: center; /* 垂直居中 */
-        font-size: 1.2rem; /* 稍微增大字体，使其更显眼 */
-        font-weight: 700; /* 加粗 */
-        letter-spacing: 1px; /* 增加字母间距 */
-        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); /* 添加文字阴影 */
+        border-top: 1px solid #eee;
       }
-      .item:hover .caption {
-        opacity: 1;
-      }
-      /* 弹窗遮罩层 */
       .modal {
         display: none;
         position: fixed;
@@ -124,7 +139,7 @@
         top: 0;
         width: 100vw;
         height: 100vh;
-        background: rgba(0, 0, 0, 0.8);
+        background: rgba(0, 0, 0, 0.85);
         justify-content: center;
         align-items: center;
         padding: 15px;
@@ -160,49 +175,83 @@
         color: #fff;
         cursor: pointer;
         user-select: none;
+        transition: transform 0.3s ease;
       }
-      /* 移动端点击显示名称 */
-      @media (hover: none) {
-        .item:hover .caption {
-          opacity: 0;
-        }
-        .item:active .caption {
-          opacity: 1;
-        }
+      .modal-close:hover {
+        transform: rotate(90deg);
       }
-      .top {
+      .contact-info {
         text-align: center;
-        font-weight: 800;
-        font-size: larger;
+        padding: 20px 15px;
+        background: #fff;
+        margin-top: 20px;
+        border-top: 1px solid #eee;
+      }
+      .contact-info p {
+        margin: 5px 0;
+        font-size: 1.1rem;
+        color: #555;
+      }
+      
+      /* 一键到顶部的按钮样式 */
+      .back-to-top {
+        display: none; /* 默认隐藏 */
+        position: fixed; /* 固定位置 */
+        bottom: 20px; /* 距离底部 20px */
+        right: 20px; /* 距离右侧 20px */
+        background-color: #000;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+        line-height: 50px;
+        text-align: center;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: background-color 0.3s, opacity 0.3s, transform 0.3s;
+        z-index: 1000;
+        opacity: 0.8;
+      }
+      .back-to-top:hover {
+        background-color: #333;
+        opacity: 1;
+        transform: scale(1.1);
       }
     </style>
   </head>
   <body>
-    <div class="top">LV $49</div>
-    <div class="top">other brands $35</div>
-    <div class="top">Free Shipping</div>
-    <div class="top">Wholesale Price Cheaper</div>
+    <header>Perfume List</header>
+
+    <div class="price-info">
+      <p>LV: $49</p>
+      <p>Other Brands: $35</p>
+      <p>Free Shipping</p>
+      <p>Wholesale price is cheaper</p>
+    </div>
 
     <div class="navbar">
       <button data-brand="All" class="active">All Brands</button>
-      <button data-brand="Valentino">Valentino</button>
       <button data-brand="Dior">Dior</button>
       <button data-brand="Chanel">Chanel</button>
       <button data-brand="YSL">YSL</button>
-      <button data-brand="Tom Ford">Tom Ford</button>
-      <button data-brand="Creed">Creed</button>
       <button data-brand="Louis Vuitton">Louis Vuitton</button>
+      <button data-brand="Tom Ford">Tom Ford</button>
       <button data-brand="Gucci">Gucci</button>
+      <button data-brand="Valentino">Valentino</button>
       <button data-brand="Prada">Prada</button>
       <button data-brand="Versace">Versace</button>
+      <button data-brand="Creed">Creed</button>
       <button data-brand="Jean Paul Gaultier">Jean Paul Gaultier</button>
       <button data-brand="Maison Francis Kurkdjian">
         Maison Francis Kurkdjian
       </button>
       <button data-brand="Parfums de Marly">Parfums de Marly</button>
-      <button data-brand="Other">Other</button>
+      <button data-brand="Giorgio Armani">Giorgio Armani</button>
+      <button data-brand="Carolina Herrera">Carolina Herrera</button>
+      <button data-brand="Other">Other Brands</button>
     </div>
-
     <div class="gallery" id="gallery">
       <div
         class="item"
@@ -212,7 +261,7 @@
         data-brand="Valentino"
       >
         <img src="images/perfume1.jpg" alt="A01" loading="lazy" />
-        <div class="caption">A1</div>
+        <div class="caption">A1 - Valentino</div>
       </div>
       <div
         class="item"
@@ -222,7 +271,7 @@
         data-brand="Valentino"
       >
         <img src="images/perfume2.jpg" alt="A02" loading="lazy" />
-        <div class="caption">A2</div>
+        <div class="caption">A2 - Valentino</div>
       </div>
       <div
         class="item"
@@ -232,7 +281,7 @@
         data-brand="Valentino"
       >
         <img src="images/perfume3.jpg" alt="A03" loading="lazy" />
-        <div class="caption">A3</div>
+        <div class="caption">A3 - Valentino</div>
       </div>
       <div
         class="item"
@@ -242,17 +291,17 @@
         data-brand="Dior"
       >
         <img src="images/perfume4.jpg" alt="A04" loading="lazy" />
-        <div class="caption">A4</div>
+        <div class="caption">A4 - Dior</div>
       </div>
       <div
         class="item"
         tabindex="0"
         data-name="A05"
         data-img="images/perfume5.jpg"
-        data-brand="Lancôme"
+        data-brand="Other"
       >
         <img src="images/perfume5.jpg" alt="A05" loading="lazy" />
-        <div class="caption">A5</div>
+        <div class="caption">A5 - Lancôme</div>
       </div>
       <div
         class="item"
@@ -262,7 +311,7 @@
         data-brand="Chanel"
       >
         <img src="images/perfume6.jpg" alt="A06" loading="lazy" />
-        <div class="caption">A6</div>
+        <div class="caption">A6 - Chanel</div>
       </div>
       <div
         class="item"
@@ -272,17 +321,17 @@
         data-brand="YSL"
       >
         <img src="images/perfume7.jpg" alt="A07" loading="lazy" />
-        <div class="caption">A7</div>
+        <div class="caption">A7 - YSL</div>
       </div>
       <div
         class="item"
         tabindex="0"
         data-name="A08"
         data-img="images/perfume8.jpg"
-        data-brand="Paco Rabanne"
+        data-brand="Other"
       >
         <img src="images/perfume8.jpg" alt="A08" loading="lazy" />
-        <div class="caption">A8</div>
+        <div class="caption">A8 - Paco Rabanne</div>
       </div>
       <div
         class="item"
@@ -292,7 +341,7 @@
         data-brand="Creed"
       >
         <img src="images/perfume9.jpg" alt="A09" loading="lazy" />
-        <div class="caption">A9</div>
+        <div class="caption">A9 - Creed</div>
       </div>
       <div
         class="item"
@@ -302,7 +351,7 @@
         data-brand="Jean Paul Gaultier"
       >
         <img src="images/perfume10.jpg" alt="A10" loading="lazy" />
-        <div class="caption">A10</div>
+        <div class="caption">A10 - Jean Paul Gaultier</div>
       </div>
       <div
         class="item"
@@ -312,7 +361,7 @@
         data-brand="Maison Francis Kurkdjian"
       >
         <img src="images/perfume11.jpg" alt="A11" loading="lazy" />
-        <div class="caption">A11</div>
+        <div class="caption">A11 - Maison Francis Kurkdjian</div>
       </div>
       <div
         class="item"
@@ -322,7 +371,7 @@
         data-brand="YSL"
       >
         <img src="images/perfume12.jpg" alt="A12" loading="lazy" />
-        <div class="caption">A12</div>
+        <div class="caption">A12 - YSL</div>
       </div>
       <div
         class="item"
@@ -332,7 +381,7 @@
         data-brand="Chanel"
       >
         <img src="images/perfume13.jpg" alt="A13" loading="lazy" />
-        <div class="caption">A13</div>
+        <div class="caption">A13 - Chanel</div>
       </div>
       <div
         class="item"
@@ -342,7 +391,7 @@
         data-brand="Dior"
       >
         <img src="images/perfume14.jpg" alt="A14" loading="lazy" />
-        <div class="caption">A14</div>
+        <div class="caption">A14 - Dior</div>
       </div>
       <div
         class="item"
@@ -352,7 +401,7 @@
         data-brand="Versace"
       >
         <img src="images/perfume15.jpg" alt="A15" loading="lazy" />
-        <div class="caption">A15</div>
+        <div class="caption">A15 - Versace</div>
       </div>
       <div
         class="item"
@@ -362,7 +411,7 @@
         data-brand="Prada"
       >
         <img src="images/perfume18.jpg" alt="A18" loading="lazy" />
-        <div class="caption">A18</div>
+        <div class="caption">A18 - Prada</div>
       </div>
       <div
         class="item"
@@ -372,7 +421,7 @@
         data-brand="Tom Ford"
       >
         <img src="images/perfume19.jpg" alt="A19" loading="lazy" />
-        <div class="caption">A19</div>
+        <div class="caption">A19 - Tom Ford</div>
       </div>
       <div
         class="item"
@@ -382,7 +431,7 @@
         data-brand="Giorgio Armani"
       >
         <img src="images/perfume20.jpg" alt="A20" loading="lazy" />
-        <div class="caption">A20</div>
+        <div class="caption">A20 - Giorgio Armani</div>
       </div>
       <div
         class="item"
@@ -392,7 +441,7 @@
         data-brand="Giorgio Armani"
       >
         <img src="images/perfume21.jpg" alt="A21" loading="lazy" />
-        <div class="caption">A21</div>
+        <div class="caption">A21 - Giorgio Armani</div>
       </div>
       <div
         class="item"
@@ -402,7 +451,7 @@
         data-brand="Tom Ford"
       >
         <img src="images/perfume22.jpg" alt="A22" loading="lazy" />
-        <div class="caption">A22</div>
+        <div class="caption">A22 - Tom Ford</div>
       </div>
       <div
         class="item"
@@ -412,7 +461,7 @@
         data-brand="Creed"
       >
         <img src="images/perfume23.jpg" alt="A23" loading="lazy" />
-        <div class="caption">A23</div>
+        <div class="caption">A23 - Creed</div>
       </div>
       <div
         class="item"
@@ -422,7 +471,7 @@
         data-brand="Tom Ford"
       >
         <img src="images/perfume24.jpg" alt="A24" loading="lazy" />
-        <div class="caption">A24</div>
+        <div class="caption">A24 - Tom Ford</div>
       </div>
       <div
         class="item"
@@ -432,7 +481,7 @@
         data-brand="Dior"
       >
         <img src="images/perfume25.jpg" alt="A25" loading="lazy" />
-        <div class="caption">A25</div>
+        <div class="caption">A25 - Dior</div>
       </div>
       <div
         class="item"
@@ -442,7 +491,7 @@
         data-brand="Parfums de Marly"
       >
         <img src="images/perfume26.jpg" alt="A26" loading="lazy" />
-        <div class="caption">A26</div>
+        <div class="caption">A26 - Parfums de Marly</div>
       </div>
       <div
         class="item"
@@ -452,7 +501,7 @@
         data-brand="Gucci"
       >
         <img src="images/perfume27.jpg" alt="A27" loading="lazy" />
-        <div class="caption">A27</div>
+        <div class="caption">A27 - Gucci</div>
       </div>
       <div
         class="item"
@@ -462,7 +511,7 @@
         data-brand="Versace"
       >
         <img src="images/perfume28.jpg" alt="A28" loading="lazy" />
-        <div class="caption">A28</div>
+        <div class="caption">A28 - Versace</div>
       </div>
       <div
         class="item"
@@ -472,7 +521,7 @@
         data-brand="Chanel"
       >
         <img src="images/perfume29.jpg" alt="A29" loading="lazy" />
-        <div class="caption">A29</div>
+        <div class="caption">A29 - Chanel</div>
       </div>
       <div
         class="item"
@@ -482,7 +531,7 @@
         data-brand="YSL"
       >
         <img src="images/perfume30.jpg" alt="A30" loading="lazy" />
-        <div class="caption">A30</div>
+        <div class="caption">A30 - YSL</div>
       </div>
       <div
         class="item"
@@ -492,7 +541,7 @@
         data-brand="Dior"
       >
         <img src="images/perfume31.jpg" alt="A31" loading="lazy" />
-        <div class="caption">A31</div>
+        <div class="caption">A31 - Dior</div>
       </div>
       <div
         class="item"
@@ -502,7 +551,7 @@
         data-brand="Giorgio Armani"
       >
         <img src="images/perfume32.jpg" alt="A32" loading="lazy" />
-        <div class="caption">A32</div>
+        <div class="caption">A32 - Giorgio Armani</div>
       </div>
       <div
         class="item"
@@ -512,7 +561,7 @@
         data-brand="Louis Vuitton"
       >
         <img src="images/perfume33.jpg" alt="A33" loading="lazy" />
-        <div class="caption">A33</div>
+        <div class="caption">A33 - Louis Vuitton</div>
       </div>
       <div
         class="item"
@@ -522,7 +571,7 @@
         data-brand="Valentino"
       >
         <img src="images/perfume34.jpg" alt="A34" loading="lazy" />
-        <div class="caption">A34</div>
+        <div class="caption">A34 - Valentino</div>
       </div>
       <div
         class="item"
@@ -532,7 +581,7 @@
         data-brand="Valentino"
       >
         <img src="images/perfume35.jpg" alt="A35" loading="lazy" />
-        <div class="caption">A35</div>
+        <div class="caption">A35 - Valentino</div>
       </div>
       <div
         class="item"
@@ -542,7 +591,7 @@
         data-brand="Louis Vuitton"
       >
         <img src="images/perfume36.jpg" alt="A36" loading="lazy" />
-        <div class="caption">A36</div>
+        <div class="caption">A36 - Louis Vuitton</div>
       </div>
       <div
         class="item"
@@ -552,7 +601,7 @@
         data-brand="Carolina Herrera"
       >
         <img src="images/perfume37.jpg" alt="A37" loading="lazy" />
-        <div class="caption">A37</div>
+        <div class="caption">A37 - Carolina Herrera</div>
       </div>
       <div
         class="item"
@@ -562,7 +611,7 @@
         data-brand="Carolina Herrera"
       >
         <img src="images/perfume38.jpg" alt="A38" loading="lazy" />
-        <div class="caption">A38</div>
+        <div class="caption">A38 - Carolina Herrera</div>
       </div>
       <div
         class="item"
@@ -572,7 +621,7 @@
         data-brand="Louis Vuitton"
       >
         <img src="images/perfume39.jpg" alt="A39" loading="lazy" />
-        <div class="caption">A39</div>
+        <div class="caption">A39 - Louis Vuitton</div>
       </div>
       <div
         class="item"
@@ -582,17 +631,17 @@
         data-brand="Valentino"
       >
         <img src="images/perfume40.jpg" alt="A40" loading="lazy" />
-        <div class="caption">A40</div>
+        <div class="caption">A40 - Valentino</div>
       </div>
       <div
         class="item"
         tabindex="0"
         data-name="A41"
         data-img="images/perfume41.jpg"
-        data-brand="Paco Rabanne"
+        data-brand="Other"
       >
         <img src="images/perfume41.jpg" alt="A41" loading="lazy" />
-        <div class="caption">A41</div>
+        <div class="caption">A41 - Paco Rabanne</div>
       </div>
       <div
         class="item"
@@ -602,7 +651,7 @@
         data-brand="Parfums de Marly"
       >
         <img src="images/perfume42.jpg" alt="A42" loading="lazy" />
-        <div class="caption">A42</div>
+        <div class="caption">A42 - Parfums de Marly</div>
       </div>
       <div
         class="item"
@@ -612,7 +661,7 @@
         data-brand="Chanel"
       >
         <img src="images/perfume43.jpg" alt="A43" loading="lazy" />
-        <div class="caption">A43</div>
+        <div class="caption">A43 - Chanel</div>
       </div>
       <div
         class="item"
@@ -622,7 +671,7 @@
         data-brand="Creed"
       >
         <img src="images/perfume44.jpg" alt="A44" loading="lazy" />
-        <div class="caption">A44</div>
+        <div class="caption">A44 - Creed</div>
       </div>
       <div
         class="item"
@@ -632,7 +681,7 @@
         data-brand="YSL"
       >
         <img src="images/perfume45.jpg" alt="A45" loading="lazy" />
-        <div class="caption">A45</div>
+        <div class="caption">A45 - YSL</div>
       </div>
       <div
         class="item"
@@ -642,7 +691,7 @@
         data-brand="Louis Vuitton"
       >
         <img src="images/perfume46.jpg" alt="A46" loading="lazy" />
-        <div class="caption">A46</div>
+        <div class="caption">A46 - Louis Vuitton</div>
       </div>
       <div
         class="item"
@@ -652,17 +701,17 @@
         data-brand="Carolina Herrera"
       >
         <img src="images/perfume47.jpg" alt="A47" loading="lazy" />
-        <div class="caption">A47</div>
+        <div class="caption">A47 - Carolina Herrera</div>
       </div>
       <div
         class="item"
         tabindex="0"
         data-name="A48"
         data-img="images/perfume48.jpg"
-        data-brand="Marc Jacobs"
+        data-brand="Other"
       >
         <img src="images/perfume48.jpg" alt="A48" loading="lazy" />
-        <div class="caption">A48</div>
+        <div class="caption">A48 - My Burberry</div>
       </div>
       <div
         class="item"
@@ -672,7 +721,7 @@
         data-brand="Valentino"
       >
         <img src="images/perfume49.jpg" alt="A49" loading="lazy" />
-        <div class="caption">A49</div>
+        <div class="caption">A49 - Valentino</div>
       </div>
       <div
         class="item"
@@ -682,7 +731,7 @@
         data-brand="Gucci"
       >
         <img src="images/perfume50.jpg" alt="A50" loading="lazy" />
-        <div class="caption">A50</div>
+        <div class="caption">A50 - Gucci</div>
       </div>
       <div
         class="item"
@@ -692,7 +741,7 @@
         data-brand="Prada"
       >
         <img src="images/perfume51.jpg" alt="A51" loading="lazy" />
-        <div class="caption">A51</div>
+        <div class="caption">A51 - Prada</div>
       </div>
       <div
         class="item"
@@ -702,37 +751,37 @@
         data-brand="Jean Paul Gaultier"
       >
         <img src="images/perfume52.jpg" alt="A52" loading="lazy" />
-        <div class="caption">A52</div>
+        <div class="caption">A52 - Jean Paul Gaultier</div>
       </div>
       <div
         class="item"
         tabindex="0"
         data-name="A53"
         data-img="images/perfume53.jpg"
-        data-brand="Initio Parfums Privés"
+        data-brand="Other"
       >
         <img src="images/perfume53.jpg" alt="A53" loading="lazy" />
-        <div class="caption">A53</div>
+        <div class="caption">A53 - Initio Parfums Privés</div>
       </div>
       <div
         class="item"
         tabindex="0"
         data-name="A54"
         data-img="images/perfume54.jpg"
-        data-brand="Lattafa Perfumes"
+        data-brand="Other"
       >
         <img src="images/perfume54.jpg" alt="A54" loading="lazy" />
-        <div class="caption">A54</div>
+        <div class="caption">A54 - Lattafa Perfumes</div>
       </div>
       <div
         class="item"
         tabindex="0"
         data-name="A55"
         data-img="images/perfume55.jpg"
-        data-brand="Lattafa Perfumes"
+        data-brand="Other"
       >
         <img src="images/perfume55.jpg" alt="A55" loading="lazy" />
-        <div class="caption">A55</div>
+        <div class="caption">A55 - Lattafa Perfumes</div>
       </div>
       <div
         class="item"
@@ -742,7 +791,7 @@
         data-brand="Jean Paul Gaultier"
       >
         <img src="images/perfume56.jpg" alt="A56" loading="lazy" />
-        <div class="caption">A56</div>
+        <div class="caption">A56 - Jean Paul Gaultier</div>
       </div>
       <div
         class="item"
@@ -752,7 +801,7 @@
         data-brand="YSL"
       >
         <img src="images/perfume57.jpg" alt="A57" loading="lazy" />
-        <div class="caption">A57</div>
+        <div class="caption">A57 - YSL</div>
       </div>
       <div
         class="item"
@@ -762,7 +811,7 @@
         data-brand="Chanel"
       >
         <img src="images/perfume58.jpg" alt="A58" loading="lazy" />
-        <div class="caption">A58</div>
+        <div class="caption">A58 - Chanel</div>
       </div>
       <div
         class="item"
@@ -772,7 +821,7 @@
         data-brand="Versace"
       >
         <img src="images/perfume59.jpg" alt="A59" loading="lazy" />
-        <div class="caption">A59</div>
+        <div class="caption">A59 - Versace</div>
       </div>
       <div
         class="item"
@@ -782,7 +831,7 @@
         data-brand="Chanel"
       >
         <img src="images/perfume60.jpg" alt="A60" loading="lazy" />
-        <div class="caption">A60</div>
+        <div class="caption">A60 - Chanel</div>
       </div>
       <div
         class="item"
@@ -792,17 +841,17 @@
         data-brand="Giorgio Armani"
       >
         <img src="images/perfume61.jpg" alt="A61" loading="lazy" />
-        <div class="caption">A61</div>
+        <div class="caption">A61 - Giorgio Armani</div>
       </div>
       <div
         class="item"
         tabindex="0"
         data-name="A62"
         data-img="images/perfume62.jpg"
-        data-brand="Ralph Lauren"
+        data-brand="Other"
       >
         <img src="images/perfume62.jpg" alt="A62" loading="lazy" />
-        <div class="caption">A62</div>
+        <div class="caption">A62 - Ralph Lauren</div>
       </div>
       <div
         class="item"
@@ -812,7 +861,7 @@
         data-brand="Jean Paul Gaultier"
       >
         <img src="images/perfume63.jpg" alt="A63" loading="lazy" />
-        <div class="caption">A63</div>
+        <div class="caption">A63 - Jean Paul Gaultier</div>
       </div>
       <div
         class="item"
@@ -822,7 +871,7 @@
         data-brand="Creed"
       >
         <img src="images/perfume64.jpg" alt="A64" loading="lazy" />
-        <div class="caption">A64</div>
+        <div class="caption">A64 - Creed</div>
       </div>
       <div
         class="item"
@@ -832,7 +881,7 @@
         data-brand="Maison Francis Kurkdjian"
       >
         <img src="images/perfume65.jpg" alt="A65" loading="lazy" />
-        <div class="caption">A65</div>
+        <div class="caption">A65 - Maison Francis Kurkdjian</div>
       </div>
       <div
         class="item"
@@ -842,7 +891,7 @@
         data-brand="Giorgio Armani"
       >
         <img src="images/perfume66.jpg" alt="A66" loading="lazy" />
-        <div class="caption">A66</div>
+        <div class="caption">A66 - Giorgio Armani</div>
       </div>
       <div
         class="item"
@@ -852,7 +901,7 @@
         data-brand="Gucci"
       >
         <img src="images/perfume67.jpg" alt="A67" loading="lazy" />
-        <div class="caption">A67</div>
+        <div class="caption">A67 - Gucci</div>
       </div>
       <div
         class="item"
@@ -862,7 +911,7 @@
         data-brand="Parfums de Marly"
       >
         <img src="images/perfume68.jpg" alt="A68" loading="lazy" />
-        <div class="caption">A68</div>
+        <div class="caption">A68 - Parfums de Marly</div>
       </div>
       <div
         class="item"
@@ -872,7 +921,7 @@
         data-brand="Dior"
       >
         <img src="images/perfume69.jpg" alt="A69" loading="lazy" />
-        <div class="caption">A69</div>
+        <div class="caption">A69 - Dior</div>
       </div>
       <div
         class="item"
@@ -882,7 +931,7 @@
         data-brand="Jean Paul Gaultier"
       >
         <img src="images/perfume70.jpg" alt="A70" loading="lazy" />
-        <div class="caption">A70</div>
+        <div class="caption">A70 - Jean Paul Gaultier</div>
       </div>
     </div>
 
@@ -893,7 +942,7 @@
       aria-modal="true"
       aria-labelledby="modal-caption"
     >
-      <div class="modal-close" id="modal-close" aria-label="关闭弹窗">
+      <div class="modal-close" id="modal-close" aria-label="Close modal">
         &times;
       </div>
       <div class="modal-content">
@@ -902,23 +951,39 @@
       </div>
     </div>
 
+    <div class="contact-info">
+      <h3>Contact Us</h3>
+      <p>Please contact us for orders or wholesale inquiries.</p>
+      <p>WhatsApp: +16232027321</p>
+      <p>
+        <a href="https://wa.me/16232027321" target="_blank">Link to Contact</a>
+      </p>
+      <p>Ship from California</p>
+    </div>
+
+    <button id="back-to-top" class="back-to-top" aria-label="Back to top">&#x25B2;</button>
+
+</body>
+
     <script>
-      // 弹窗逻辑
+      // Modal Logic
       const modal = document.getElementById("modal");
       const modalImg = document.getElementById("modal-img");
       const modalCaption = document.getElementById("modal-caption");
       const modalClose = document.getElementById("modal-close");
+      const gallery = document.getElementById("gallery");
 
-      document.getElementById("gallery").addEventListener("click", (e) => {
+      gallery.addEventListener("click", (e) => {
         const item = e.target.closest(".item");
         if (!item) return;
 
         const imgSrc = item.getAttribute("data-img");
         const name = item.getAttribute("data-name");
+        const captionText = item.querySelector(".caption").textContent;
 
         modalImg.src = imgSrc;
         modalImg.alt = name;
-        modalCaption.textContent = name;
+        modalCaption.textContent = captionText;
 
         modal.classList.add("open");
       });
@@ -929,26 +994,25 @@
         modalCaption.textContent = "";
       });
 
-      // 点击遮罩关闭
+      // Close modal by clicking on overlay
       modal.addEventListener("click", (e) => {
         if (e.target === modal) {
           modalClose.click();
         }
       });
 
-      // 键盘关闭弹窗支持
+      // Keyboard support for closing modal (Escape key)
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && modal.classList.contains("open")) {
           modalClose.click();
         }
       });
 
-      // 导航栏筛选逻辑
+      // Navbar Filtering Logic
       const navbar = document.querySelector(".navbar");
-      const gallery = document.getElementById("gallery");
       const items = gallery.querySelectorAll(".item");
 
-      // 定义所有有独立按钮的品牌
+      // Define all brands with dedicated buttons
       const dedicatedBrands = [
         "Valentino",
         "Dior",
@@ -963,13 +1027,15 @@
         "Jean Paul Gaultier",
         "Maison Francis Kurkdjian",
         "Parfums de Marly",
+        "Giorgio Armani",
+        "Carolina Herrera",
       ];
+      
 
       navbar.addEventListener("click", (e) => {
         const button = e.target.closest("button");
         if (!button) return;
 
-        // 移除所有按钮的 active 类，并为被点击的按钮添加 active 类
         const buttons = navbar.querySelectorAll("button");
         buttons.forEach((btn) => btn.classList.remove("active"));
         button.classList.add("active");
@@ -981,10 +1047,16 @@
           if (brand === "All") {
             item.classList.remove("hidden");
           } else if (brand === "Other") {
-            if (dedicatedBrands.includes(itemBrand)) {
-              item.classList.add("hidden");
-            } else {
+            const realBrandName = item
+              .querySelector(".caption")
+              .textContent.split(" - ")[1];
+            if (
+              !dedicatedBrands.includes(realBrandName) &&
+              realBrandName !== undefined
+            ) {
               item.classList.remove("hidden");
+            } else {
+              item.classList.add("hidden");
             }
           } else {
             if (itemBrand === brand) {
@@ -993,6 +1065,25 @@
               item.classList.add("hidden");
             }
           }
+        });
+      });
+      // 一键到顶部的按钮逻辑
+      const backToTopButton = document.getElementById('back-to-top');
+
+      // 当页面滚动时，检查滚动位置
+      window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 300) { // 当页面向下滚动超过 300px 时显示按钮
+          backToTopButton.style.display = 'block';
+        } else {
+          backToTopButton.style.display = 'none';
+               }
+        });
+
+      // 当点击按钮时，平滑滚动到页面顶部
+      backToTopButton.addEventListener('click', () => {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth' // 平滑滚动效果
         });
       });
     </script>
