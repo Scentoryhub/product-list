@@ -1322,6 +1322,23 @@
 
       let cartItems = [];
 
+      // Load cart from local storage on page load
+      function loadCartFromLocalStorage() {
+        const storedCart = localStorage.getItem("cartItems");
+        if (storedCart) {
+          cartItems = JSON.parse(storedCart);
+          updateCartCount();
+          cartItems.forEach((item) => {
+            updateItemCountDisplay(item.name, item.quantity);
+          });
+        }
+      }
+
+      // Save cart to local storage
+      function saveCartToLocalStorage() {
+        localStorage.setItem("cartItems", JSON.stringify(cartItems));
+      }
+
       function updateCartCount() {
         cartCount.textContent = cartItems.reduce(
           (total, item) => total + item.quantity,
@@ -1382,6 +1399,7 @@
         }
         updateCartCount();
         updateItemCountDisplay(name, existingItem ? existingItem.quantity : 1);
+        saveCartToLocalStorage(); // Save after adding item
 
         // Add pulse animation
         cartButton.classList.add("added");
@@ -1402,6 +1420,7 @@
           }
           updateCartCount();
           renderCartItems();
+          saveCartToLocalStorage(); // Save after updating quantity
         }
       }
 
@@ -1432,6 +1451,7 @@
           updateCartCount();
           renderCartItems();
           updateItemCountDisplay(itemName, 0);
+          saveCartToLocalStorage(); // Save after removing item
         } else if (e.target.classList.contains("increase-quantity")) {
           updateQuantity(index, 1);
         } else if (e.target.classList.contains("decrease-quantity")) {
@@ -1444,6 +1464,7 @@
         cartItems = [];
         updateCartCount();
         renderCartItems();
+        saveCartToLocalStorage(); // Save after clearing cart
       });
 
       sendWhatsappBtn.addEventListener("click", () => {
@@ -1456,6 +1477,9 @@
         const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
         window.open(whatsappUrl, "_blank");
       });
+
+      // Call this function at the very beginning of the script
+      loadCartFromLocalStorage();
 
       // Existing modal and filter logic (unchanged)
       const modal = document.getElementById("modal");
