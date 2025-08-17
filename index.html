@@ -13,24 +13,24 @@
         margin: 0;
         padding: 0;
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        background: #f4f4f4;
-        color: #111;
+        background: #fff;
+        color: #222;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
       }
       header {
-        padding: 20px 15px;
+        padding: 40px 15px;
         text-align: center;
-        font-size: 1.8rem;
+        font-size: 2.2rem;
         font-weight: 700;
-        letter-spacing: 2px;
+        letter-spacing: 2px; /* 调整：更柔和的字间距 */
         color: #222;
         border-bottom: 1px solid #eee;
         background-color: #fff;
       }
       .price-info {
         text-align: center;
-        padding: 10px 0;
+        padding: 30px 0;
         background: #fff;
         margin-bottom: 20px;
         border-bottom: 1px solid #eee;
@@ -45,7 +45,7 @@
         display: flex;
         justify-content: center;
         flex-wrap: wrap;
-        padding: 10px 15px;
+        padding: 15px 15px;
         border-bottom: 1px solid #eee;
         background: #fff;
         margin-bottom: 20px;
@@ -67,9 +67,9 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       }
       .navbar button.active {
-        background: #444;
+        background: #333;
         color: #fff;
-        border-color: #444;
+        border-color: #333;
         transform: scale(1.1);
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       }
@@ -79,31 +79,31 @@
         padding: 0 10px;
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
+        gap: 25px;
       }
       @media (min-width: 768px) {
         .gallery {
           grid-template-columns: repeat(4, 1fr);
-          gap: 20px;
+          gap: 40px;
           padding: 0 20px;
         }
       }
       .item {
         position: relative;
         overflow: hidden;
-        border-radius: 8px;
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
         background: #fff;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
       }
       .item:hover {
         transform: translateY(-5px);
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
       }
       .item .add-to-cart {
         position: absolute;
         top: 10px;
-        left: 10px;
+        right: 10px;
         background: rgba(0, 0, 0, 0.7);
         color: #fff;
         border: none;
@@ -121,32 +121,31 @@
       .item .add-to-cart:hover {
         background: rgba(0, 0, 0, 0.9);
       }
-      /* New style for the item-specific count */
       .item-cart-count {
         position: absolute;
-        top: 10px;
-        right: 10px;
+        top: -5px;
+        right: -5px;
         background-color: #f44;
         color: white;
         border-radius: 50%;
         padding: 2px 6px;
         font-size: 0.8rem;
-        z-index: 10;
-        min-width: 20px;
+        min-width: 1.2em;
         text-align: center;
-        line-height: 16px;
+        display: none;
       }
       .item img {
         display: block;
         width: 100%;
-        height: auto;
+        height: 250px; /* 关键修改: 固定图片高度 */
+        object-fit: cover; /* 关键修改: 裁剪图片以适应容器，防止错位 */
         vertical-align: middle;
-        border-radius: 8px 8px 0 0;
+        border-radius: 12px 12px 0 0;
       }
       .caption {
         background: #fff;
         color: #333;
-        padding: 12px;
+        padding: 16px; /* 调整：增加内边距 */
         font-size: 1rem;
         font-weight: 600;
         text-align: center;
@@ -206,7 +205,7 @@
       }
       .contact-info {
         text-align: center;
-        padding: 20px 15px;
+        padding: 30px 15px;
         background: #fff;
         margin-top: 20px;
         border-top: 1px solid #eee;
@@ -245,7 +244,7 @@
         position: fixed;
         bottom: 20px;
         left: 20px;
-        background-color: #333;
+        background-color: #ffffff;
         color: white;
         border: none;
         border-radius: 50%;
@@ -285,126 +284,9 @@
         padding: 2px 6px;
         font-size: 0.8rem;
       }
-      .cart-modal {
-        display: none;
-        position: fixed;
-        z-index: 9999;
-        left: 0;
-        top: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(0, 0, 0, 0.85);
-        justify-content: center;
-        align-items: center;
-      }
-      .cart-modal.open {
-        display: flex;
-      }
-      .cart-content {
-        background: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        max-width: 500px;
-        max-height: 80vh;
-        overflow-y: auto;
-        position: relative;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-      }
-      .cart-modal-close {
-        position: absolute;
-        top: 10px;
-        right: 15px;
-        font-size: 2rem;
-        color: #999;
-        cursor: pointer;
-        user-select: none;
-        transition: color 0.3s ease;
-      }
-      .cart-modal-close:hover {
-        color: #000;
-      }
-      .cart-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 0;
-        border-bottom: 1px solid #eee;
-      }
-      .cart-item:last-child {
-        border-bottom: none;
-      }
-      .cart-item-info {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-      }
-      .cart-item-name {
-        font-weight: 600;
-      }
-      .cart-item-quantity {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .quantity-btn {
-        background: #eee;
-        border: 1px solid #ccc;
-        width: 25px;
-        height: 25px;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
-        font-size: 1.2rem;
-        font-weight: bold;
-        transition: background 0.3s;
-      }
-      .quantity-btn:hover {
-        background: #ddd;
-      }
-      .remove-btn {
-        background: #e74c3c;
-        color: white;
-        border: none;
-        padding: 6px 12px;
-        cursor: pointer;
-        border-radius: 5px;
-        transition: background 0.3s;
-        font-size: 0.9rem;
-      }
-      .remove-btn:hover {
-        background: #c0392b;
-      }
-      .cart-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-        margin-top: 20px;
-      }
-      .cart-actions button {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: background 0.3s, transform 0.2s;
-      }
-      #clear-cart-btn {
-        background: #e74c3c;
-        color: white;
-      }
-      #clear-cart-btn:hover {
-        background: #c0392b;
-        transform: translateY(-2px);
-      }
-      #send-whatsapp-btn {
-        background: #2ecc71;
-        color: white;
-      }
-      #send-whatsapp-btn:hover {
-        background: #27ae60;
-        transform: translateY(-2px);
+      .cart-icon {
+        width: 40px;
+        height: 40px;
       }
     </style>
   </head>
@@ -450,8 +332,9 @@
       >
         <img src="images/perfume1.jpg" alt="A01" loading="lazy" />
         <div class="caption">A1 - Valentino</div>
-        <button class="add-to-cart" data-name="A01">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A1">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -462,8 +345,9 @@
       >
         <img src="images/perfume2.jpg" alt="A02" loading="lazy" />
         <div class="caption">A2 - Valentino</div>
-        <button class="add-to-cart" data-name="A02">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A2">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -474,8 +358,9 @@
       >
         <img src="images/perfume3.jpg" alt="A03" loading="lazy" />
         <div class="caption">A3 - Valentino</div>
-        <button class="add-to-cart" data-name="A03">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A3">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -486,8 +371,9 @@
       >
         <img src="images/perfume4.jpg" alt="A04" loading="lazy" />
         <div class="caption">A4 - Dior</div>
-        <button class="add-to-cart" data-name="A04">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A4">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -498,8 +384,9 @@
       >
         <img src="images/perfume5.jpg" alt="A05" loading="lazy" />
         <div class="caption">A5 - Lancôme</div>
-        <button class="add-to-cart" data-name="A05">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A5">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -510,8 +397,9 @@
       >
         <img src="images/perfume6.jpg" alt="A06" loading="lazy" />
         <div class="caption">A6 - Chanel</div>
-        <button class="add-to-cart" data-name="A06">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A6">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -522,8 +410,9 @@
       >
         <img src="images/perfume7.jpg" alt="A07" loading="lazy" />
         <div class="caption">A7 - YSL</div>
-        <button class="add-to-cart" data-name="A07">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A7">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -534,8 +423,9 @@
       >
         <img src="images/perfume8.jpg" alt="A08" loading="lazy" />
         <div class="caption">A8 - Paco Rabanne</div>
-        <button class="add-to-cart" data-name="A08">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A8">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -546,8 +436,9 @@
       >
         <img src="images/perfume9.jpg" alt="A09" loading="lazy" />
         <div class="caption">A9 - Creed</div>
-        <button class="add-to-cart" data-name="A09">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A9">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -558,8 +449,9 @@
       >
         <img src="images/perfume10.jpg" alt="A10" loading="lazy" />
         <div class="caption">A10 - Jean Paul Gaultier</div>
-        <button class="add-to-cart" data-name="A10">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A10">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -570,8 +462,9 @@
       >
         <img src="images/perfume11.jpg" alt="A11" loading="lazy" />
         <div class="caption">A11 - Maison Francis Kurkdjian</div>
-        <button class="add-to-cart" data-name="A11">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A11">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -582,8 +475,9 @@
       >
         <img src="images/perfume12.jpg" alt="A12" loading="lazy" />
         <div class="caption">A12 - YSL</div>
-        <button class="add-to-cart" data-name="A12">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A12">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -594,8 +488,9 @@
       >
         <img src="images/perfume13.jpg" alt="A13" loading="lazy" />
         <div class="caption">A13 - Chanel</div>
-        <button class="add-to-cart" data-name="A13">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A13">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -606,8 +501,9 @@
       >
         <img src="images/perfume14.jpg" alt="A14" loading="lazy" />
         <div class="caption">A14 - Dior</div>
-        <button class="add-to-cart" data-name="A14">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A14">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -618,8 +514,9 @@
       >
         <img src="images/perfume15.jpg" alt="A15" loading="lazy" />
         <div class="caption">A15 - Versace</div>
-        <button class="add-to-cart" data-name="A15">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A15">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -630,8 +527,9 @@
       >
         <img src="images/perfume18.jpg" alt="A18" loading="lazy" />
         <div class="caption">A18 - Prada</div>
-        <button class="add-to-cart" data-name="A18">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A18">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -642,8 +540,9 @@
       >
         <img src="images/perfume19.jpg" alt="A19" loading="lazy" />
         <div class="caption">A19 - Tom Ford</div>
-        <button class="add-to-cart" data-name="A19">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A19">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -654,8 +553,9 @@
       >
         <img src="images/perfume20.jpg" alt="A20" loading="lazy" />
         <div class="caption">A20 - Giorgio Armani</div>
-        <button class="add-to-cart" data-name="A20">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A20">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -666,8 +566,9 @@
       >
         <img src="images/perfume21.jpg" alt="A21" loading="lazy" />
         <div class="caption">A21 - Giorgio Armani</div>
-        <button class="add-to-cart" data-name="A21">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A21">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -678,8 +579,9 @@
       >
         <img src="images/perfume22.jpg" alt="A22" loading="lazy" />
         <div class="caption">A22 - Tom Ford</div>
-        <button class="add-to-cart" data-name="A22">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A22">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -690,8 +592,9 @@
       >
         <img src="images/perfume23.jpg" alt="A23" loading="lazy" />
         <div class="caption">A23 - Creed</div>
-        <button class="add-to-cart" data-name="A23">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A23">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -702,8 +605,9 @@
       >
         <img src="images/perfume24.jpg" alt="A24" loading="lazy" />
         <div class="caption">A24 - Tom Ford</div>
-        <button class="add-to-cart" data-name="A24">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A24">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -714,8 +618,9 @@
       >
         <img src="images/perfume25.jpg" alt="A25" loading="lazy" />
         <div class="caption">A25 - Dior</div>
-        <button class="add-to-cart" data-name="A25">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A25">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -726,8 +631,9 @@
       >
         <img src="images/perfume26.jpg" alt="A26" loading="lazy" />
         <div class="caption">A26 - Parfums de Marly</div>
-        <button class="add-to-cart" data-name="A26">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A26">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -738,8 +644,9 @@
       >
         <img src="images/perfume27.jpg" alt="A27" loading="lazy" />
         <div class="caption">A27 - Gucci</div>
-        <button class="add-to-cart" data-name="A27">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A27">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -750,8 +657,9 @@
       >
         <img src="images/perfume28.jpg" alt="A28" loading="lazy" />
         <div class="caption">A28 - Versace</div>
-        <button class="add-to-cart" data-name="A28">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A28">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -762,8 +670,9 @@
       >
         <img src="images/perfume29.jpg" alt="A29" loading="lazy" />
         <div class="caption">A29 - Chanel</div>
-        <button class="add-to-cart" data-name="A29">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A29">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -774,8 +683,9 @@
       >
         <img src="images/perfume30.jpg" alt="A30" loading="lazy" />
         <div class="caption">A30 - YSL</div>
-        <button class="add-to-cart" data-name="A30">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A30">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -786,8 +696,9 @@
       >
         <img src="images/perfume31.jpg" alt="A31" loading="lazy" />
         <div class="caption">A31 - Dior</div>
-        <button class="add-to-cart" data-name="A31">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A31">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -798,8 +709,9 @@
       >
         <img src="images/perfume32.jpg" alt="A32" loading="lazy" />
         <div class="caption">A32 - Giorgio Armani</div>
-        <button class="add-to-cart" data-name="A32">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A32">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -810,8 +722,9 @@
       >
         <img src="images/perfume33.jpg" alt="A33" loading="lazy" />
         <div class="caption">A33 - Louis Vuitton</div>
-        <button class="add-to-cart" data-name="A33">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A33">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -822,8 +735,9 @@
       >
         <img src="images/perfume34.jpg" alt="A34" loading="lazy" />
         <div class="caption">A34 - Valentino</div>
-        <button class="add-to-cart" data-name="A34">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A34">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -834,8 +748,9 @@
       >
         <img src="images/perfume35.jpg" alt="A35" loading="lazy" />
         <div class="caption">A35 - Valentino</div>
-        <button class="add-to-cart" data-name="A35">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A35">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -846,8 +761,9 @@
       >
         <img src="images/perfume36.jpg" alt="A36" loading="lazy" />
         <div class="caption">A36 - Louis Vuitton</div>
-        <button class="add-to-cart" data-name="A36">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A36">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -858,8 +774,9 @@
       >
         <img src="images/perfume37.jpg" alt="A37" loading="lazy" />
         <div class="caption">A37 - Carolina Herrera</div>
-        <button class="add-to-cart" data-name="A37">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A37">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -870,8 +787,9 @@
       >
         <img src="images/perfume38.jpg" alt="A38" loading="lazy" />
         <div class="caption">A38 - Carolina Herrera</div>
-        <button class="add-to-cart" data-name="A38">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A38">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -882,8 +800,9 @@
       >
         <img src="images/perfume39.jpg" alt="A39" loading="lazy" />
         <div class="caption">A39 - Louis Vuitton</div>
-        <button class="add-to-cart" data-name="A39">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A39">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -894,8 +813,9 @@
       >
         <img src="images/perfume40.jpg" alt="A40" loading="lazy" />
         <div class="caption">A40 - Valentino</div>
-        <button class="add-to-cart" data-name="A40">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A40">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -906,8 +826,9 @@
       >
         <img src="images/perfume41.jpg" alt="A41" loading="lazy" />
         <div class="caption">A41 - Xerjoff</div>
-        <button class="add-to-cart" data-name="A41">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A41">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -918,8 +839,9 @@
       >
         <img src="images/perfume42.jpg" alt="A42" loading="lazy" />
         <div class="caption">A42 - Parfums de Marly</div>
-        <button class="add-to-cart" data-name="A42">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A42">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -930,8 +852,9 @@
       >
         <img src="images/perfume43.jpg" alt="A43" loading="lazy" />
         <div class="caption">A43 - Chanel</div>
-        <button class="add-to-cart" data-name="A43">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A43">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -942,8 +865,9 @@
       >
         <img src="images/perfume44.jpg" alt="A44" loading="lazy" />
         <div class="caption">A44 - Creed</div>
-        <button class="add-to-cart" data-name="A44">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A44">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -954,8 +878,9 @@
       >
         <img src="images/perfume45.jpg" alt="A45" loading="lazy" />
         <div class="caption">A45 - YSL</div>
-        <button class="add-to-cart" data-name="A45">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A45">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -966,8 +891,9 @@
       >
         <img src="images/perfume46.jpg" alt="A46" loading="lazy" />
         <div class="caption">A46 - Louis Vuitton</div>
-        <button class="add-to-cart" data-name="A46">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A46">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -978,8 +904,9 @@
       >
         <img src="images/perfume47.jpg" alt="A47" loading="lazy" />
         <div class="caption">A47 - Carolina Herrera</div>
-        <button class="add-to-cart" data-name="A47">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A47">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -990,8 +917,9 @@
       >
         <img src="images/perfume48.jpg" alt="A48" loading="lazy" />
         <div class="caption">A48 - My Burberry</div>
-        <button class="add-to-cart" data-name="A48">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A48">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -1002,8 +930,9 @@
       >
         <img src="images/perfume49.jpg" alt="A49" loading="lazy" />
         <div class="caption">A49 - Valentino</div>
-        <button class="add-to-cart" data-name="A49">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A49">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -1014,8 +943,9 @@
       >
         <img src="images/perfume50.jpg" alt="A50" loading="lazy" />
         <div class="caption">A50 - Gucci</div>
-        <button class="add-to-cart" data-name="A50">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A50">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -1026,8 +956,9 @@
       >
         <img src="images/perfume51.jpg" alt="A51" loading="lazy" />
         <div class="caption">A51 - Prada</div>
-        <button class="add-to-cart" data-name="A51">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A51">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -1038,8 +969,9 @@
       >
         <img src="images/perfume52.jpg" alt="A52" loading="lazy" />
         <div class="caption">A52 - Jean Paul Gaultier</div>
-        <button class="add-to-cart" data-name="A52">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A52">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -1050,8 +982,9 @@
       >
         <img src="images/perfume53.jpg" alt="A53" loading="lazy" />
         <div class="caption">A53 - Initio Parfums Privés</div>
-        <button class="add-to-cart" data-name="A53">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A53">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -1062,8 +995,9 @@
       >
         <img src="images/perfume54.jpg" alt="A54" loading="lazy" />
         <div class="caption">A54 - Lattafa Perfumes</div>
-        <button class="add-to-cart" data-name="A54">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A54">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -1074,8 +1008,9 @@
       >
         <img src="images/perfume55.jpg" alt="A55" loading="lazy" />
         <div class="caption">A55 - Lattafa Perfumes</div>
-        <button class="add-to-cart" data-name="A55">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A55">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -1086,8 +1021,9 @@
       >
         <img src="images/perfume56.jpg" alt="A56" loading="lazy" />
         <div class="caption">A56 - Jean Paul Gaultier</div>
-        <button class="add-to-cart" data-name="A56">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A56">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -1098,8 +1034,9 @@
       >
         <img src="images/perfume57.jpg" alt="A57" loading="lazy" />
         <div class="caption">A57 - YSL</div>
-        <button class="add-to-cart" data-name="A57">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A57">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -1110,8 +1047,9 @@
       >
         <img src="images/perfume58.jpg" alt="A58" loading="lazy" />
         <div class="caption">A58 - Chanel</div>
-        <button class="add-to-cart" data-name="A58">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A58">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -1122,8 +1060,9 @@
       >
         <img src="images/perfume59.jpg" alt="A59" loading="lazy" />
         <div class="caption">A59 - Versace</div>
-        <button class="add-to-cart" data-name="A59">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A59">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -1134,8 +1073,9 @@
       >
         <img src="images/perfume60.jpg" alt="A60" loading="lazy" />
         <div class="caption">A60 - Chanel</div>
-        <button class="add-to-cart" data-name="A60">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A60">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -1146,8 +1086,9 @@
       >
         <img src="images/perfume61.jpg" alt="A61" loading="lazy" />
         <div class="caption">A61 - Giorgio Armani</div>
-        <button class="add-to-cart" data-name="A61">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A61">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -1158,8 +1099,9 @@
       >
         <img src="images/perfume62.jpg" alt="A62" loading="lazy" />
         <div class="caption">A62 - Ralph Lauren</div>
-        <button class="add-to-cart" data-name="A62">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A62">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -1170,8 +1112,9 @@
       >
         <img src="images/perfume63.jpg" alt="A63" loading="lazy" />
         <div class="caption">A63 - Jean Paul Gaultier</div>
-        <button class="add-to-cart" data-name="A63">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A63">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -1182,8 +1125,9 @@
       >
         <img src="images/perfume64.jpg" alt="A64" loading="lazy" />
         <div class="caption">A64 - Creed</div>
-        <button class="add-to-cart" data-name="A64">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A64">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -1194,8 +1138,9 @@
       >
         <img src="images/perfume65.jpg" alt="A65" loading="lazy" />
         <div class="caption">A65 - Maison Francis Kurkdjian</div>
-        <button class="add-to-cart" data-name="A65">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A65">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -1206,8 +1151,9 @@
       >
         <img src="images/perfume66.jpg" alt="A66" loading="lazy" />
         <div class="caption">A66 - Giorgio Armani</div>
-        <button class="add-to-cart" data-name="A66">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A66">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -1218,8 +1164,9 @@
       >
         <img src="images/perfume67.jpg" alt="A67" loading="lazy" />
         <div class="caption">A67 - Gucci</div>
-        <button class="add-to-cart" data-name="A67">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A67">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -1230,8 +1177,9 @@
       >
         <img src="images/perfume68.jpg" alt="A68" loading="lazy" />
         <div class="caption">A68 - Parfums de Marly</div>
-        <button class="add-to-cart" data-name="A68">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A68">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -1242,8 +1190,9 @@
       >
         <img src="images/perfume69.jpg" alt="A69" loading="lazy" />
         <div class="caption">A69 - Dior</div>
-        <button class="add-to-cart" data-name="A69">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A69">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
       <div
         class="item"
@@ -1254,8 +1203,9 @@
       >
         <img src="images/perfume70.jpg" alt="A70" loading="lazy" />
         <div class="caption">A70 - Jean Paul Gaultier</div>
-        <button class="add-to-cart" data-name="A70">🛒</button>
-        <span class="item-cart-count hidden">0</span>
+        <button class="add-to-cart" data-name="A70">
+          🛒 <span class="item-cart-count"></span>
+        </button>
       </div>
     </div>
 
@@ -1275,18 +1225,6 @@
       </div>
     </div>
 
-    <div class="cart-modal" id="cart-modal">
-      <div class="cart-content">
-        <span class="cart-modal-close" id="cart-modal-close">&times;</span>
-        <h3 id="cart-title">Your Cart</h3>
-        <div id="cart-items-list"></div>
-        <div class="cart-actions">
-          <button id="send-whatsapp-btn">Send Inquiry</button>
-          <button id="clear-cart-btn">Clear Cart</button>
-        </div>
-      </div>
-    </div>
-
     <div class="contact-info">
       <h3>Contact Us</h3>
       <p>Please contact us for orders or wholesale inquiries.</p>
@@ -1302,7 +1240,8 @@
     </button>
 
     <button class="cart-button" id="cart-button">
-      🛒 <span id="cart-count" class="cart-count">0</span>
+      <img src="icon/order.png" alt="Cart" class="cart-icon" />
+      <span id="cart-count" class="cart-count">0</span>
     </button>
 
     <script>
@@ -1311,30 +1250,16 @@
 
       // Cart logic
       const cartButton = document.getElementById("cart-button");
-      const cartModal = document.getElementById("cart-modal");
       const cartCount = document.getElementById("cart-count");
-      const cartItemsList = document.getElementById("cart-items-list");
-      const cartModalClose = document.getElementById("cart-modal-close");
-      const sendWhatsappBtn = document.getElementById("send-whatsapp-btn");
       const addToCartButtons = document.querySelectorAll(".add-to-cart");
-      const clearCartBtn = document.getElementById("clear-cart-btn");
-      const itemCartCounts = document.querySelectorAll(".item-cart-count");
 
       let cartItems = [];
 
-      // Load cart from local storage on page load
       function loadCartFromLocalStorage() {
         const storedCart = localStorage.getItem("cartItems");
-        if (storedCart) {
-          cartItems = JSON.parse(storedCart);
-          updateCartCount();
-          cartItems.forEach((item) => {
-            updateItemCountDisplay(item.name, item.quantity);
-          });
-        }
+        cartItems = storedCart ? JSON.parse(storedCart) : [];
       }
 
-      // Save cart to local storage
       function saveCartToLocalStorage() {
         localStorage.setItem("cartItems", JSON.stringify(cartItems));
       }
@@ -1346,60 +1271,55 @@
         );
       }
 
-      function updateItemCountDisplay(name, quantity) {
-        const itemElement = document.querySelector(
-          `.item[data-name="${name}"]`
-        );
-        if (itemElement) {
-          const countSpan = itemElement.querySelector(".item-cart-count");
-          if (quantity > 0) {
-            countSpan.textContent = quantity;
-            countSpan.classList.remove("hidden");
+      // New function to render per-item badges
+      function renderItemCounts() {
+        const allItems = document.querySelectorAll(".item");
+        allItems.forEach((item) => {
+          const itemName = item
+            .querySelector(".add-to-cart")
+            .getAttribute("data-name");
+          const itemCartCountBadge = item.querySelector(".item-cart-count");
+          const itemInCart = cartItems.find(
+            (cartItem) => cartItem.name === itemName
+          );
+
+          if (itemInCart && itemInCart.quantity > 0) {
+            itemCartCountBadge.textContent = itemInCart.quantity;
+            itemCartCountBadge.style.display = "block";
           } else {
-            countSpan.classList.add("hidden");
+            itemCartCountBadge.style.display = "none";
           }
-        }
+        });
       }
 
-      function renderCartItems() {
-        cartItemsList.innerHTML = "";
-        if (cartItems.length === 0) {
-          cartItemsList.innerHTML = "<p>Your cart is empty.</p>";
-          sendWhatsappBtn.style.display = "none";
-        } else {
-          sendWhatsappBtn.style.display = "block";
-          cartItems.forEach((item, index) => {
-            const cartItemDiv = document.createElement("div");
-            cartItemDiv.classList.add("cart-item");
-            cartItemDiv.innerHTML = `
-              <div class="cart-item-info">
-                <span class="cart-item-name">${item.caption}</span>
-                <div class="cart-item-quantity">
-                  <span class="quantity-btn decrease-quantity" data-index="${index}">-</span>
-                  <span>${item.quantity}</span>
-                  <span class="quantity-btn increase-quantity" data-index="${index}">+</span>
-                </div>
-              </div>
-              <button class="remove-btn" data-index="${index}">Remove</button>
-            `;
-            cartItemsList.appendChild(cartItemDiv);
-          });
+      // Listen for message from cart.html to update count
+      window.addEventListener("message", (event) => {
+        if (event.data === "updateCartCount") {
+          loadCartFromLocalStorage();
+          updateCartCount();
+          renderItemCounts(); // Call the new function
         }
-      }
+      });
 
-      function addToCart(name) {
+      function addToCart(name, img, caption, button) {
         const existingItem = cartItems.find((item) => item.name === name);
-        const itemCaption = document.querySelector(
-          `.item[data-name="${name}"] .caption`
-        ).textContent;
         if (existingItem) {
           existingItem.quantity++;
         } else {
-          cartItems.push({ name, caption: itemCaption, quantity: 1 });
+          cartItems.push({ name, img, caption, quantity: 1 });
         }
+        saveCartToLocalStorage();
         updateCartCount();
-        updateItemCountDisplay(name, existingItem ? existingItem.quantity : 1);
-        saveCartToLocalStorage(); // Save after adding item
+
+        // New code to update the specific item's badge
+        const itemCartCount = button.querySelector(".item-cart-count");
+        const currentItemInCart = cartItems.find((item) => item.name === name);
+        if (currentItemInCart) {
+          itemCartCount.textContent = currentItemInCart.quantity;
+          itemCartCount.style.display = "block";
+        } else {
+          itemCartCount.style.display = "none";
+        }
 
         // Add pulse animation
         cartButton.classList.add("added");
@@ -1408,78 +1328,26 @@
         }, 600);
       }
 
-      function updateQuantity(index, change) {
-        if (cartItems[index]) {
-          cartItems[index].quantity += change;
-          const itemName = cartItems[index].name;
-          if (cartItems[index].quantity <= 0) {
-            cartItems.splice(index, 1);
-            updateItemCountDisplay(itemName, 0);
-          } else {
-            updateItemCountDisplay(itemName, cartItems[index].quantity);
-          }
-          updateCartCount();
-          renderCartItems();
-          saveCartToLocalStorage(); // Save after updating quantity
-        }
-      }
+      document.addEventListener("DOMContentLoaded", () => {
+        loadCartFromLocalStorage();
+        updateCartCount();
+        renderItemCounts(); // Call the new function on page load
+      });
 
       addToCartButtons.forEach((button) => {
         button.addEventListener("click", (e) => {
           e.stopPropagation();
-          const name = e.target.getAttribute("data-name");
-          addToCart(name);
+          const item = e.target.closest(".item");
+          const name = item.getAttribute("data-name").replace("A0", "A");
+          const img = item.getAttribute("data-img");
+          const caption = item.querySelector(".caption").textContent;
+          addToCart(name, img, caption, e.currentTarget);
         });
       });
 
       cartButton.addEventListener("click", () => {
-        renderCartItems();
-        cartModal.classList.add("open");
+        window.location.href = "cart.html";
       });
-
-      cartModalClose.addEventListener("click", () => {
-        cartModal.classList.remove("open");
-      });
-
-      cartItemsList.addEventListener("click", (e) => {
-        const index = e.target.getAttribute("data-index");
-        const item = cartItems[index];
-
-        if (e.target.classList.contains("remove-btn")) {
-          const itemName = item.name;
-          cartItems.splice(index, 1);
-          updateCartCount();
-          renderCartItems();
-          updateItemCountDisplay(itemName, 0);
-          saveCartToLocalStorage(); // Save after removing item
-        } else if (e.target.classList.contains("increase-quantity")) {
-          updateQuantity(index, 1);
-        } else if (e.target.classList.contains("decrease-quantity")) {
-          updateQuantity(index, -1);
-        }
-      });
-
-      clearCartBtn.addEventListener("click", () => {
-        cartItems.forEach((item) => updateItemCountDisplay(item.name, 0));
-        cartItems = [];
-        updateCartCount();
-        renderCartItems();
-        saveCartToLocalStorage(); // Save after clearing cart
-      });
-
-      sendWhatsappBtn.addEventListener("click", () => {
-        const messageLines = cartItems.map(
-          (item) => `* ${item.caption} (${item.quantity} bottles)`
-        );
-        const message = `Hello, I am interested in the following perfumes:%0A${messageLines.join(
-          "%0A"
-        )}%0A%0APlease provide a quote. Thank you!`;
-        const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
-        window.open(whatsappUrl, "_blank");
-      });
-
-      // Call this function at the very beginning of the script
-      loadCartFromLocalStorage();
 
       // Existing modal and filter logic (unchanged)
       const modal = document.getElementById("modal");
@@ -1518,13 +1386,8 @@
       });
 
       document.addEventListener("keydown", (e) => {
-        if (
-          e.key === "Escape" &&
-          (modal.classList.contains("open") ||
-            cartModal.classList.contains("open"))
-        ) {
+        if (e.key === "Escape" && modal.classList.contains("open")) {
           modal.classList.remove("open");
-          cartModal.classList.remove("open");
         }
       });
 
