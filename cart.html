@@ -20,7 +20,7 @@
         position: relative;
         min-height: 100vh;
         /* 关键修改：为固定底栏留出空间，防止内容被遮挡 */
-        padding-bottom: 90px;
+        padding-bottom: 120px;
       }
       .page-header {
         position: relative;
@@ -184,6 +184,25 @@
       .send-whatsapp-btn:hover {
         background-color: #1da851;
       }
+      /* 新增：购物车数量统计样式 */
+      .cart-summary {
+        max-width: 800px;
+        margin: 20px auto 0;
+        padding: 15px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+      .cart-summary p {
+        margin: 5px 0;
+        font-size: 1rem;
+        color: #333;
+      }
+      .cart-summary .total-count {
+        font-weight: bold;
+        color: #222;
+        font-size: 1.1rem;
+      }
     </style>
   </head>
   <body>
@@ -194,6 +213,12 @@
 
     <div class="cart-container">
       <ul id="cart-items-list" class="cart-items-list"></ul>
+    </div>
+
+    <div id="cart-summary" class="cart-summary">
+      <p id="total-count" class="total-count">总数量: 0</p>
+      <p id="lv-count">LV 数量: 0</p>
+      <p id="other-brands-count">其他品牌数量: 0</p>
     </div>
 
     <div class="cart-actions">
@@ -207,6 +232,10 @@
       const cartItemsList = document.getElementById("cart-items-list");
       const clearCartBtn = document.getElementById("clear-cart-btn");
       const sendWhatsappBtn = document.getElementById("send-whatsapp-btn");
+      // 新增：获取数量统计元素
+      const totalCountEl = document.getElementById("total-count");
+      const lvCountEl = document.getElementById("lv-count");
+      const otherBrandsCountEl = document.getElementById("other-brands-count");
 
       // WhatsApp number for inquiry
       const whatsappNumber = "16232027321";
@@ -254,6 +283,30 @@
             cartItemsList.appendChild(li);
           });
         }
+        updateCartSummary();
+      }
+
+      // 新增：计算并更新购物车数量统计
+      function updateCartSummary() {
+        let cartItems = loadCartFromLocalStorage();
+        let totalCount = 0;
+        let lvCount = 0;
+        let otherBrandsCount = 0;
+
+        cartItems.forEach((item) => {
+          totalCount += item.quantity;
+          if (item.caption.includes("Louis Vuitton")) {
+            lvCount += item.quantity;
+          } else {
+            otherBrandsCount += item.quantity;
+          }
+        });
+
+        totalCountEl.textContent = `总数量: ${totalCount}`;
+        lvCountEl.textContent = `LV 数量: ${lvCount}`;
+        otherBrandsCountEl.textContent = `其他品牌数量: ${otherBrandsCount}`;
+
+        return { totalCount, lvCount, otherBrandsCount };
       }
 
       function updateQuantity(index, change) {
@@ -328,6 +381,7 @@
         updateMainPageCartCount();
       });
 
+      // 关键修改：在发送WhatsApp消息时，添加数量统计信息
       sendWhatsappBtn.addEventListener("click", () => {
         const cartItems = loadCartFromLocalStorage();
         if (cartItems.length === 0) {
@@ -336,6 +390,9 @@
           );
           return;
         }
+
+        const summary = updateCartSummary();
+
         // 确保在发送信息时也使用排序后的列表
         cartItems.sort((a, b) => {
           const getNumber = (str) => parseInt(str.match(/\d+/)?.[0] || "0", 10);
@@ -343,12 +400,24 @@
           const numB = getNumber(b.caption);
           return numA - numB;
         });
+
         const messageLines = cartItems.map(
           (item) => `* ${item.caption} (${item.quantity} bottles)`
         );
+
+        // 添加数量统计到消息中
+        const summaryLines = [
+          `Total: ${summary.totalCount} bottles`,
+          `LV: ${summary.lvCount} bottles`,
+          `Other Brands: ${summary.otherBrandsCount} bottles`,
+        ];
+
         const message = `Hello, I am interested in the following perfumes:%0A${messageLines.join(
           "%0A"
+        )}%0A%0A---%0A*Order Summary*%0A${summaryLines.join(
+          "%0A"
         )}%0A%0APlease provide a quote. Thank you!`;
+
         const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
         window.open(whatsappUrl, "_blank");
       });
