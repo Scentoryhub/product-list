@@ -19,6 +19,8 @@
         -moz-osx-font-smoothing: grayscale;
         position: relative;
         min-height: 100vh;
+        /* 关键修改：为固定底栏留出空间，防止内容被遮挡 */
+        padding-bottom: 90px;
       }
       .page-header {
         position: relative;
@@ -37,195 +39,177 @@
       }
       .back-btn {
         position: absolute;
-        left: 15px;
         top: 50%;
+        left: 15px;
         transform: translateY(-50%);
-        color: #555;
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
         text-decoration: none;
-        transition: color 0.3s;
+        transition: transform 0.3s;
+        background-image: url("icon/back.png");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        border: none;
+        background-color: transparent;
       }
       .back-btn:hover {
-        color: #000;
+        transform: translateY(-50%) scale(1.1);
       }
-      /* 新增：为返回图片图标添加样式 */
-      .back-btn img {
-        height: 2rem;
-        width: auto;
-        vertical-align: middle;
-      }
-
-      /* New CSS for the horizontal cart layout */
       .cart-container {
         max-width: 800px;
         margin: 0 auto;
-        padding: 0 10px;
+        padding: 0 15px;
       }
-      .cart-item-horizontal {
+      .cart-items-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .cart-item {
         display: flex;
         align-items: center;
-        gap: 15px;
-        padding: 15px;
         background: #fff;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         margin-bottom: 15px;
-        transition: transform 0.2s;
+        overflow: hidden;
+        transition: transform 0.2s ease-in-out;
+        gap: 15px;
+        padding-right: 15px;
       }
-      .cart-item-horizontal:hover {
-        transform: translateY(-2px);
+      .cart-item:hover {
+        transform: translateY(-3px);
       }
-      .cart-item-horizontal img {
-        width: 80px;
-        height: 80px;
+      .cart-item img {
+        width: 100px;
+        height: 100px;
         object-fit: cover;
-        border-radius: 4px;
+        flex-shrink: 0;
       }
       .item-details {
         flex-grow: 1;
-        display: flex;
-        align-items: center;
+        padding: 15px 0 15px 0;
       }
       .item-details h3 {
-        margin: 0;
+        margin: 0 0 5px 0;
         font-size: 1.2rem;
         color: #333;
       }
-      .quantity-controls {
+      .quantity-control {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
+        margin-top: 10px;
       }
-      .quantity-btn {
-        background: #eee;
+      .quantity-control button {
+        background: #f0f0f0;
         border: 1px solid #ccc;
+        border-radius: 50%;
         width: 30px;
         height: 30px;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
         font-size: 1.2rem;
-        font-weight: bold;
-        transition: background 0.3s;
-        flex-shrink: 0;
+        cursor: pointer;
+        transition: background-color 0.2s;
       }
-      .quantity-btn:hover {
+      .quantity-control button:hover {
         background: #ddd;
       }
-      .quantity-display {
+      .quantity-control span {
         font-size: 1.1rem;
         font-weight: bold;
-        min-width: 20px;
-        text-align: center;
       }
       .remove-btn {
-        background: #e74c3c;
-        color: white;
-        border: none;
-        padding: 8px 16px;
+        padding: 8px 12px;
+        background: #eee;
+        color: #777;
+        border: 1px solid #ddd;
+        border-radius: 6px;
         cursor: pointer;
-        border-radius: 5px;
-        transition: background 0.3s, transform 0.2s;
+        transition: background-color 0.2s, color 0.2s;
         font-size: 0.9rem;
-        flex-shrink: 0;
       }
+      /* 关键修改：鼠标悬停时背景变为红色 */
       .remove-btn:hover {
-        background: #c0392b;
-        transform: translateY(-1px);
-      }
-      .cart-actions {
-        max-width: 800px;
-        margin: 20px auto;
-        padding: 0 10px;
-        display: flex;
-        justify-content: center; /* 调整为 center */
-        gap: 10px;
-      }
-      .cart-actions button {
-        padding: 12px 24px;
-        border: none;
-        border-radius: 20px; /* 调整为更圆润的圆角 */
-        cursor: pointer;
-        font-size: 1rem;
-        font-weight: 500; /* 调整字体粗细 */
-        transition: background 0.3s, transform 0.2s;
-        color: #fff; /* 字体颜色 */
-      }
-      #clear-cart-btn {
-        background: #b0b0b0; /* 更柔和的灰色 */
-      }
-      #clear-cart-btn:hover {
-        background: #999;
-        transform: translateY(-2px);
-      }
-      #send-whatsapp-btn {
-        background: #d4af37; /* 典雅的金色 */
-      }
-      #send-whatsapp-btn:hover {
-        background: #c0a133;
-        transform: translateY(-2px);
+        background: #e74c3c;
+        color: #fff;
       }
       .empty-cart-message {
         text-align: center;
         color: #777;
-        margin-top: 50px;
-        font-size: 1.2rem;
-        padding: 20px;
-      }
-      /* New footer styles to fix to the bottom */
-      .contact-info {
-        text-align: center;
-        padding: 20px 15px;
-        background: #fff;
-        border-top: 1px solid #eee;
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-      }
-      .contact-info p {
-        margin: 5px 0;
         font-size: 1.1rem;
+        padding: 50px 0;
+      }
+      .cart-actions {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: #fff;
+        padding: 15px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        border-top: 1px solid #eee;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+      }
+      .cart-actions button {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: bold;
+        transition: background-color 0.2s, transform 0.2s;
+        flex-grow: 1;
+        max-width: 200px;
+      }
+      .cart-actions button:hover {
+        transform: translateY(-2px);
+      }
+      .clear-cart-btn {
+        background-color: #e7e7e7;
         color: #555;
       }
-      /* Add padding to the bottom of the body to prevent content from being hidden by the fixed footer */
-      body {
-        padding-bottom: 160px; /* Adjust this value to match the height of your contact-info section */
+      /* 关键修改：鼠标悬停时背景变为红色 */
+      .clear-cart-btn:hover {
+        background-color: #e74c3c;
+        color: #fff;
+      }
+      .send-whatsapp-btn {
+        background-color: #25d366;
+        color: white;
+      }
+      .send-whatsapp-btn:hover {
+        background-color: #1da851;
       }
     </style>
   </head>
   <body>
-    <div class="page-header">
-      <a href="index.html" class="back-btn">
-        <img src="icon/back.png" alt="Back" />
-      </a>
-      <h1>Shopping Cart</h1>
-    </div>
+    <header class="page-header">
+      <a href="index.html" class="back-btn" aria-label="Go back"></a>
+      <h1>Your Cart</h1>
+    </header>
 
     <div class="cart-container">
-      <div id="cart-items-list"></div>
+      <ul id="cart-items-list" class="cart-items-list"></ul>
     </div>
 
     <div class="cart-actions">
-      <button id="clear-cart-btn">Clear Cart</button>
-      <button id="send-whatsapp-btn">Send Inquiry</button>
-    </div>
-
-    <div class="contact-info">
-      <h3>Contact Us</h3>
-      <p>Please contact us for orders or wholesale inquiries.</p>
-      <p>WhatsApp: +16232027321</p>
-      <p>
-        <a href="https://wa.me/16232027321" target="_blank">Link to Contact</a>
-      </p>
-      <p>Ship from California</p>
+      <button id="clear-cart-btn" class="clear-cart-btn">Clear Cart</button>
+      <button id="send-whatsapp-btn" class="send-whatsapp-btn">
+        Send on WhatsApp
+      </button>
     </div>
 
     <script>
-      const whatsappNumber = "16232027321";
       const cartItemsList = document.getElementById("cart-items-list");
-      const sendWhatsappBtn = document.getElementById("send-whatsapp-btn");
       const clearCartBtn = document.getElementById("clear-cart-btn");
+      const sendWhatsappBtn = document.getElementById("send-whatsapp-btn");
+
+      // WhatsApp number for inquiry
+      const whatsappNumber = "16232027321";
 
       function loadCartFromLocalStorage() {
         const storedCart = localStorage.getItem("cartItems");
@@ -236,55 +220,72 @@
         localStorage.setItem("cartItems", JSON.stringify(cart));
       }
 
-      function updateMainPageCartCount() {
-        if (window.opener) {
-          window.opener.postMessage("updateCartCount", "*");
-        }
-      }
-
       function renderCartItems() {
-        const cartItems = loadCartFromLocalStorage();
+        let cartItems = loadCartFromLocalStorage();
         cartItemsList.innerHTML = "";
         if (cartItems.length === 0) {
           cartItemsList.innerHTML =
-            '<p class="empty-cart-message">Your cart is empty.</p>';
-          sendWhatsappBtn.style.display = "none";
-          clearCartBtn.style.display = "none";
+            "<p class='empty-cart-message'>Your cart is empty.</p>";
         } else {
-          sendWhatsappBtn.style.display = "block";
-          clearCartBtn.style.display = "block";
+          // 关键修改：自定义排序逻辑，用于按数字顺序排列产品
+          cartItems.sort((a, b) => {
+            const getNumber = (str) =>
+              parseInt(str.match(/\d+/)?.[0] || "0", 10);
+            const numA = getNumber(a.caption);
+            const numB = getNumber(b.caption);
+            return numA - numB;
+          });
+
           cartItems.forEach((item, index) => {
-            const cartItemDiv = document.createElement("div");
-            cartItemDiv.classList.add("cart-item-horizontal");
-            cartItemDiv.innerHTML = `
-              <img src="${item.img}" alt="${
-              item.caption
-            }" loading="lazy" width="80" height="80" />
+            const li = document.createElement("li");
+            li.className = "cart-item";
+            li.innerHTML = `
+              <img src="${item.img}" alt="${item.name}" loading="lazy">
               <div class="item-details">
-                <h3>${item.caption.split(" - ")[0]}</h3>
-              </div>
-              <div class="quantity-controls">
-                <span class="quantity-btn decrease-quantity" data-index="${index}">-</span>
-                <span class="quantity-display">${item.quantity}</span>
-                <span class="quantity-btn increase-quantity" data-index="${index}">+</span>
+                <h3>${item.caption}</h3>
+                <div class="quantity-control">
+                  <button class="decrease-quantity" data-index="${index}">-</button>
+                  <span>${item.quantity}</span>
+                  <button class="increase-quantity" data-index="${index}">+</button>
+                </div>
               </div>
               <button class="remove-btn" data-index="${index}">Remove</button>
             `;
-            cartItemsList.appendChild(cartItemDiv);
+            cartItemsList.appendChild(li);
           });
         }
       }
 
       function updateQuantity(index, change) {
         let cartItems = loadCartFromLocalStorage();
-        if (cartItems[index]) {
-          cartItems[index].quantity += change;
-          if (cartItems[index].quantity <= 0) {
-            cartItems.splice(index, 1);
+        // 找到正确的项目，因为索引可能因排序而改变
+        const sortedItems = [...cartItems].sort((a, b) => {
+          const getNumber = (str) => parseInt(str.match(/\d+/)?.[0] || "0", 10);
+          const numA = getNumber(a.caption);
+          const numB = getNumber(b.caption);
+          return numA - numB;
+        });
+
+        const itemToUpdate = sortedItems[index];
+
+        if (itemToUpdate) {
+          itemToUpdate.quantity = Math.max(0, itemToUpdate.quantity + change);
+          const originalItemIndex = cartItems.findIndex(
+            (item) => item.caption === itemToUpdate.caption
+          );
+          if (originalItemIndex !== -1) {
+            cartItems[originalItemIndex].quantity = itemToUpdate.quantity;
           }
-          saveCartToLocalStorage(cartItems);
+          const updatedCart = cartItems.filter((item) => item.quantity > 0);
+          saveCartToLocalStorage(updatedCart);
           renderCartItems();
           updateMainPageCartCount();
+        }
+      }
+
+      function updateMainPageCartCount() {
+        if (window.opener) {
+          window.opener.postMessage("updateCartCount", "*");
         }
       }
 
@@ -292,16 +293,32 @@
 
       cartItemsList.addEventListener("click", (e) => {
         const index = e.target.getAttribute("data-index");
+        if (index === null) return;
+
         if (e.target.classList.contains("remove-btn")) {
+          // 找到正确的项目并从购物车中移除
           let cartItems = loadCartFromLocalStorage();
-          cartItems.splice(index, 1);
-          saveCartToLocalStorage(cartItems);
-          renderCartItems();
-          updateMainPageCartCount();
+          const sortedItems = [...cartItems].sort((a, b) => {
+            const getNumber = (str) =>
+              parseInt(str.match(/\d+/)?.[0] || "0", 10);
+            const numA = getNumber(a.caption);
+            const numB = getNumber(b.caption);
+            return numA - numB;
+          });
+          const itemToRemove = sortedItems[index];
+
+          if (itemToRemove) {
+            const updatedCart = cartItems.filter(
+              (item) => item.caption !== itemToRemove.caption
+            );
+            saveCartToLocalStorage(updatedCart);
+            renderCartItems();
+            updateMainPageCartCount();
+          }
         } else if (e.target.classList.contains("increase-quantity")) {
-          updateQuantity(index, 1);
+          updateQuantity(parseInt(index), 1);
         } else if (e.target.classList.contains("decrease-quantity")) {
-          updateQuantity(index, -1);
+          updateQuantity(parseInt(index), -1);
         }
       });
 
@@ -313,6 +330,19 @@
 
       sendWhatsappBtn.addEventListener("click", () => {
         const cartItems = loadCartFromLocalStorage();
+        if (cartItems.length === 0) {
+          alert(
+            "Your cart is empty. Please add items before sending an order."
+          );
+          return;
+        }
+        // 确保在发送信息时也使用排序后的列表
+        cartItems.sort((a, b) => {
+          const getNumber = (str) => parseInt(str.match(/\d+/)?.[0] || "0", 10);
+          const numA = getNumber(a.caption);
+          const numB = getNumber(b.caption);
+          return numA - numB;
+        });
         const messageLines = cartItems.map(
           (item) => `* ${item.caption} (${item.quantity} bottles)`
         );
