@@ -32,20 +32,23 @@
         border-bottom: 1px solid #eee;
         background-color: #fff;
       }
+      /* --- 这是新的 .price-info 样式 --- */
       .price-info {
-        display: flex; /* 使用 Flexbox 进行左右布局 */
-        justify-content: space-around; /* 两端对齐，中间留有空间 */
-        align-items: center;
-        padding: 10px 0; /* 压缩顶部空间 */
-        background: #fff;
-        margin-bottom: 20px;
-        border-bottom: 1px solid #eee;
+        max-width: 600px; /* 设置最大宽度，避免内容过宽 */
+        margin: 0 auto 25px auto; /* 上下左右居中，并增加底部外边距 */
+        padding: 20px; /* 增加内部空间 */
+        background-color: #f9f9f9; /* 设置一个非常浅的灰色背景 */
+        border: 1px solid #e0e0e0; /* 添加一个柔和的边框 */
+        border-radius: 12px; /* 添加圆角，使其看起来更现代 */
+        text-align: center; /* 所有文字居中 */
       }
+
+      /* --- 在 .price-info 下方添加这个新规则 --- */
       .price-info p {
-        margin: 5px 0;
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #333;
+        margin: 8px 0; /* 统一所有段落的上下间距 */
+        font-size: 1rem; /* 统一基础字体大小 */
+        color: #333; /* 统一字体颜色 */
+        font-weight: 500;
       }
       .navbar {
         display: flex;
@@ -79,6 +82,50 @@
         transform: scale(1.1);
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       }
+      /* 新增：使搜索栏单独占一行并加长 */
+      /*
+      .search-container {
+        width: 100%;
+        margin-bottom: 15px; 
+        padding-bottom: 15px; 
+        border-bottom: 1px solid #eee; 
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      #search-input {
+        padding: 10px 20px; 
+        font-size: 1rem;
+        border-radius: 20px;
+        border: 2px solid #ddd; 
+        margin-right: 10px; 
+        width: 60%; 
+        max-width: 400px; 
+        transition: box-shadow 0.3s ease, border-color 0.3s ease;
+      }
+      #search-input:focus {
+        outline: none;
+        border-color: #333; 
+        box-shadow: 0 0 0 3px rgba(51, 51, 51, 0.2);
+      }
+
+      #search-button {
+        background: #333; 
+        color: #fff; 
+        border: none;
+        padding: 10px 20px; 
+        cursor: pointer;
+        font-size: 1rem;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+      }
+      #search-button:hover {
+        background: #555;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      }
+      */
+
       .gallery {
         max-width: 1200px;
         margin: 0 auto;
@@ -297,6 +344,41 @@
       .TOP {
         text-align: center;
       }
+
+      /* --- 新增的CSS: 用于“已添加”提示 --- */
+      .add-to-cart-confirmation {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #28a745; /* 绿色背景 */
+        color: white;
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-size: 0.9rem;
+        font-weight: bold;
+        opacity: 0;
+        transition: opacity 0.5s ease, transform 0.5s ease;
+        z-index: 10;
+        pointer-events: none; /* 确保不影响点击 */
+      }
+
+      .add-to-cart-confirmation.show {
+        opacity: 1;
+        transform: translate(-50%, -100%); /* 向上移动 */
+      }
+      .order-instructions {
+        text-align: left;
+        width: 100%; /* 确保它在卡片内撑满宽度 */
+        max-width: 350px; /* 可以设置一个最大宽度避免行太长 */
+        margin-top: 15px; /* 与上方的价格信息增加一点间距 */
+      }
+      .order-instructions {
+        text-align: left;
+        width: 100%; /* 确保它在卡片内撑满宽度 */
+        max-width: 350px; /* 可以设置一个最大宽度避免行太长 */
+        margin-top: 15px; /* 与上方的价格信息增加一点间距 */
+      }
     </style>
   </head>
   <body>
@@ -307,17 +389,31 @@
         <p>LV: $49</p>
         <p>Other Brands: $35</p>
         <p>Free Shipping</p>
-        <p>Location: California</p>
-        <p>Wholesale price is cheaper</p>
       </div>
+
+      <hr class="info-divider" />
+      <div class="order-instructions"></div>
       <div>
-        <p>Function</p>
-        <p style="color: #f44">🛒: Add to Cart</p>
-        <p style="color: #f44">📋: Your Orders</p>
+        <div class="order-instructions">
+          <p style="font-weight: 700; font-size: 1.1rem">How to Order:</p>
+          <p>1. Click the '🛒' icon on any perfume to add it to your cart.</p>
+          <p>
+            2. Click the floating '📋' button at the bottom-left to view your
+            order.
+          </p>
+        </div>
       </div>
     </div>
 
     <div class="navbar">
+      <!-- <div class="search-container">
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Search by Brands or number..."
+        />
+        <button id="search-button">Search</button>
+      </div> -->
       <button data-brand="All" class="active">All Brands</button>
       <button data-brand="Dior">Dior</button>
       <button data-brand="Chanel">Chanel</button>
@@ -349,7 +445,7 @@
       >
         <img src="images/perfume1.jpg" alt="A01" loading="lazy" />
         <div class="caption">A1 - Valentino</div>
-        <button class="add-to-cart" data-name="A1">
+        <button class="add-to-cart" data-name="A1" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -362,7 +458,7 @@
       >
         <img src="images/perfume2.jpg" alt="A02" loading="lazy" />
         <div class="caption">A2 - Valentino</div>
-        <button class="add-to-cart" data-name="A2">
+        <button class="add-to-cart" data-name="A2" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -375,7 +471,7 @@
       >
         <img src="images/perfume3.jpg" alt="A03" loading="lazy" />
         <div class="caption">A3 - Valentino</div>
-        <button class="add-to-cart" data-name="A3">
+        <button class="add-to-cart" data-name="A3" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -388,7 +484,7 @@
       >
         <img src="images/perfume4.jpg" alt="A04" loading="lazy" />
         <div class="caption">A4 - Dior</div>
-        <button class="add-to-cart" data-name="A4">
+        <button class="add-to-cart" data-name="A4" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -401,7 +497,7 @@
       >
         <img src="images/perfume5.jpg" alt="A05" loading="lazy" />
         <div class="caption">A5 - Lancôme</div>
-        <button class="add-to-cart" data-name="A5">
+        <button class="add-to-cart" data-name="A5" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -414,7 +510,7 @@
       >
         <img src="images/perfume6.jpg" alt="A06" loading="lazy" />
         <div class="caption">A6 - Chanel</div>
-        <button class="add-to-cart" data-name="A6">
+        <button class="add-to-cart" data-name="A6" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -427,7 +523,7 @@
       >
         <img src="images/perfume7.jpg" alt="A07" loading="lazy" />
         <div class="caption">A7 - YSL</div>
-        <button class="add-to-cart" data-name="A7">
+        <button class="add-to-cart" data-name="A7" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -440,7 +536,7 @@
       >
         <img src="images/perfume8.jpg" alt="A08" loading="lazy" />
         <div class="caption">A8 - Paco Rabanne</div>
-        <button class="add-to-cart" data-name="A8">
+        <button class="add-to-cart" data-name="A8" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -453,7 +549,7 @@
       >
         <img src="images/perfume9.jpg" alt="A09" loading="lazy" />
         <div class="caption">A9 - Creed</div>
-        <button class="add-to-cart" data-name="A9">
+        <button class="add-to-cart" data-name="A9" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -466,7 +562,7 @@
       >
         <img src="images/perfume10.jpg" alt="A10" loading="lazy" />
         <div class="caption">A10 - Jean Paul Gaultier</div>
-        <button class="add-to-cart" data-name="A10">
+        <button class="add-to-cart" data-name="A10" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -479,7 +575,7 @@
       >
         <img src="images/perfume11.jpg" alt="A11" loading="lazy" />
         <div class="caption">A11 - Maison Francis Kurkdjian</div>
-        <button class="add-to-cart" data-name="A11">
+        <button class="add-to-cart" data-name="A11" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -492,7 +588,7 @@
       >
         <img src="images/perfume12.jpg" alt="A12" loading="lazy" />
         <div class="caption">A12 - YSL</div>
-        <button class="add-to-cart" data-name="A12">
+        <button class="add-to-cart" data-name="A12" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -505,7 +601,7 @@
       >
         <img src="images/perfume13.jpg" alt="A13" loading="lazy" />
         <div class="caption">A13 - Chanel</div>
-        <button class="add-to-cart" data-name="A13">
+        <button class="add-to-cart" data-name="A13" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -518,7 +614,7 @@
       >
         <img src="images/perfume14.jpg" alt="A14" loading="lazy" />
         <div class="caption">A14 - Dior</div>
-        <button class="add-to-cart" data-name="A14">
+        <button class="add-to-cart" data-name="A14" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -531,7 +627,7 @@
       >
         <img src="images/perfume15.jpg" alt="A15" loading="lazy" />
         <div class="caption">A15 - Versace</div>
-        <button class="add-to-cart" data-name="A15">
+        <button class="add-to-cart" data-name="A15" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -544,7 +640,7 @@
       >
         <img src="images/perfume18.jpg" alt="A18" loading="lazy" />
         <div class="caption">A18 - Prada</div>
-        <button class="add-to-cart" data-name="A18">
+        <button class="add-to-cart" data-name="A18" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -557,7 +653,7 @@
       >
         <img src="images/perfume19.jpg" alt="A19" loading="lazy" />
         <div class="caption">A19 - Tom Ford</div>
-        <button class="add-to-cart" data-name="A19">
+        <button class="add-to-cart" data-name="A19" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -570,7 +666,7 @@
       >
         <img src="images/perfume20.jpg" alt="A20" loading="lazy" />
         <div class="caption">A20 - Giorgio Armani</div>
-        <button class="add-to-cart" data-name="A20">
+        <button class="add-to-cart" data-name="A20" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -583,7 +679,7 @@
       >
         <img src="images/perfume21.jpg" alt="A21" loading="lazy" />
         <div class="caption">A21 - Giorgio Armani</div>
-        <button class="add-to-cart" data-name="A21">
+        <button class="add-to-cart" data-name="A21" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -596,7 +692,7 @@
       >
         <img src="images/perfume22.jpg" alt="A22" loading="lazy" />
         <div class="caption">A22 - Tom Ford</div>
-        <button class="add-to-cart" data-name="A22">
+        <button class="add-to-cart" data-name="A22" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -609,7 +705,7 @@
       >
         <img src="images/perfume23.jpg" alt="A23" loading="lazy" />
         <div class="caption">A23 - Creed</div>
-        <button class="add-to-cart" data-name="A23">
+        <button class="add-to-cart" data-name="A23" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -622,7 +718,7 @@
       >
         <img src="images/perfume24.jpg" alt="A24" loading="lazy" />
         <div class="caption">A24 - Tom Ford</div>
-        <button class="add-to-cart" data-name="A24">
+        <button class="add-to-cart" data-name="A24" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -635,7 +731,7 @@
       >
         <img src="images/perfume25.jpg" alt="A25" loading="lazy" />
         <div class="caption">A25 - Dior</div>
-        <button class="add-to-cart" data-name="A25">
+        <button class="add-to-cart" data-name="A25" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -648,7 +744,7 @@
       >
         <img src="images/perfume26.jpg" alt="A26" loading="lazy" />
         <div class="caption">A26 - Parfums de Marly</div>
-        <button class="add-to-cart" data-name="A26">
+        <button class="add-to-cart" data-name="A26" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -661,7 +757,7 @@
       >
         <img src="images/perfume27.jpg" alt="A27" loading="lazy" />
         <div class="caption">A27 - Gucci</div>
-        <button class="add-to-cart" data-name="A27">
+        <button class="add-to-cart" data-name="A27" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -674,7 +770,7 @@
       >
         <img src="images/perfume28.jpg" alt="A28" loading="lazy" />
         <div class="caption">A28 - Versace</div>
-        <button class="add-to-cart" data-name="A28">
+        <button class="add-to-cart" data-name="A28" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -687,7 +783,7 @@
       >
         <img src="images/perfume29.jpg" alt="A29" loading="lazy" />
         <div class="caption">A29 - Chanel</div>
-        <button class="add-to-cart" data-name="A29">
+        <button class="add-to-cart" data-name="A29" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -700,7 +796,7 @@
       >
         <img src="images/perfume30.jpg" alt="A30" loading="lazy" />
         <div class="caption">A30 - YSL</div>
-        <button class="add-to-cart" data-name="A30">
+        <button class="add-to-cart" data-name="A30" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -713,7 +809,7 @@
       >
         <img src="images/perfume31.jpg" alt="A31" loading="lazy" />
         <div class="caption">A31 - Dior</div>
-        <button class="add-to-cart" data-name="A31">
+        <button class="add-to-cart" data-name="A31" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -726,7 +822,7 @@
       >
         <img src="images/perfume32.jpg" alt="A32" loading="lazy" />
         <div class="caption">A32 - Giorgio Armani</div>
-        <button class="add-to-cart" data-name="A32">
+        <button class="add-to-cart" data-name="A32" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -739,7 +835,7 @@
       >
         <img src="images/perfume33.jpg" alt="A33" loading="lazy" />
         <div class="caption">A33 - Louis Vuitton</div>
-        <button class="add-to-cart" data-name="A33">
+        <button class="add-to-cart" data-name="A33" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -752,7 +848,7 @@
       >
         <img src="images/perfume34.jpg" alt="A34" loading="lazy" />
         <div class="caption">A34 - Valentino</div>
-        <button class="add-to-cart" data-name="A34">
+        <button class="add-to-cart" data-name="A34" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -765,7 +861,7 @@
       >
         <img src="images/perfume35.jpg" alt="A35" loading="lazy" />
         <div class="caption">A35 - Valentino</div>
-        <button class="add-to-cart" data-name="A35">
+        <button class="add-to-cart" data-name="A35" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -778,7 +874,7 @@
       >
         <img src="images/perfume36.jpg" alt="A36" loading="lazy" />
         <div class="caption">A36 - Louis Vuitton</div>
-        <button class="add-to-cart" data-name="A36">
+        <button class="add-to-cart" data-name="A36" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -791,7 +887,7 @@
       >
         <img src="images/perfume37.jpg" alt="A37" loading="lazy" />
         <div class="caption">A37 - Carolina Herrera</div>
-        <button class="add-to-cart" data-name="A37">
+        <button class="add-to-cart" data-name="A37" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -804,7 +900,7 @@
       >
         <img src="images/perfume38.jpg" alt="A38" loading="lazy" />
         <div class="caption">A38 - Carolina Herrera</div>
-        <button class="add-to-cart" data-name="A38">
+        <button class="add-to-cart" data-name="A38" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -817,7 +913,7 @@
       >
         <img src="images/perfume39.jpg" alt="A39" loading="lazy" />
         <div class="caption">A39 - Louis Vuitton</div>
-        <button class="add-to-cart" data-name="A39">
+        <button class="add-to-cart" data-name="A39" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -830,7 +926,7 @@
       >
         <img src="images/perfume40.jpg" alt="A40" loading="lazy" />
         <div class="caption">A40 - Valentino</div>
-        <button class="add-to-cart" data-name="A40">
+        <button class="add-to-cart" data-name="A40" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -843,7 +939,7 @@
       >
         <img src="images/perfume41.jpg" alt="A41" loading="lazy" />
         <div class="caption">A41 - Xerjoff</div>
-        <button class="add-to-cart" data-name="A41">
+        <button class="add-to-cart" data-name="A41" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -856,7 +952,7 @@
       >
         <img src="images/perfume42.jpg" alt="A42" loading="lazy" />
         <div class="caption">A42 - Parfums de Marly</div>
-        <button class="add-to-cart" data-name="A42">
+        <button class="add-to-cart" data-name="A42" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -869,7 +965,7 @@
       >
         <img src="images/perfume43.jpg" alt="A43" loading="lazy" />
         <div class="caption">A43 - Chanel</div>
-        <button class="add-to-cart" data-name="A43">
+        <button class="add-to-cart" data-name="A43" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -882,7 +978,7 @@
       >
         <img src="images/perfume44.jpg" alt="A44" loading="lazy" />
         <div class="caption">A44 - Creed</div>
-        <button class="add-to-cart" data-name="A44">
+        <button class="add-to-cart" data-name="A44" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -895,7 +991,7 @@
       >
         <img src="images/perfume45.jpg" alt="A45" loading="lazy" />
         <div class="caption">A45 - YSL</div>
-        <button class="add-to-cart" data-name="A45">
+        <button class="add-to-cart" data-name="A45" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -908,7 +1004,7 @@
       >
         <img src="images/perfume46.jpg" alt="A46" loading="lazy" />
         <div class="caption">A46 - Louis Vuitton</div>
-        <button class="add-to-cart" data-name="A46">
+        <button class="add-to-cart" data-name="A46" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -921,7 +1017,7 @@
       >
         <img src="images/perfume47.jpg" alt="A47" loading="lazy" />
         <div class="caption">A47 - Carolina Herrera</div>
-        <button class="add-to-cart" data-name="A47">
+        <button class="add-to-cart" data-name="A47" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -934,7 +1030,7 @@
       >
         <img src="images/perfume48.jpg" alt="A48" loading="lazy" />
         <div class="caption">A48 - My Burberry</div>
-        <button class="add-to-cart" data-name="A48">
+        <button class="add-to-cart" data-name="A48" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -947,7 +1043,7 @@
       >
         <img src="images/perfume49.jpg" alt="A49" loading="lazy" />
         <div class="caption">A49 - Valentino</div>
-        <button class="add-to-cart" data-name="A49">
+        <button class="add-to-cart" data-name="A49" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -960,7 +1056,7 @@
       >
         <img src="images/perfume50.jpg" alt="A50" loading="lazy" />
         <div class="caption">A50 - Gucci</div>
-        <button class="add-to-cart" data-name="A50">
+        <button class="add-to-cart" data-name="A50" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -973,7 +1069,7 @@
       >
         <img src="images/perfume51.jpg" alt="A51" loading="lazy" />
         <div class="caption">A51 - Prada</div>
-        <button class="add-to-cart" data-name="A51">
+        <button class="add-to-cart" data-name="A51" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -986,7 +1082,7 @@
       >
         <img src="images/perfume52.jpg" alt="A52" loading="lazy" />
         <div class="caption">A52 - Jean Paul Gaultier</div>
-        <button class="add-to-cart" data-name="A52">
+        <button class="add-to-cart" data-name="A52" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -999,7 +1095,7 @@
       >
         <img src="images/perfume53.jpg" alt="A53" loading="lazy" />
         <div class="caption">A53 - Initio Parfums Privés</div>
-        <button class="add-to-cart" data-name="A53">
+        <button class="add-to-cart" data-name="A53" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1012,7 +1108,7 @@
       >
         <img src="images/perfume54.jpg" alt="A54" loading="lazy" />
         <div class="caption">A54 - Lattafa Perfumes</div>
-        <button class="add-to-cart" data-name="A54">
+        <button class="add-to-cart" data-name="A54" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1025,7 +1121,7 @@
       >
         <img src="images/perfume55.jpg" alt="A55" loading="lazy" />
         <div class="caption">A55 - Lattafa Perfumes</div>
-        <button class="add-to-cart" data-name="A55">
+        <button class="add-to-cart" data-name="A55" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1038,7 +1134,7 @@
       >
         <img src="images/perfume56.jpg" alt="A56" loading="lazy" />
         <div class="caption">A56 - Jean Paul Gaultier</div>
-        <button class="add-to-cart" data-name="A56">
+        <button class="add-to-cart" data-name="A56" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1051,7 +1147,7 @@
       >
         <img src="images/perfume57.jpg" alt="A57" loading="lazy" />
         <div class="caption">A57 - YSL</div>
-        <button class="add-to-cart" data-name="A57">
+        <button class="add-to-cart" data-name="A57" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1064,7 +1160,7 @@
       >
         <img src="images/perfume58.jpg" alt="A58" loading="lazy" />
         <div class="caption">A58 - Chanel</div>
-        <button class="add-to-cart" data-name="A58">
+        <button class="add-to-cart" data-name="A58" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1077,7 +1173,7 @@
       >
         <img src="images/perfume59.jpg" alt="A59" loading="lazy" />
         <div class="caption">A59 - Versace</div>
-        <button class="add-to-cart" data-name="A59">
+        <button class="add-to-cart" data-name="A59" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1090,7 +1186,7 @@
       >
         <img src="images/perfume60.jpg" alt="A60" loading="lazy" />
         <div class="caption">A60 - Chanel</div>
-        <button class="add-to-cart" data-name="A60">
+        <button class="add-to-cart" data-name="A60" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1103,7 +1199,7 @@
       >
         <img src="images/perfume61.jpg" alt="A61" loading="lazy" />
         <div class="caption">A61 - Giorgio Armani</div>
-        <button class="add-to-cart" data-name="A61">
+        <button class="add-to-cart" data-name="A61" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1116,7 +1212,7 @@
       >
         <img src="images/perfume62.jpg" alt="A62" loading="lazy" />
         <div class="caption">A62 - Ralph Lauren</div>
-        <button class="add-to-cart" data-name="A62">
+        <button class="add-to-cart" data-name="A62" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1129,7 +1225,7 @@
       >
         <img src="images/perfume63.jpg" alt="A63" loading="lazy" />
         <div class="caption">A63 - Jean Paul Gaultier</div>
-        <button class="add-to-cart" data-name="A63">
+        <button class="add-to-cart" data-name="A63" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1142,7 +1238,7 @@
       >
         <img src="images/perfume64.jpg" alt="A64" loading="lazy" />
         <div class="caption">A64 - Creed</div>
-        <button class="add-to-cart" data-name="A64">
+        <button class="add-to-cart" data-name="A64" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1155,7 +1251,7 @@
       >
         <img src="images/perfume65.jpg" alt="A65" loading="lazy" />
         <div class="caption">A65 - Maison Francis Kurkdjian</div>
-        <button class="add-to-cart" data-name="A65">
+        <button class="add-to-cart" data-name="A65" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1168,7 +1264,7 @@
       >
         <img src="images/perfume66.jpg" alt="A66" loading="lazy" />
         <div class="caption">A66 - Giorgio Armani</div>
-        <button class="add-to-cart" data-name="A66">
+        <button class="add-to-cart" data-name="A66" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1181,7 +1277,7 @@
       >
         <img src="images/perfume67.jpg" alt="A67" loading="lazy" />
         <div class="caption">A67 - Gucci</div>
-        <button class="add-to-cart" data-name="A67">
+        <button class="add-to-cart" data-name="A67" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1194,7 +1290,7 @@
       >
         <img src="images/perfume68.jpg" alt="A68" loading="lazy" />
         <div class="caption">A68 - Parfums de Marly</div>
-        <button class="add-to-cart" data-name="A68">
+        <button class="add-to-cart" data-name="A68" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1207,7 +1303,7 @@
       >
         <img src="images/perfume69.jpg" alt="A69" loading="lazy" />
         <div class="caption">A69 - Dior</div>
-        <button class="add-to-cart" data-name="A69">
+        <button class="add-to-cart" data-name="A69" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1220,7 +1316,7 @@
       >
         <img src="images/perfume70.jpg" alt="A70" loading="lazy" />
         <div class="caption">A70 - Jean Paul Gaultier</div>
-        <button class="add-to-cart" data-name="A70">
+        <button class="add-to-cart" data-name="A70" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1233,7 +1329,7 @@
       >
         <img src="images/perfume71.jpg" alt="A71" loading="lazy" />
         <div class="caption">A71 - Louis Vuitton</div>
-        <button class="add-to-cart" data-name="A71">
+        <button class="add-to-cart" data-name="A71" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1246,7 +1342,7 @@
       >
         <img src="images/perfume72.jpg" alt="A72" loading="lazy" />
         <div class="caption">A72 - Maison Francis Kurkdjian</div>
-        <button class="add-to-cart" data-name="A72">
+        <button class="add-to-cart" data-name="A72" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1258,8 +1354,8 @@
         data-brand="Parfums de Marly"
       >
         <img src="images/perfume73.jpg" alt="A73" loading="lazy" />
-        <div class="caption">A73 - Parfums de Marly </div>
-        <button class="add-to-cart" data-name="A73">
+        <div class="caption">A73 - Parfums de Marly</div>
+        <button class="add-to-cart" data-name="A73" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1271,8 +1367,8 @@
         data-brand="Chanel"
       >
         <img src="images/perfume74.jpg" alt="A74" loading="lazy" />
-        <div class="caption">A74 - Chanel </div>
-        <button class="add-to-cart" data-name="A74">
+        <div class="caption">A74 - Chanel</div>
+        <button class="add-to-cart" data-name="A74" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1284,8 +1380,8 @@
         data-brand="Creed"
       >
         <img src="images/perfume75.jpg" alt="A75" loading="lazy" />
-        <div class="caption">A75 - Creed </div>
-        <button class="add-to-cart" data-name="A75">
+        <div class="caption">A75 - Creed</div>
+        <button class="add-to-cart" data-name="A75" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1297,8 +1393,8 @@
         data-brand="Tom Ford"
       >
         <img src="images/perfume76.jpg" alt="A76" loading="lazy" />
-        <div class="caption">A76 - Tom Ford </div>
-        <button class="add-to-cart" data-name="A76">
+        <div class="caption">A76 - Tom Ford</div>
+        <button class="add-to-cart" data-name="A76" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1311,7 +1407,7 @@
       >
         <img src="images/perfume77.jpg" alt="A77" loading="lazy" />
         <div class="caption">A77 - Carolina Herrera</div>
-        <button class="add-to-cart" data-name="A77">
+        <button class="add-to-cart" data-name="A77" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1324,7 +1420,7 @@
       >
         <img src="images/perfume78.jpg" alt="A78" loading="lazy" />
         <div class="caption">A78 - Chanel</div>
-        <button class="add-to-cart" data-name="A78">
+        <button class="add-to-cart" data-name="A78" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1337,7 +1433,7 @@
       >
         <img src="images/perfume79.jpg" alt="A79" loading="lazy" />
         <div class="caption">A79 - Creed</div>
-        <button class="add-to-cart" data-name="A79">
+        <button class="add-to-cart" data-name="A79" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1350,7 +1446,7 @@
       >
         <img src="images/perfume80.jpg" alt="A80" loading="lazy" />
         <div class="caption">A80 - YSL</div>
-        <button class="add-to-cart" data-name="A80">
+        <button class="add-to-cart" data-name="A80" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1362,8 +1458,8 @@
         data-brand="Tom Ford"
       >
         <img src="images/perfume81.jpg" alt="A81" loading="lazy" />
-        <div class="caption">A81 - Tom Ford </div>
-        <button class="add-to-cart" data-name="A81">
+        <div class="caption">A81 - Tom Ford</div>
+        <button class="add-to-cart" data-name="A81" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1376,7 +1472,7 @@
       >
         <img src="images/perfume82.jpg" alt="A82" loading="lazy" />
         <div class="caption">A82 - Tom Ford</div>
-        <button class="add-to-cart" data-name="A82">
+        <button class="add-to-cart" data-name="A82" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1389,7 +1485,7 @@
       >
         <img src="images/perfume83.jpg" alt="A83" loading="lazy" />
         <div class="caption">A83 - Tom Ford</div>
-        <button class="add-to-cart" data-name="A83">
+        <button class="add-to-cart" data-name="A83" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1402,7 +1498,7 @@
       >
         <img src="images/perfume84.jpg" alt="A84" loading="lazy" />
         <div class="caption">A84 - Tom Ford</div>
-        <button class="add-to-cart" data-name="A84">
+        <button class="add-to-cart" data-name="A84" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1415,7 +1511,7 @@
       >
         <img src="images/perfume85.jpg" alt="A85" loading="lazy" />
         <div class="caption">A85 - Initio</div>
-        <button class="add-to-cart" data-name="A85">
+        <button class="add-to-cart" data-name="A85" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1428,7 +1524,7 @@
       >
         <img src="images/perfume86.jpg" alt="A86" loading="lazy" />
         <div class="caption">A86 - Louis Vuitton</div>
-        <button class="add-to-cart" data-name="A86">
+        <button class="add-to-cart" data-name="A86" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1441,7 +1537,7 @@
       >
         <img src="images/perfume87.jpg" alt="A87" loading="lazy" />
         <div class="caption">A87 - Ralph Lauren</div>
-        <button class="add-to-cart" data-name="A87">
+        <button class="add-to-cart" data-name="A87" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1454,7 +1550,7 @@
       >
         <img src="images/perfume88.jpg" alt="A88" loading="lazy" />
         <div class="caption">A88 - Parfums de Marly</div>
-        <button class="add-to-cart" data-name="A88">
+        <button class="add-to-cart" data-name="A88" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
@@ -1467,144 +1563,140 @@
       >
         <img src="images/perfume89.jpg" alt="A89" loading="lazy" />
         <div class="caption">A89 - Chanel</div>
-        <button class="add-to-cart" data-name="A89">
+        <button class="add-to-cart" data-name="A89" title="Add to Cart">
           🛒 <span class="item-cart-count"></span>
         </button>
       </div>
-       <div
-          class="item"
-          tabindex="0"
-          data-name="A90"
-          data-img="images/perfume90.jpg"
-          data-brand="Le Labo"
-        >
-          <img src="images/perfume90.jpg" alt="A90" loading="lazy" />
-          <div class="caption">A90 - Le Labo</div>
-          <button class="add-to-cart" data-name="A90">
-            🛒 <span class="item-cart-count"></span>
-          </button>
-        </div>
       <div
-          class="item"
-          tabindex="0"
-          data-name="A91"
-          data-img="images/perfume91.jpg"
-          data-brand="Burberry"
-        >
-          <img src="images/perfume91.jpg" alt="A91" loading="lazy" />
-          <div class="caption">A91 - Burberry</div>
-          <button class="add-to-cart" data-name="A91">
-            🛒 <span class="item-cart-count"></span>
-          </button>
-        </div>
+        class="item"
+        tabindex="0"
+        data-name="A90"
+        data-img="images/perfume90.jpg"
+        data-brand="Le Labo"
+      >
+        <img src="images/perfume90.jpg" alt="A90" loading="lazy" />
+        <div class="caption">A90 - Le Labo</div>
+        <button class="add-to-cart" data-name="A90" title="Add to Cart">
+          🛒 <span class="item-cart-count"></span>
+        </button>
+      </div>
       <div
-          class="item"
-          tabindex="0"
-          data-name="A92"
-          data-img="images/perfume92.jpg"
-          data-brand="Hugo Boss"
-        >
-          <img src="images/perfume92.jpg" alt="A92" loading="lazy" />
-          <div class="caption">A92 - Hugo Boss</div>
-          <button class="add-to-cart" data-name="A92">
-            🛒 <span class="item-cart-count"></span>
-          </button>
-        </div>
+        class="item"
+        tabindex="0"
+        data-name="A91"
+        data-img="images/perfume91.jpg"
+        data-brand="Burberry"
+      >
+        <img src="images/perfume91.jpg" alt="A91" loading="lazy" />
+        <div class="caption">A91 - Burberry</div>
+        <button class="add-to-cart" data-name="A91" title="Add to Cart">
+          🛒 <span class="item-cart-count"></span>
+        </button>
+      </div>
       <div
-          class="item"
-          tabindex="0"
-          data-name="A93"
-          data-img="images/perfume93.jpg"
-          data-brand="Carolina Herrera"
-        >
-          <img src="images/perfume93.jpg" alt="A93" loading="lazy" />
-          <div class="caption">A93 - Carolina Herrera</div>
-          <button class="add-to-cart" data-name="A93">
-            🛒 <span class="item-cart-count"></span>
-          </button>
-        </div>
+        class="item"
+        tabindex="0"
+        data-name="A92"
+        data-img="images/perfume92.jpg"
+        data-brand="Hugo Boss"
+      >
+        <img src="images/perfume92.jpg" alt="A92" loading="lazy" />
+        <div class="caption">A92 - Hugo Boss</div>
+        <button class="add-to-cart" data-name="A92" title="Add to Cart">
+          🛒 <span class="item-cart-count"></span>
+        </button>
+      </div>
       <div
-          class="item"
-          tabindex="0"
-          data-name="A94"
-          data-img="images/perfume94.jpg"
-          data-brand="Hermès"
-        >
-          <img src="images/perfume94.jpg" alt="A94" loading="lazy" />
-          <div class="caption">A94 - Hermès</div>
-          <button class="add-to-cart" data-name="A94">
-            🛒 <span class="item-cart-count"></span>
-          </button>
-        </div>
-       <div
-          class="item"
-          tabindex="0"
-          data-name="A95"
-          data-img="images/perfume95.jpg"
-          data-brand="Chanel"
-        >
-          <img src="images/perfume95.jpg" alt="A95" loading="lazy" />
-          <div class="caption">A95 - Chanel</div>
-          <button class="add-to-cart" data-name="A95">
-            🛒 <span class="item-cart-count"></span>
-          </button>
-        </div>
-        <div
-          class="item"
-          tabindex="0"
-          data-name="A96"
-          data-img="images/perfume96.jpg"
-          data-brand="Byredo"
-        >
-          <img src="images/perfume96.jpg" alt="A96" loading="lazy" />
-          <div class="caption">A96 - Byredo</div>
-          <button class="add-to-cart" data-name="A96">
-            🛒 <span class="item-cart-count"></span>
-          </button>
-        </div>
-        <div
-          class="item"
-          tabindex="0"
-          data-name="A97"
-          data-img="images/perfume97.jpg"
-          data-brand="Jo Malone"
-        >
-          <img src="images/perfume97.jpg" alt="A97" loading="lazy" />
-          <div class="caption">A97 - Jo Malone</div>
-          <button class="add-to-cart" data-name="A97">
-            🛒 <span class="item-cart-count"></span>
-          </button>
-        </div>
+        class="item"
+        tabindex="0"
+        data-name="A93"
+        data-img="images/perfume93.jpg"
+        data-brand="Carolina Herrera"
+      >
+        <img src="images/perfume93.jpg" alt="A93" loading="lazy" />
+        <div class="caption">A93 - Carolina Herrera</div>
+        <button class="add-to-cart" data-name="A93" title="Add to Cart">
+          🛒 <span class="item-cart-count"></span>
+        </button>
+      </div>
       <div
-          class="item"
-          tabindex="0"
-          data-name="A98"
-          data-img="images/perfume98.jpg"
-          data-brand="Creed"
-        >
-          <img src="images/perfume98.jpg" alt="A98" loading="lazy" />
-          <div class="caption">A98 - Creed</div>
-          <button class="add-to-cart" data-name="A98">
-            🛒 <span class="item-cart-count"></span>
-          </button>
-        </div>
-        <div
-          class="item"
-          tabindex="0"
-          data-name="A99"
-          data-img="images/perfume99.jpg"
-          data-brand="Valentino"
-        >
-          <img src="images/perfume99.jpg" alt="A99" loading="lazy" />
-          <div class="caption">A99 - Valentino</div>
-          <button class="add-to-cart" data-name="A99">
-            🛒 <span class="item-cart-count"></span>
-          </button>
-        </div>
-    </div>
-    </div>
-    
-
+        class="item"
+        tabindex="0"
+        data-name="A94"
+        data-img="images/perfume94.jpg"
+        data-brand="Hermès"
+      >
+        <img src="images/perfume94.jpg" alt="A94" loading="lazy" />
+        <div class="caption">A94 - Hermès</div>
+        <button class="add-to-cart" data-name="A94" title="Add to Cart">
+          🛒 <span class="item-cart-count"></span>
+        </button>
+      </div>
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A95"
+        data-img="images/perfume95.jpg"
+        data-brand="Chanel"
+      >
+        <img src="images/perfume95.jpg" alt="A95" loading="lazy" />
+        <div class="caption">A95 - Chanel</div>
+        <button class="add-to-cart" data-name="A95" title="Add to Cart">
+          🛒 <span class="item-cart-count"></span>
+        </button>
+      </div>
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A96"
+        data-img="images/perfume96.jpg"
+        data-brand="Byredo"
+      >
+        <img src="images/perfume96.jpg" alt="A96" loading="lazy" />
+        <div class="caption">A96 - Byredo</div>
+        <button class="add-to-cart" data-name="A96" title="Add to Cart">
+          🛒 <span class="item-cart-count"></span>
+        </button>
+      </div>
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A97"
+        data-img="images/perfume97.jpg"
+        data-brand="Jo Malone"
+      >
+        <img src="images/perfume97.jpg" alt="A97" loading="lazy" />
+        <div class="caption">A97 - Jo Malone</div>
+        <button class="add-to-cart" data-name="A97" title="Add to Cart">
+          🛒 <span class="item-cart-count"></span>
+        </button>
+      </div>
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A98"
+        data-img="images/perfume98.jpg"
+        data-brand="Creed"
+      >
+        <img src="images/perfume98.jpg" alt="A98" loading="lazy" />
+        <div class="caption">A98 - Creed</div>
+        <button class="add-to-cart" data-name="A98" title="Add to Cart">
+          🛒 <span class="item-cart-count"></span>
+        </button>
+      </div>
+      <div
+        class="item"
+        tabindex="0"
+        data-name="A99"
+        data-img="images/perfume99.jpg"
+        data-brand="Valentino"
+      >
+        <img src="images/perfume99.jpg" alt="A99" loading="lazy" />
+        <div class="caption">A99 - Valentino</div>
+        <button class="add-to-cart" data-name="A99" title="Add to Cart">
+          🛒 <span class="item-cart-count"></span>
+        </button>
+      </div>
     </div>
 
     <div
@@ -1632,7 +1724,7 @@
       &#x25B2;
     </button>
 
-    <button class="cart-button" id="cart-button">
+    <button class="cart-button" id="cart-button" title="View Your Order">
       <img src="icon/order.png" alt="Cart" class="cart-icon" />
       <span id="cart-count" class="cart-count">0</span>
     </button>
@@ -1694,6 +1786,7 @@
         }
       });
 
+      // --- 修改后的 addToCart 函数 ---
       function addToCart(name, img, caption, button) {
         const existingItem = cartItems.find((item) => item.name === name);
         if (existingItem) {
@@ -1704,7 +1797,6 @@
         saveCartToLocalStorage();
         updateCartCount();
 
-        // New code to update the specific item's badge
         const itemCartCount = button.querySelector(".item-cart-count");
         const currentItemInCart = cartItems.find((item) => item.name === name);
         if (currentItemInCart) {
@@ -1714,7 +1806,24 @@
           itemCartCount.style.display = "none";
         }
 
-        // Add pulse animation
+        // --- 新增的交互反馈逻辑 ---
+        const confirmation = document.createElement("div");
+        confirmation.textContent = "Added!";
+        confirmation.className = "add-to-cart-confirmation";
+
+        const itemElement = button.closest(".item");
+        // itemElement.style.position = 'relative'; // .item 已经有 position: relative, 无需重复设置
+        itemElement.appendChild(confirmation);
+
+        setTimeout(() => {
+          confirmation.classList.add("show");
+        }, 10);
+
+        setTimeout(() => {
+          confirmation.remove();
+        }, 1500);
+
+        // --- 原有的动画逻辑保留 ---
         cartButton.classList.add("added");
         setTimeout(() => {
           cartButton.classList.remove("added");
@@ -1750,6 +1859,9 @@
       const gallery = document.getElementById("gallery");
       const navbar = document.querySelector(".navbar");
       const items = gallery.querySelectorAll(".item");
+      const searchInput = document.getElementById("search-input");
+      const brandButtons = navbar.querySelectorAll("button[data-brand]");
+      const allButton = document.querySelector('button[data-brand="All"]');
 
       gallery.addEventListener("click", (e) => {
         const item = e.target.closest(".item");
@@ -1803,11 +1915,12 @@
       ];
 
       navbar.addEventListener("click", (e) => {
-        const button = e.target.closest("button");
+        const button = e.target.closest("button[data-brand]");
         if (!button) return;
 
-        const buttons = navbar.querySelectorAll("button");
-        buttons.forEach((btn) => btn.classList.remove("active"));
+        searchInput.value = "";
+
+        brandButtons.forEach((btn) => btn.classList.remove("active"));
         button.classList.add("active");
 
         const brand = button.getAttribute("data-brand");
@@ -1837,6 +1950,42 @@
         });
       });
 
+      function performSearch() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+
+        brandButtons.forEach((btn) => btn.classList.remove("active"));
+
+        items.forEach((item) => {
+          const name = item.getAttribute("data-name").toLowerCase();
+          const brand = item.getAttribute("data-brand").toLowerCase();
+          const caption = item
+            .querySelector(".caption")
+            .textContent.toLowerCase();
+
+          if (
+            name.includes(searchTerm) ||
+            brand.includes(searchTerm) ||
+            caption.includes(searchTerm)
+          ) {
+            item.classList.remove("hidden");
+          } else {
+            item.classList.add("hidden");
+          }
+        });
+      }
+
+      searchInput.addEventListener("keyup", () => {
+        if (searchInput.value.trim() === "") {
+          allButton.click();
+        } else {
+          performSearch();
+        }
+      });
+
+      document
+        .getElementById("search-button")
+        .addEventListener("click", performSearch);
+
       const backToTopButton = document.getElementById("back-to-top");
 
       window.addEventListener("scroll", () => {
@@ -1856,5 +2005,3 @@
     </script>
   </body>
 </html>
-
-
