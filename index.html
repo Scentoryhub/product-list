@@ -82,50 +82,6 @@
         transform: scale(1.1);
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       }
-      /* 新增：使搜索栏单独占一行并加长 */
-      /*
-      .search-container {
-        width: 100%;
-        margin-bottom: 15px; 
-        padding-bottom: 15px; 
-        border-bottom: 1px solid #eee; 
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-      }
-      #search-input {
-        padding: 10px 20px; 
-        font-size: 1rem;
-        border-radius: 20px;
-        border: 2px solid #ddd; 
-        margin-right: 10px; 
-        width: 60%; 
-        max-width: 400px; 
-        transition: box-shadow 0.3s ease, border-color 0.3s ease;
-      }
-      #search-input:focus {
-        outline: none;
-        border-color: #333; 
-        box-shadow: 0 0 0 3px rgba(51, 51, 51, 0.2);
-      }
-
-      #search-button {
-        background: #333; 
-        color: #fff; 
-        border: none;
-        padding: 10px 20px; 
-        cursor: pointer;
-        font-size: 1rem;
-        border-radius: 20px;
-        transition: all 0.3s ease;
-      }
-      #search-button:hover {
-        background: #555;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      }
-      */
-
       .gallery {
         max-width: 1200px;
         margin: 0 auto;
@@ -406,14 +362,6 @@
     </div>
 
     <div class="navbar">
-      <!-- <div class="search-container">
-        <input
-          type="text"
-          id="search-input"
-          placeholder="Search by Brands or number..."
-        />
-        <button id="search-button">Search</button>
-      </div> -->
       <button data-brand="All" class="active">All Brands</button>
       <button data-brand="Dior">Dior</button>
       <button data-brand="Chanel">Chanel</button>
@@ -1859,7 +1807,6 @@
       const gallery = document.getElementById("gallery");
       const navbar = document.querySelector(".navbar");
       const items = gallery.querySelectorAll(".item");
-      const searchInput = document.getElementById("search-input");
       const brandButtons = navbar.querySelectorAll("button[data-brand]");
       const allButton = document.querySelector('button[data-brand="All"]');
 
@@ -1918,8 +1865,6 @@
         const button = e.target.closest("button[data-brand]");
         if (!button) return;
 
-        searchInput.value = "";
-
         brandButtons.forEach((btn) => btn.classList.remove("active"));
         button.classList.add("active");
 
@@ -1951,8 +1896,6 @@
       });
 
       function performSearch() {
-        const searchTerm = searchInput.value.toLowerCase().trim();
-
         brandButtons.forEach((btn) => btn.classList.remove("active"));
 
         items.forEach((item) => {
@@ -1973,19 +1916,6 @@
           }
         });
       }
-      /*
-      searchInput.addEventListener("keyup", () => {
-        if (searchInput.value.trim() === "") {
-          allButton.click();
-        } else {
-          performSearch();
-        }
-      });
-
-      document
-        .getElementById("search-button")
-        .addEventListener("click", performSearch);
-      */
 
       const backToTopButton = document.getElementById("back-to-top");
 
@@ -2006,4 +1936,3 @@
     </script>
   </body>
 </html>
-
