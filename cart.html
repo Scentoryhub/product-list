@@ -58,7 +58,7 @@
         transform: translateY(-50%) scale(1.1);
       }
       .cart-container {
-        max-width: 1000px;
+        max-width: 1200px; /* 稍微加宽以容纳三列 */
         margin: 0 auto;
         padding: 0 15px;
       }
@@ -67,9 +67,25 @@
         padding: 0;
         margin: 0;
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        /* 默认设置为单排布局 */
+        grid-template-columns: 1fr;
         gap: 15px;
       }
+
+      /* 规则1: 超过6个商品，在平板及以上设备变为双排 */
+      .cart-items-list.two-columns {
+        @media (min-width: 768px) {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      /* 规则2: 超过12个商品，在桌面设备变为三排 */
+      .cart-items-list.three-columns {
+        @media (min-width: 1024px) {
+          grid-template-columns: 1fr 1fr 1fr;
+        }
+      }
+
       .cart-item {
         display: flex;
         align-items: center;
@@ -189,7 +205,7 @@
         background-color: #1da851;
       }
       .cart-summary {
-        max-width: 1000px;
+        max-width: 1200px;
         margin: 20px auto 0;
         padding: 15px;
         background: #fff;
@@ -211,70 +227,6 @@
         .cart-item img {
           width: 120px;
           height: 120px;
-        }
-        ---
-/* New: Floating Cart Button and styles */
-      .floating-cart-button {
-          position: fixed;
-          bottom: 80px;
-          right: 30px;
-          width: 60px;
-          height: 60px;
-          background-color: #007bff;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-          text-decoration: none;
-          font-size: 2rem;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-          z-index: 100;
-          transition: background-color 0.3s, transform 0.2s;
-          cursor: pointer;
-        }
-        .floating-cart-button:hover {
-          background-color: #0056b3;
-          transform: scale(1.05);
-        }
-
-        /* New: Cart count badge */
-        .cart-count-badge {
-          position: absolute;
-          top: -5px;
-          right: -5px;
-          background-color: #e74c3c;
-          color: white;
-          font-size: 0.9rem;
-          font-weight: bold;
-          padding: 4px 8px;
-          border-radius: 50%;
-          min-width: 25px;
-          text-align: center;
-          display: none; /* Hidden by default */
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        /* New: Animation for cart update */
-        @keyframes pulse {
-          0% {
-            transform: scale(1);
-          }
-          50% {
-            transform: scale(1.1);
-          }
-          100% {
-            transform: scale(1);
-          }
-        }
-        .pulse-animation {
-          animation: pulse 0.5s ease-in-out;
-        }
-
-        /* New: Icon for cart button. You could replace this with a Font Awesome icon if you prefer. */
-        .cart-icon::before {
-          content: "🛒"; /* Unicode for a shopping cart emoji */
-          font-size: 1.5rem;
         }
       }
     </style>
@@ -325,6 +277,20 @@
       function renderCartItems() {
         let cartItems = loadCartFromLocalStorage();
         cartItemsList.innerHTML = "";
+
+        // --- 新的布局逻辑 ---
+        // 1. 先移除所有布局class，恢复默认
+        cartItemsList.classList.remove("two-columns", "three-columns");
+
+        // 2. 根据商品种类数量，添加对应的class
+        const itemCount = cartItems.length;
+        if (itemCount > 12) {
+          cartItemsList.classList.add("three-columns");
+        } else if (itemCount > 6) {
+          cartItemsList.classList.add("two-columns");
+        }
+        // 如果<=6，则不添加任何class，保持默认单排
+
         if (cartItems.length === 0) {
           cartItemsList.innerHTML =
             "<p class='empty-cart-message'>Your cart is empty.</p>";
@@ -366,7 +332,8 @@
 
         cartItems.forEach((item) => {
           totalCount += item.quantity;
-          if (item.caption.includes("Louis Vuitton")) {
+          // 确保大小写不敏感
+          if (item.caption.toLowerCase().includes("louis vuitton")) {
             lvCount += item.quantity;
           } else {
             otherBrandsCount += item.quantity;
@@ -414,12 +381,14 @@
 
       document.addEventListener("DOMContentLoaded", renderCartItems);
 
+      // --- 已删除: 不再需要根据窗口大小调整布局 ---
+      // window.addEventListener("resize", checkAndApplyLayout);
+
       cartItemsList.addEventListener("click", (e) => {
         const index = e.target.getAttribute("data-index");
         if (index === null) return;
 
         if (e.target.classList.contains("remove-btn")) {
-          // Add confirmation for removing a single item
           if (!confirm("Are you sure you want to remove this item?")) {
             return;
           }
@@ -450,7 +419,6 @@
       });
 
       clearCartBtn.addEventListener("click", () => {
-        // Add confirmation for clearing the entire cart
         if (!confirm("Are you sure you want to clear your cart?")) {
           return;
         }
@@ -468,7 +436,6 @@
           return;
         }
 
-        // Add loading state to the button
         const originalText = sendWhatsappBtn.textContent;
         sendWhatsappBtn.textContent = "准备中...";
         sendWhatsappBtn.disabled = true;
@@ -501,7 +468,6 @@
         const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
         window.open(whatsappUrl, "_blank");
 
-        // Reset button state after a short delay to allow for page load
         setTimeout(() => {
           sendWhatsappBtn.textContent = originalText;
           sendWhatsappBtn.disabled = false;
