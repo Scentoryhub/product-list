@@ -264,7 +264,7 @@
 
       const whatsappNumber = "16232027321";
 
-      // --- 新增: 品牌列表，用于从长标题中提取品牌名 ---
+      // --- 核心改动: 更新品牌列表，确保所有品牌都被包含 ---
       const BRANDS = [
         "Dior",
         "Chanel",
@@ -280,6 +280,7 @@
         "Maison Francis Kurkdjian",
         "Parfums de Marly",
         "Giorgio Armani",
+        "Emporio Armani",
         "Carolina Herrera",
         "Lancôme",
         "Paco Rabanne",
@@ -293,7 +294,6 @@
         "Hermès",
         "Byredo",
         "Jo Malone",
-        // 如果有其他品牌，可以继续添加
       ];
 
       function loadCartFromLocalStorage() {
@@ -303,19 +303,21 @@
 
       function saveCartToLocalStorage(cart) {
         localStorage.setItem("cartItems", JSON.stringify(cart));
+        window.dispatchEvent(new Event("storage"));
       }
 
-      // --- 新增: 从完整标题生成短标题的函数 ---
       function getShortCaption(fullCaption) {
         const captionParts = fullCaption.split(" - ");
         if (captionParts.length < 2) {
-          return fullCaption; // 如果格式不符，返回原始标题
+          return fullCaption;
         }
         const itemNumber = captionParts[0];
         const fullName = captionParts.slice(1).join(" - ");
 
-        // 查找哪个品牌名包含在完整名称中
-        const foundBrand = BRANDS.find((brand) =>
+        // 对品牌列表进行排序，优先匹配更长的品牌名 (例如 'Yves Saint Laurent' 优先于 'Saint')
+        const sortedBrands = [...BRANDS].sort((a, b) => b.length - a.length);
+
+        const foundBrand = sortedBrands.find((brand) =>
           fullName.toLowerCase().includes(brand.toLowerCase())
         );
 
@@ -323,7 +325,6 @@
           return `${itemNumber} - ${foundBrand}`;
         }
 
-        // 如果在列表中找不到品牌，返回原始标题作为备用
         return fullCaption;
       }
 
@@ -355,7 +356,6 @@
             const li = document.createElement("li");
             li.className = "cart-item";
 
-            // --- 核心改动: 使用 getShortCaption 函数处理标题 ---
             const displayCaption = getShortCaption(item.caption);
 
             li.innerHTML = `
@@ -420,13 +420,6 @@
           const updatedCart = cartItems.filter((item) => item.quantity > 0);
           saveCartToLocalStorage(updatedCart);
           renderCartItems();
-          updateMainPageCartCount();
-        }
-      }
-
-      function updateMainPageCartCount() {
-        if (window.opener) {
-          window.opener.postMessage("updateCartCount", "*");
         }
       }
 
@@ -457,7 +450,6 @@
             );
             saveCartToLocalStorage(updatedCart);
             renderCartItems();
-            updateMainPageCartCount();
           }
         } else if (e.target.classList.contains("increase-quantity")) {
           updateQuantity(parseInt(index), 1);
@@ -471,8 +463,8 @@
           return;
         }
         localStorage.removeItem("cartItems");
+        window.dispatchEvent(new Event("storage"));
         renderCartItems();
-        updateMainPageCartCount();
       });
 
       sendWhatsappBtn.addEventListener("click", () => {
@@ -497,7 +489,6 @@
           return numA - numB;
         });
 
-        // WhatsApp 消息仍然使用完整的 item.caption
         const messageLines = cartItems.map(
           (item) => `* ${item.caption} (${item.quantity} bottles)`
         );
