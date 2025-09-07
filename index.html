@@ -6,6 +6,7 @@
     <title>Perfume List</title>
     <link rel="icon" type="image/png" href="icon/32.png" />
     <link rel="apple-touch-icon" href="icon/180.png" />
+
     <style>
       /* Reset */
       a {
@@ -29,11 +30,11 @@
         max-width: 600px;
         margin: 25px auto;
         padding: 0 15px;
-        position: relative; /* For the clear button */
+        position: relative;
       }
       #search-input {
         width: 100%;
-        padding: 12px 40px 12px 20px; /* Right padding for clear button */
+        padding: 12px 40px 12px 20px;
         font-size: 1.1rem;
         border: 1px solid #ccc;
         border-radius: 25px;
@@ -45,7 +46,6 @@
         border-color: #333;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       }
-      /* --- Clear Search Button (New) --- */
       #search-clear-btn {
         position: absolute;
         top: 50%;
@@ -60,7 +60,7 @@
         cursor: pointer;
         font-weight: bold;
         font-size: 16px;
-        display: none; /* Default hidden */
+        display: none;
         align-items: center;
         justify-content: center;
         line-height: 22px;
@@ -106,6 +106,7 @@
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 25px;
+        min-height: 300px; /* Give gallery some height while loading */
       }
       @media (min-width: 768px) {
         .gallery {
@@ -115,7 +116,6 @@
         }
       }
 
-      /* --- Item Fade-in Animation (New) --- */
       @keyframes fadeIn {
         from {
           opacity: 0;
@@ -134,13 +134,12 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
         background: #fff;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-        animation: fadeIn 0.5s ease-out; /* Apply animation */
+        animation: fadeIn 0.5s ease-out;
       }
       .item:hover {
         transform: translateY(-5px);
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
       }
-      /* --- Out of Stock Style --- */
       .item[data-stock="0"] {
         opacity: 0.5;
         pointer-events: none;
@@ -216,7 +215,6 @@
       .hidden {
         display: none !important;
       }
-      /* --- Improved No Results Message --- */
       .no-results-message {
         grid-column: 1 / -1;
         text-align: center;
@@ -227,6 +225,27 @@
       .no-results-message p {
         margin: 5px 0;
       }
+
+      /* --- Loading State Spinner (New) --- */
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .gallery-loader {
+        grid-column: 1 / -1; /* Span all columns in the grid */
+        margin: 80px auto;
+        border: 6px solid #f3f3f3; /* Light grey circle */
+        border-top: 6px solid #333; /* Dark part that spins */
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+      }
+
       /* --- Mobile Navbar Optimization --- */
       @media (max-width: 767px) {
         .navbar {
@@ -500,7 +519,9 @@
       <button data-brand="Other" aria-pressed="false">Other Brands</button>
     </div>
 
-    <div class="gallery" id="gallery"></div>
+    <div class="gallery" id="gallery">
+      <div class="gallery-loader"></div>
+    </div>
 
     <div
       class="modal"
@@ -518,10 +539,14 @@
       </div>
     </div>
 
-    <div class="contact-info">
-      <a href="https://wa.me/16232027321">Need help? Contact us on WhatsApp</a>
-      <p>We are available 24/7</p>
-    </div>
+    <footer>
+      <div class="contact-info">
+        <a href="https://wa.me/16232027321"
+          >Need help? Contact us on WhatsApp</a
+        >
+        <p>We are available 24/7</p>
+      </div>
+    </footer>
 
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">
       &#x25B2;
@@ -539,9 +564,6 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        // =================================================================
-        // 1. CENTRALIZED CONFIGURATION
-        // =================================================================
         const config = {
           whatsappNumber: "16232027321",
           brandAliases: {
@@ -556,10 +578,6 @@
           },
         };
 
-        // =================================================================
-        // 2. UNIFIED PERFUME DATABASE
-        // Images are now updated to .webp format for better performance.
-        // =================================================================
         const perfumeDB = [
           {
             id: "A01",
@@ -1257,7 +1275,6 @@
         ];
 
         const { whatsappNumber, brandAliases } = config;
-
         const cartButton = document.getElementById("cart-button");
         const cartCount = document.getElementById("cart-count");
         const gallery = document.getElementById("gallery");
@@ -1270,11 +1287,13 @@
         const backToTopButton = document.getElementById("back-to-top");
         const searchInput = document.getElementById("search-input");
         const searchClearBtn = document.getElementById("search-clear-btn");
-        let items = []; // This will be populated after rendering
+        let items = [];
         let cartItems = [];
 
         function renderGallery(perfumeList) {
+          // 3. 在渲染商品前，先清空 gallery (这会移除加载动画)
           gallery.innerHTML = "";
+
           perfumeList.forEach((perfume) => {
             const item = document.createElement("div");
             item.className = "item";
@@ -1297,6 +1316,8 @@
           renderItemCounts();
           handleNoResults();
         }
+
+        // ... (The rest of your JavaScript remains unchanged)
 
         function loadCartFromLocalStorage() {
           const storedCart = localStorage.getItem("perfumeCart");
@@ -1465,7 +1486,6 @@
           }
 
           renderGallery(filteredList);
-          // Save state after rendering
           localStorage.setItem("lastFilterBrand", selectedBrand);
           localStorage.setItem("lastSearchTerm", searchInput.value.trim());
         }
