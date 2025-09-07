@@ -564,6 +564,9 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", () => {
+        // =================================================================
+        // 1. CENTRALIZED CONFIGURATION
+        // =================================================================
         const config = {
           whatsappNumber: "16232027321",
           brandAliases: {
@@ -578,7 +581,11 @@
           },
         };
 
+        // =================================================================
+        // 2. UNIFIED PERFUME DATABASE
+        // =================================================================
         const perfumeDB = [
+          // ... (您的99款香水数据在这里，内容保持不变) ...
           {
             id: "A01",
             name: "Valentino Donna Born in Roma Intense",
@@ -1291,9 +1298,7 @@
         let cartItems = [];
 
         function renderGallery(perfumeList) {
-          // 3. 在渲染商品前，先清空 gallery (这会移除加载动画)
           gallery.innerHTML = "";
-
           perfumeList.forEach((perfume) => {
             const item = document.createElement("div");
             item.className = "item";
@@ -1316,8 +1321,6 @@
           renderItemCounts();
           handleNoResults();
         }
-
-        // ... (The rest of your JavaScript remains unchanged)
 
         function loadCartFromLocalStorage() {
           const storedCart = localStorage.getItem("perfumeCart");
@@ -1342,7 +1345,6 @@
             const itemInCart = cartItems.find(
               (cartItem) => cartItem.name === itemName
             );
-
             if (itemInCart && itemInCart.quantity > 0) {
               itemCartCountBadge.textContent = itemInCart.quantity;
               itemCartCountBadge.style.display = "block";
@@ -1382,9 +1384,7 @@
               (p) => p.id === item.dataset.name
             );
             if (!perfumeData) return;
-
             const { id, name, img } = perfumeData;
-
             const existingItem = cartItems.find(
               (cartItem) => cartItem.name === id
             );
@@ -1398,7 +1398,6 @@
                 quantity: 1,
               });
             }
-
             saveCartToLocalStorage();
             updateCartCount();
             renderItemCounts();
@@ -1459,13 +1458,10 @@
             ? activeBrandBtn.dataset.brand
             : "All";
           let searchTerm = searchInput.value.toLowerCase().trim();
-
           if (brandAliases[searchTerm]) {
             searchTerm = brandAliases[searchTerm];
           }
-
           let filteredList = perfumeDB;
-
           if (selectedBrand !== "All") {
             if (selectedBrand === "Other") {
               filteredList = perfumeDB.filter(
@@ -1475,7 +1471,6 @@
               filteredList = perfumeDB.filter((p) => p.brand === selectedBrand);
             }
           }
-
           if (searchTerm) {
             filteredList = filteredList.filter(
               (p) =>
@@ -1484,7 +1479,6 @@
                 p.brand.toLowerCase().includes(searchTerm)
             );
           }
-
           renderGallery(filteredList);
           localStorage.setItem("lastFilterBrand", selectedBrand);
           localStorage.setItem("lastSearchTerm", searchInput.value.trim());
@@ -1512,7 +1506,6 @@
           const allButton = navbar.querySelector('button[data-brand="All"]');
           allButton.classList.add("active");
           allButton.setAttribute("aria-pressed", "true");
-
           searchClearBtn.style.display = searchInput.value ? "flex" : "none";
           filterAndSearch();
         });
@@ -1525,7 +1518,6 @@
         function handleNoResults() {
           const visibleItems = gallery.children.length;
           let messageEl = gallery.querySelector(".no-results-message");
-
           if (visibleItems === 0 && !messageEl) {
             messageEl = document.createElement("div");
             messageEl.className = "no-results-message";
@@ -1540,10 +1532,16 @@
           }
         }
 
-        backToTopButton.addEventListener("scroll", () => {
-          backToTopButton.style.display =
-            window.pageYOffset > 300 ? "block" : "none";
+        // --- 核心修正 ---
+        // 将事件监听器绑定到 window 对象
+        window.addEventListener("scroll", () => {
+          if (window.pageYOffset > 300) {
+            backToTopButton.style.display = "block";
+          } else {
+            backToTopButton.style.display = "none";
+          }
         });
+
         backToTopButton.addEventListener("click", () => {
           window.scrollTo({ top: 0, behavior: "smooth" });
         });
@@ -1551,7 +1549,6 @@
         function applyLastState() {
           const lastBrand = localStorage.getItem("lastFilterBrand") || "All";
           const lastSearch = localStorage.getItem("lastSearchTerm") || "";
-
           if (lastSearch) {
             searchInput.value = lastSearch;
             searchInput.dispatchEvent(new Event("input"));
