@@ -262,8 +262,39 @@
       const lvCountEl = document.getElementById("lv-count");
       const otherBrandsCountEl = document.getElementById("other-brands-count");
 
-      // WhatsApp number for inquiry
       const whatsappNumber = "16232027321";
+
+      // --- 新增: 品牌列表，用于从长标题中提取品牌名 ---
+      const BRANDS = [
+        "Dior",
+        "Chanel",
+        "Yves Saint Laurent",
+        "Louis Vuitton",
+        "Tom Ford",
+        "Gucci",
+        "Valentino",
+        "Prada",
+        "Versace",
+        "Creed",
+        "Jean Paul Gaultier",
+        "Maison Francis Kurkdjian",
+        "Parfums de Marly",
+        "Giorgio Armani",
+        "Carolina Herrera",
+        "Lancôme",
+        "Paco Rabanne",
+        "Xerjoff",
+        "Initio",
+        "Lattafa",
+        "Ralph Lauren",
+        "Burberry",
+        "Le Labo",
+        "Hugo Boss",
+        "Hermès",
+        "Byredo",
+        "Jo Malone",
+        // 如果有其他品牌，可以继续添加
+      ];
 
       function loadCartFromLocalStorage() {
         const storedCart = localStorage.getItem("cartItems");
@@ -274,22 +305,39 @@
         localStorage.setItem("cartItems", JSON.stringify(cart));
       }
 
+      // --- 新增: 从完整标题生成短标题的函数 ---
+      function getShortCaption(fullCaption) {
+        const captionParts = fullCaption.split(" - ");
+        if (captionParts.length < 2) {
+          return fullCaption; // 如果格式不符，返回原始标题
+        }
+        const itemNumber = captionParts[0];
+        const fullName = captionParts.slice(1).join(" - ");
+
+        // 查找哪个品牌名包含在完整名称中
+        const foundBrand = BRANDS.find((brand) =>
+          fullName.toLowerCase().includes(brand.toLowerCase())
+        );
+
+        if (foundBrand) {
+          return `${itemNumber} - ${foundBrand}`;
+        }
+
+        // 如果在列表中找不到品牌，返回原始标题作为备用
+        return fullCaption;
+      }
+
       function renderCartItems() {
         let cartItems = loadCartFromLocalStorage();
         cartItemsList.innerHTML = "";
 
-        // --- 新的布局逻辑 ---
-        // 1. 先移除所有布局class，恢复默认
         cartItemsList.classList.remove("two-columns", "three-columns");
-
-        // 2. 根据商品种类数量，添加对应的class
         const itemCount = cartItems.length;
         if (itemCount > 12) {
           cartItemsList.classList.add("three-columns");
         } else if (itemCount > 6) {
           cartItemsList.classList.add("two-columns");
         }
-        // 如果<=6，则不添加任何class，保持默认单排
 
         if (cartItems.length === 0) {
           cartItemsList.innerHTML =
@@ -306,10 +354,14 @@
           cartItems.forEach((item, index) => {
             const li = document.createElement("li");
             li.className = "cart-item";
+
+            // --- 核心改动: 使用 getShortCaption 函数处理标题 ---
+            const displayCaption = getShortCaption(item.caption);
+
             li.innerHTML = `
               <img src="${item.img}" alt="${item.name}" loading="lazy">
               <div class="item-details">
-                <h3>${item.caption}</h3>
+                <h3>${displayCaption}</h3>
                 <div class="quantity-control">
                   <button class="decrease-quantity" data-index="${index}">-</button>
                   <span>${item.quantity}</span>
@@ -332,7 +384,6 @@
 
         cartItems.forEach((item) => {
           totalCount += item.quantity;
-          // 确保大小写不敏感
           if (item.caption.toLowerCase().includes("louis vuitton")) {
             lvCount += item.quantity;
           } else {
@@ -380,9 +431,6 @@
       }
 
       document.addEventListener("DOMContentLoaded", renderCartItems);
-
-      // --- 已删除: 不再需要根据窗口大小调整布局 ---
-      // window.addEventListener("resize", checkAndApplyLayout);
 
       cartItemsList.addEventListener("click", (e) => {
         const index = e.target.getAttribute("data-index");
@@ -449,6 +497,7 @@
           return numA - numB;
         });
 
+        // WhatsApp 消息仍然使用完整的 item.caption
         const messageLines = cartItems.map(
           (item) => `* ${item.caption} (${item.quantity} bottles)`
         );
