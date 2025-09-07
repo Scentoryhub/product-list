@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Your Cart</title>
     <style>
-      /* Reset and common styles, similar to index.html */
+      /* Reset and common styles */
       * {
         box-sizing: border-box;
       }
@@ -19,8 +19,7 @@
         -moz-osx-font-smoothing: grayscale;
         position: relative;
         min-height: 100vh;
-        /* 为固定底栏留出空间，防止内容被遮挡 */
-        padding-bottom: 120px;
+        padding-bottom: 120px; /* Space for footer actions */
       }
       .page-header {
         position: relative;
@@ -58,7 +57,7 @@
         transform: translateY(-50%) scale(1.1);
       }
       .cart-container {
-        max-width: 1200px; /* 稍微加宽以容纳三列 */
+        max-width: 1200px;
         margin: 0 auto;
         padding: 0 15px;
       }
@@ -67,25 +66,19 @@
         padding: 0;
         margin: 0;
         display: grid;
-        /* 默认设置为单排布局 */
         grid-template-columns: 1fr;
         gap: 15px;
       }
-
-      /* 规则1: 超过6个商品，在平板及以上设备变为双排 */
       .cart-items-list.two-columns {
         @media (min-width: 768px) {
           grid-template-columns: 1fr 1fr;
         }
       }
-
-      /* 规则2: 超过12个商品，在桌面设备变为三排 */
       .cart-items-list.three-columns {
         @media (min-width: 1024px) {
           grid-template-columns: 1fr 1fr 1fr;
         }
       }
-
       .cart-item {
         display: flex;
         align-items: center;
@@ -100,12 +93,21 @@
       .cart-item:hover {
         transform: translateY(-3px);
       }
+
       .cart-item img {
         width: 80px;
         height: 80px;
         object-fit: cover;
         flex-shrink: 0;
+        transition: width 0.3s, height 0.3s;
       }
+      @media (min-width: 600px) {
+        .cart-item img {
+          width: 120px;
+          height: 120px;
+        }
+      }
+
       .item-details {
         flex-grow: 1;
         padding: 15px 0;
@@ -222,13 +224,6 @@
         color: #222;
         font-size: 1.1rem;
       }
-
-      @media (min-width: 600px) {
-        .cart-item img {
-          width: 120px;
-          height: 120px;
-        }
-      }
     </style>
   </head>
   <body>
@@ -242,9 +237,9 @@
     </div>
 
     <div id="cart-summary" class="cart-summary">
-      <p id="total-count" class="total-count">总数量: 0</p>
-      <p id="lv-count">LV 数量: 0</p>
-      <p id="other-brands-count">其他品牌数量: 0</p>
+      <p id="total-count" class="total-count">Total Quantity: 0</p>
+      <p id="lv-count">LV Quantity: 0</p>
+      <p id="other-brands-count">Other Brands Quantity: 0</p>
     </div>
 
     <div class="cart-actions">
@@ -264,7 +259,6 @@
 
       const whatsappNumber = "16232027321";
 
-      // --- 核心改动: 更新品牌列表，确保所有品牌都被包含 ---
       const BRANDS = [
         "Dior",
         "Chanel",
@@ -297,42 +291,32 @@
       ];
 
       function loadCartFromLocalStorage() {
-        const storedCart = localStorage.getItem("cartItems");
+        const storedCart = localStorage.getItem("perfumeCart");
         return storedCart ? JSON.parse(storedCart) : [];
       }
 
       function saveCartToLocalStorage(cart) {
-        localStorage.setItem("cartItems", JSON.stringify(cart));
+        localStorage.setItem("perfumeCart", JSON.stringify(cart));
         window.dispatchEvent(new Event("storage"));
       }
 
       function getShortCaption(fullCaption) {
         const captionParts = fullCaption.split(" - ");
-        if (captionParts.length < 2) {
-          return fullCaption;
-        }
+        if (captionParts.length < 2) return fullCaption;
         const itemNumber = captionParts[0];
         const fullName = captionParts.slice(1).join(" - ");
-
-        // 对品牌列表进行排序，优先匹配更长的品牌名 (例如 'Yves Saint Laurent' 优先于 'Saint')
         const sortedBrands = [...BRANDS].sort((a, b) => b.length - a.length);
-
         const foundBrand = sortedBrands.find((brand) =>
           fullName.toLowerCase().includes(brand.toLowerCase())
         );
-
-        if (foundBrand) {
-          return `${itemNumber} - ${foundBrand}`;
-        }
-
-        return fullCaption;
+        return foundBrand ? `${itemNumber} - ${foundBrand}` : fullCaption;
       }
 
       function renderCartItems() {
         let cartItems = loadCartFromLocalStorage();
         cartItemsList.innerHTML = "";
 
-        cartItemsList.classList.remove("two-columns", "three-columns");
+        cartItemsList.className = "cart-items-list"; // Reset classes
         const itemCount = cartItems.length;
         if (itemCount > 12) {
           cartItemsList.classList.add("three-columns");
@@ -347,15 +331,12 @@
           cartItems.sort((a, b) => {
             const getNumber = (str) =>
               parseInt(str.match(/\d+/)?.[0] || "0", 10);
-            const numA = getNumber(a.caption);
-            const numB = getNumber(b.caption);
-            return numA - numB;
+            return getNumber(a.caption) - getNumber(b.caption);
           });
 
           cartItems.forEach((item, index) => {
             const li = document.createElement("li");
             li.className = "cart-item";
-
             const displayCaption = getShortCaption(item.caption);
 
             li.innerHTML = `
@@ -393,7 +374,7 @@
 
         totalCountEl.textContent = `Total Quantity: ${totalCount}`;
         lvCountEl.textContent = `LV Quantity: ${lvCount}`;
-        otherBrandsCountEl.textContent = `Other Quantity: ${otherBrandsCount}`;
+        otherBrandsCountEl.textContent = `Other Brands Quantity: ${otherBrandsCount}`;
 
         return { totalCount, lvCount, otherBrandsCount };
       }
@@ -402,9 +383,7 @@
         let cartItems = loadCartFromLocalStorage();
         const sortedItems = [...cartItems].sort((a, b) => {
           const getNumber = (str) => parseInt(str.match(/\d+/)?.[0] || "0", 10);
-          const numA = getNumber(a.caption);
-          const numB = getNumber(b.caption);
-          return numA - numB;
+          return getNumber(a.caption) - getNumber(b.caption);
         });
 
         const itemToUpdate = sortedItems[index];
@@ -430,17 +409,13 @@
         if (index === null) return;
 
         if (e.target.classList.contains("remove-btn")) {
-          if (!confirm("Are you sure you want to remove this item?")) {
-            return;
-          }
+          if (!confirm("Are you sure you want to remove this item?")) return;
 
           let cartItems = loadCartFromLocalStorage();
           const sortedItems = [...cartItems].sort((a, b) => {
             const getNumber = (str) =>
               parseInt(str.match(/\d+/)?.[0] || "0", 10);
-            const numA = getNumber(a.caption);
-            const numB = getNumber(b.caption);
-            return numA - numB;
+            return getNumber(a.caption) - getNumber(b.caption);
           });
           const itemToRemove = sortedItems[index];
 
@@ -459,10 +434,9 @@
       });
 
       clearCartBtn.addEventListener("click", () => {
-        if (!confirm("Are you sure you want to clear your cart?")) {
-          return;
-        }
-        localStorage.removeItem("cartItems");
+        if (!confirm("Are you sure you want to clear your cart?")) return;
+
+        localStorage.removeItem("perfumeCart");
         window.dispatchEvent(new Event("storage"));
         renderCartItems();
       });
@@ -477,16 +451,13 @@
         }
 
         const originalText = sendWhatsappBtn.textContent;
-        sendWhatsappBtn.textContent = "准备中...";
+        sendWhatsappBtn.textContent = "Preparing...";
         sendWhatsappBtn.disabled = true;
-        sendWhatsappBtn.style.backgroundColor = "#1da851";
 
         const summary = updateCartSummary();
         cartItems.sort((a, b) => {
           const getNumber = (str) => parseInt(str.match(/\d+/)?.[0] || "0", 10);
-          const numA = getNumber(a.caption);
-          const numB = getNumber(b.caption);
-          return numA - numB;
+          return getNumber(a.caption) - getNumber(b.caption);
         });
 
         const messageLines = cartItems.map(
@@ -494,9 +465,9 @@
         );
 
         const summaryLines = [
-          `Total: ${summary.totalCount} bottles`,
-          `LV: ${summary.lvCount} bottles`,
-          `Other Brands: ${summary.otherBrandsCount} bottles`,
+          `Total Quantity: ${summary.totalCount} bottles`,
+          `LV Quantity: ${summary.lvCount} bottles`,
+          `Other Brands Quantity: ${summary.otherBrandsCount} bottles`,
         ];
 
         const message = `Hello, I am interested in the following perfumes:%0A${messageLines.join(
@@ -511,7 +482,6 @@
         setTimeout(() => {
           sendWhatsappBtn.textContent = originalText;
           sendWhatsappBtn.disabled = false;
-          sendWhatsappBtn.style.backgroundColor = "#25d366";
         }, 1000);
       });
     </script>
