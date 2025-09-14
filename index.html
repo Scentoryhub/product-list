@@ -1224,7 +1224,7 @@
             name: "Burberry Her Elixir de Parfum",
             brand: "Burberry",
             img: "images/perfume91.webp",
-            stock: 0,
+            stock: 1,
           },
           {
             id: "A92",
@@ -1624,25 +1624,25 @@
         });
 
         const dedicatedBrands = [
-          ...new Set(perfumeDB.map((p) => p.brand)),
-        ].filter(
-          (b) =>
-            b &&
-            ![
-              "Lancôme",
-              "Paco Rabanne",
-              "Xerjoff",
-              "Initio",
-              "Lattafa",
-              "Ralph Lauren",
-              "Burberry",
-              "Le Labo",
-              "Hugo Boss",
-              "Hermès",
-              "Byredo",
-              "Jo Malone",
-            ].includes(b)
-        );
+          "Dior",
+          "Chanel",
+          "Yves Saint Laurent",
+          "Louis Vuitton",
+          "Tom Ford",
+          "Gucci",
+          "Valentino",
+          "Prada",
+          "Versace",
+          "Creed",
+          "Xerjoff",
+          "Kayali",
+          "Initio",
+          "Jean Paul Gaultier",
+          "Maison Francis Kurkdjian",
+          "Parfums de Marly",
+          "Giorgio Armani",
+          "Carolina Herrera",
+        ];
 
         function filterAndSearch() {
           const activeBrandBtn = navbar.querySelector("button.active");
