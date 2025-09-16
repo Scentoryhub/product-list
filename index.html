@@ -453,6 +453,30 @@
         opacity: 1;
         transform: translate(-50%, -100%);
       }
+      #new-arrival-btn {
+        display: block;
+        position: fixed;
+        bottom: 130px;
+        right: 20px;
+        background-color: #ea7a6e; /* 保持醒目的藍色 */
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 55px;
+        height: 55px;
+        font-size: 1rem; /* 為文字設定清晰的字體大小 */
+        font-weight: bold; /* 字體加粗 */
+        line-height: 55px; /* 確保文字垂直置中 */
+        text-align: center;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        transition: all 0.3s, opacity 0.4s ease-out;
+        z-index: 1000;
+        opacity: 1;
+      }
+      #new-arrival-btn.is-scrolling {
+        opacity: 0.5;
+      }
     </style>
   </head>
   <body>
@@ -548,9 +572,10 @@
           >Need help? Contact us on WhatsApp</a
         >
         <p>We are available 24/7</p>
+        footer
       </div>
     </footer>
-
+    <button id="new-arrival-btn" title="Go to New Arrivals">NEW!</button>
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">
       &#x25B2;
     </button>
@@ -1758,6 +1783,59 @@
         loadCartFromLocalStorage();
         updateCartCount();
         applyLastState();
+        // ... applyLastState(); 的後面 ...
+
+        // --- 更新後的 New Arrival 按鈕功能 ---
+        const newArrivalButton = document.getElementById("new-arrival-btn");
+
+        if (newArrivalButton) {
+          // 輔助函數：檢查元素是否在可視範圍內
+          const isElementInViewport = (el) => {
+            if (!el) return false;
+            const rect = el.getBoundingClientRect();
+            return rect.top < window.innerHeight && rect.bottom >= 0;
+          };
+
+          // 點擊事件
+          newArrivalButton.addEventListener("click", () => {
+            const allBrandsButton = navbar.querySelector(
+              'button[data-brand="All"]'
+            );
+            if (allBrandsButton) {
+              allBrandsButton.click();
+            }
+            searchInput.value = "";
+
+            setTimeout(() => {
+              const targetItem = document.querySelector(
+                '.item[data-name="A100"]'
+              );
+              if (targetItem) {
+                targetItem.scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+                // 點擊後立即隱藏按鈕
+                newArrivalButton.style.display = "none";
+              }
+            }, 100);
+          });
+
+          // 滾動事件：監控 A100 是否可見，以決定是否顯示按鈕
+          window.addEventListener("scroll", () => {
+            const targetItem = document.querySelector(
+              '.item[data-name="A100"]'
+            );
+
+            // 如果 A100 元素在畫面中，則隱藏按鈕
+            if (isElementInViewport(targetItem)) {
+              newArrivalButton.style.display = "none";
+            } else {
+              // 如果 A100 元素不在畫面中，則顯示按鈕
+              newArrivalButton.style.display = "block";
+            }
+          });
+        }
       });
     </script>
   </body>
