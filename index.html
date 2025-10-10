@@ -477,6 +477,52 @@
       #new-arrival-btn.is-scrolling {
         opacity: 0.5;
       }
+      /* --- NEW MODAL CONTROLS STYLES --- */
+      .modal-controls {
+        padding: 10px 20px 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .modal-add-btn {
+        background-color: #333;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        font-size: 1rem;
+        font-weight: bold;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .modal-add-btn:hover {
+        background-color: #555;
+      }
+      .modal-qty-controls {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .modal-qty-btn {
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        font-size: 1.5rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      .modal-qty-btn:hover {
+        background-color: #e0e0e0;
+      }
+      .modal-qty-count {
+        font-size: 1.5rem;
+        font-weight: bold;
+        min-width: 30px;
+        text-align: center;
+      }
     </style>
   </head>
   <body>
@@ -563,6 +609,14 @@
       <div class="modal-content">
         <img src="" alt="" id="modal-img" />
         <div class="modal-caption" id="modal-caption"></div>
+        <div class="modal-controls">
+          <button class="modal-add-btn">Add to Cart</button>
+          <div class="modal-qty-controls">
+            <button class="modal-qty-btn" data-action="decrease">-</button>
+            <span class="modal-qty-count">1</span>
+            <button class="modal-qty-btn" data-action="increase">+</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1547,6 +1601,13 @@
         const searchClearBtn = document.getElementById("search-clear-btn");
         let items = [];
         let cartItems = [];
+        // --- NEW DOM ELEMENTS ---
+        const modalControls = document.querySelector(".modal-controls");
+        const modalAddBtn = document.querySelector(".modal-add-btn");
+        const modalQtyControls = document.querySelector(".modal-qty-controls");
+        const modalQtyCount = document.querySelector(".modal-qty-count");
+        let currentModalProductId = null;
+        // -----------------------
 
         function renderGallery(perfumeList) {
           gallery.innerHTML = "";
@@ -1560,7 +1621,7 @@
             item.dataset.stock = perfume.stock;
 
             item.innerHTML = `
-                        <img src="${perfume.img}" alt="${perfume.id}" loading="lazy" decoding="async"/>
+                        <img src="${perfume.img}" alt="${perfume.id} - ${perfume.name}" loading="lazy" decoding="async"/>
                         <div class="caption">${perfume.id} - ${perfume.name}</div>
                         <button class="add-to-cart" title="Add to Cart" aria-label="Add ${perfume.id} to cart">
                           🛒 <span class="item-cart-count"></span>
@@ -1626,34 +1687,38 @@
           setTimeout(() => cartButton.classList.remove("added"), 600);
         }
 
+        function addItemToCart(productId) {
+          const perfumeData = perfumeDB.find((p) => p.id === productId);
+          if (!perfumeData) return;
+
+          const { id, name, img } = perfumeData;
+          const existingItem = cartItems.find(
+            (cartItem) => cartItem.name === id
+          );
+
+          if (existingItem) {
+            existingItem.quantity++;
+          } else {
+            cartItems.push({
+              name: id,
+              caption: `${id} - ${name}`,
+              img,
+              quantity: 1,
+            });
+          }
+          saveCartToLocalStorage();
+          updateCartCount();
+          renderItemCounts();
+          pulseCartButton();
+        }
+
         gallery.addEventListener("click", function (e) {
           const button = e.target.closest(".add-to-cart");
           if (button) {
             e.stopPropagation();
             const item = button.closest(".item");
-            const perfumeData = perfumeDB.find(
-              (p) => p.id === item.dataset.name
-            );
-            if (!perfumeData) return;
-            const { id, name, img } = perfumeData;
-            const existingItem = cartItems.find(
-              (cartItem) => cartItem.name === id
-            );
-            if (existingItem) {
-              existingItem.quantity++;
-            } else {
-              cartItems.push({
-                name: id,
-                caption: `${id} - ${name}`,
-                img,
-                quantity: 1,
-              });
-            }
-            saveCartToLocalStorage();
-            updateCartCount();
-            renderItemCounts();
+            addItemToCart(item.dataset.name);
             showConfirmation(button);
-            pulseCartButton();
           }
         });
 
@@ -1661,16 +1726,74 @@
           window.location.href = "cart.html";
         });
 
+        // --- UPDATED MODAL LOGIC ---
+        function updateModalControls(productId) {
+          const itemInCart = cartItems.find(
+            (cartItem) => cartItem.name === productId
+          );
+
+          if (itemInCart && itemInCart.quantity > 0) {
+            modalAddBtn.style.display = "none";
+            modalQtyControls.style.display = "flex";
+            modalQtyCount.textContent = itemInCart.quantity;
+          } else {
+            modalAddBtn.style.display = "block";
+            modalQtyControls.style.display = "none";
+          }
+        }
+
         gallery.addEventListener("click", (e) => {
           const item = e.target.closest(".item");
           if (item && !e.target.closest(".add-to-cart")) {
+            currentModalProductId = item.dataset.name; // Store the ID
             modalImg.src = item.dataset.img;
-            modalImg.alt = item.dataset.name;
+            modalImg.alt = item.querySelector(".caption").textContent;
             modalCaption.textContent =
               item.querySelector(".caption").textContent;
+            updateModalControls(currentModalProductId); // Update controls on open
             modal.classList.add("open");
           }
         });
+
+        modalControls.addEventListener("click", (e) => {
+          const target = e.target;
+          // Add to cart button
+          if (target.matches(".modal-add-btn")) {
+            addItemToCart(currentModalProductId);
+            updateModalControls(currentModalProductId); // Switch to qty controls
+          }
+
+          // Quantity buttons (+/-)
+          const button = target.closest(".modal-qty-btn");
+          if (button) {
+            const action = button.dataset.action;
+            const itemInCart = cartItems.find(
+              (item) => item.name === currentModalProductId
+            );
+            if (!itemInCart) return;
+
+            if (action === "increase") {
+              itemInCart.quantity++;
+            } else if (action === "decrease") {
+              itemInCart.quantity--;
+            }
+
+            if (itemInCart.quantity <= 0) {
+              const itemIndex = cartItems.findIndex(
+                (item) => item.name === currentModalProductId
+              );
+              if (itemIndex > -1) {
+                cartItems.splice(itemIndex, 1);
+              }
+            }
+            saveCartToLocalStorage();
+            updateCartCount();
+            renderItemCounts();
+            updateModalControls(currentModalProductId); // Refresh modal display
+            pulseCartButton();
+          }
+        });
+        // -------------------------
 
         modalClose.addEventListener("click", () =>
           modal.classList.remove("open")

@@ -6,6 +6,7 @@
     <title>Your Cart</title>
     <link rel="icon" type="image/png" href="icon/32.png" />
     <link rel="apple-touch-icon" href="icon/180.png" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
       /* Reset and common styles */
       * {
@@ -58,10 +59,12 @@
       .back-btn:hover {
         transform: translateY(-50%) scale(1.1);
       }
-      .cart-container {
+      /* New container for screenshot area */
+      #capture-area {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 0 15px;
+        padding: 15px;
+        background-color: #f4f4f4; /* Ensures consistent background for the image */
       }
       .cart-items-list {
         list-style: none;
@@ -180,15 +183,20 @@
         z-index: 10;
       }
       .cart-actions button {
-        padding: 12px 20px;
+        padding: 12px 15px;
         border: none;
         border-radius: 8px;
         cursor: pointer;
-        font-size: 1rem;
+        font-size: 0.9rem; /* Adjusted font size for three buttons */
         font-weight: bold;
         transition: background-color 0.2s, transform 0.2s;
         flex-grow: 1;
-        max-width: 200px;
+        max-width: 180px; /* Adjusted max-width */
+      }
+      @media (min-width: 600px) {
+        .cart-actions button {
+          font-size: 1rem;
+        }
       }
       .cart-actions button:hover {
         transform: translateY(-2px);
@@ -208,23 +216,41 @@
       .send-whatsapp-btn:hover {
         background-color: #1da851;
       }
+      /* New style for the share image button */
+      .share-image-btn {
+        background-color: #007bff;
+        color: white;
+      }
+      .share-image-btn:hover {
+        background-color: #0056b3;
+      }
       .cart-summary {
-        max-width: 1200px;
-        margin: 20px auto 0;
-        padding: 15px;
+        margin: 20px 0 0 0;
+        padding: 20px;
         background: #fff;
         border-radius: 12px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e0e0e0;
+      }
+      .cart-summary h2 {
+        margin-top: 0;
+        text-align: center;
+        font-size: 1.4rem;
       }
       .cart-summary p {
-        margin: 5px 0;
-        font-size: 1rem;
+        margin: 8px 0;
+        font-size: 1.1rem;
         color: #333;
+        display: flex;
+        justify-content: space-between;
       }
       .cart-summary .total-count {
         font-weight: bold;
-        color: #222;
-        font-size: 1.1rem;
+        color: #111;
+        font-size: 1.2rem;
+        border-top: 1px solid #eee;
+        padding-top: 10px;
+        margin-top: 10px;
       }
     </style>
   </head>
@@ -234,20 +260,28 @@
       <h1>Your Cart</h1>
     </header>
 
-    <div class="cart-container">
+    <div id="capture-area">
       <ul id="cart-items-list" class="cart-items-list"></ul>
-    </div>
-
-    <div id="cart-summary" class="cart-summary">
-      <p id="total-count" class="total-count">Total Quantity: 0</p>
-      <p id="lv-count">LV Quantity: 0</p>
-      <p id="other-brands-count">Other Brands Quantity: 0</p>
+      <div id="cart-summary" class="cart-summary">
+        <h2>Order Summary</h2>
+        <p><span>LV Quantity:</span> <span id="lv-count">0</span></p>
+        <p>
+          <span>Other Brands Quantity:</span>
+          <span id="other-brands-count">0</span>
+        </p>
+        <p class="total-count">
+          <span>Total Quantity:</span> <span id="total-count">0</span>
+        </p>
+      </div>
     </div>
 
     <div class="cart-actions">
       <button id="clear-cart-btn" class="clear-cart-btn">Clear Cart</button>
       <button id="send-whatsapp-btn" class="send-whatsapp-btn">
-        Send on WhatsApp
+        Send Order (Text)
+      </button>
+      <button id="share-image-btn" class="share-image-btn">
+        Share as Image
       </button>
     </div>
 
@@ -255,11 +289,13 @@
       const cartItemsList = document.getElementById("cart-items-list");
       const clearCartBtn = document.getElementById("clear-cart-btn");
       const sendWhatsappBtn = document.getElementById("send-whatsapp-btn");
+      // New button element
+      const shareImageBtn = document.getElementById("share-image-btn");
       const totalCountEl = document.getElementById("total-count");
       const lvCountEl = document.getElementById("lv-count");
       const otherBrandsCountEl = document.getElementById("other-brands-count");
 
-      const whatsappNumber = "16232027321";
+      const whatsappNumber = "16059024547";
 
       const BRANDS = [
         "Dior",
@@ -329,7 +365,9 @@
         if (cartItems.length === 0) {
           cartItemsList.innerHTML =
             "<p class='empty-cart-message'>Your cart is empty.</p>";
+          document.getElementById("cart-summary").style.display = "none";
         } else {
+          document.getElementById("cart-summary").style.display = "block";
           cartItems.sort((a, b) => {
             const getNumber = (str) =>
               parseInt(str.match(/\d+/)?.[0] || "0", 10);
@@ -374,9 +412,9 @@
           }
         });
 
-        totalCountEl.textContent = `Total Quantity: ${totalCount}`;
-        lvCountEl.textContent = `LV Quantity: ${lvCount}`;
-        otherBrandsCountEl.textContent = `Other Brands Quantity: ${otherBrandsCount}`;
+        totalCountEl.textContent = `${totalCount}`;
+        lvCountEl.textContent = `${lvCount}`;
+        otherBrandsCountEl.textContent = `${otherBrandsCount}`;
 
         return { totalCount, lvCount, otherBrandsCount };
       }
@@ -436,6 +474,10 @@
       });
 
       clearCartBtn.addEventListener("click", () => {
+        if (loadCartFromLocalStorage().length === 0) {
+          alert("Your cart is already empty.");
+          return;
+        }
         if (!confirm("Are you sure you want to clear your cart?")) return;
 
         localStorage.removeItem("perfumeCart");
@@ -443,6 +485,7 @@
         renderCartItems();
       });
 
+      // --- ORIGINAL "SEND AS TEXT" LOGIC ---
       sendWhatsappBtn.addEventListener("click", () => {
         const cartItems = loadCartFromLocalStorage();
         if (cartItems.length === 0) {
@@ -485,6 +528,66 @@
           sendWhatsappBtn.textContent = originalText;
           sendWhatsappBtn.disabled = false;
         }, 1000);
+      });
+
+      // --- NEW "SHARE AS IMAGE" LOGIC ---
+      shareImageBtn.addEventListener("click", () => {
+        const cartItems = loadCartFromLocalStorage();
+        if (cartItems.length === 0) {
+          alert(
+            "Your cart is empty. Please add items before sharing an image."
+          );
+          return;
+        }
+
+        const originalText = shareImageBtn.textContent;
+        shareImageBtn.textContent = "Generating...";
+        shareImageBtn.disabled = true;
+
+        const captureArea = document.getElementById("capture-area");
+
+        html2canvas(captureArea, {
+          backgroundColor: "#f4f4f4",
+          useCORS: true,
+        })
+          .then((canvas) => {
+            canvas.toBlob(async (blob) => {
+              const file = new File([blob], "cart-order.png", {
+                type: "image/png",
+              });
+              const shareData = {
+                files: [file],
+                title: "My Perfume Order",
+                text: "Hello, I would like to order the items in this image.",
+              };
+
+              if (navigator.share && navigator.canShare(shareData)) {
+                try {
+                  await navigator.share(shareData);
+                } catch (err) {
+                  console.error("Share failed:", err);
+                }
+              } else {
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(file);
+                link.download = "cart-order.png";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                alert(
+                  "Cart image downloaded!\n\nPlease open WhatsApp and manually send the 'cart-order.png' file from your downloads."
+                );
+              }
+            }, "image/png");
+          })
+          .catch((err) => {
+            console.error("Image generation failed:", err);
+            alert("Sorry, there was an error creating the image.");
+          })
+          .finally(() => {
+            shareImageBtn.textContent = originalText;
+            shareImageBtn.disabled = false;
+          });
       });
     </script>
   </body>
