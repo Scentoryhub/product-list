@@ -563,7 +563,9 @@
         <p style="font-size: 1.1rem; font-weight: 700">
           Premium (Luxe) Version: From $38
         </p>
-        <p>Free Shipping | Buy more save more !</p>
+        <p style="font-size: 1.1rem; font-weight: 600">
+          Free Shipping | Buy more save more !
+        </p>
         <p style="font-size: 0.9rem; color: #555">
           (Exact price is shown on each product)
         </p>
@@ -3023,27 +3025,64 @@
         });
 
         // --- !! UPDATED: APPLY LAST STATE (FOR BOTH FILTERS) !! ---
+        // --- !! UPDATED: APPLY LAST STATE (Defaults to Premium Tier) !! ---
         function applyLastState() {
-          const lastTier = localStorage.getItem("lastFilterTier") || "All";
+          // --- CHANGE HERE: Default to "Premium" if no tier is saved ---
+          const lastTier = localStorage.getItem("lastFilterTier") || "Premium";
+          // -----------------------------------------------------------
           const lastBrand = localStorage.getItem("lastFilterBrand") || "All";
           const lastSearch = localStorage.getItem("lastSearchTerm") || "";
 
+          // Clear search input if filters were last used
+          if (!lastSearch) {
+            searchInput.value = "";
+            searchClearBtn.style.display = "none";
+          }
+
           if (lastSearch) {
             searchInput.value = lastSearch;
+            // Manually trigger the search input handler to reset filters and search
             searchInput.dispatchEvent(new Event("input"));
           } else {
-            // Restore Tier state
+            // --- Restore or apply default Tier state ---
+            let tierApplied = false;
             allTierButtons.forEach((btn) => {
               const isMatch = btn.dataset.tier === lastTier;
               btn.classList.toggle("active", isMatch);
               btn.setAttribute("aria-pressed", isMatch);
+              if (isMatch) tierApplied = true;
             });
-            // Restore Brand state
+            // Fallback if the saved tier button doesn't exist (e.g., "Premium" initially)
+            if (!tierApplied) {
+              const defaultTierBtn = tierNavbar.querySelector(
+                'button[data-tier="Premium"]'
+              );
+              if (defaultTierBtn) {
+                defaultTierBtn.classList.add("active");
+                defaultTierBtn.setAttribute("aria-pressed", "true");
+              }
+            }
+
+            // --- Restore or apply default Brand state ---
+            let brandApplied = false;
             allBrandButtons.forEach((btn) => {
               const isMatch = btn.dataset.brand === lastBrand;
               btn.classList.toggle("active", isMatch);
               btn.setAttribute("aria-pressed", isMatch);
+              if (isMatch) brandApplied = true;
             });
+            // Fallback for brand if needed
+            if (!brandApplied) {
+              const defaultBrandBtn = brandNavbar.querySelector(
+                'button[data-brand="All"]'
+              );
+              if (defaultBrandBtn) {
+                defaultBrandBtn.classList.add("active");
+                defaultBrandBtn.setAttribute("aria-pressed", "true");
+              }
+            }
+
+            // Apply the filters
             filterAndSearch();
           }
         }
