@@ -144,10 +144,12 @@
         transform: translateY(-5px);
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
       }
+
+      /* --- !!! 關鍵修改：隱藏缺貨商品 !!! --- */
       .item[data-stock="0"] {
-        opacity: 0.5;
-        pointer-events: none;
+        display: none; /* 直接隐藏，不占用空间 */
       }
+
       .item[data-stock="0"]::after {
         content: "Out of Stock";
         position: absolute;
@@ -530,6 +532,29 @@
         color: #6c757d; /* 灰色 */
         font-weight: bold; /* 加粗 */
       }
+
+      /* --- Sort Container Styles --- */
+      .sort-container {
+        max-width: 900px;
+        margin: 0 auto 15px auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: center; /* 讓選單靠右對齊 */
+        align-items: center;
+      }
+      .sort-container label {
+        margin-right: 10px;
+        font-weight: 600;
+        color: #555;
+      }
+      #sort-by {
+        padding: 8px 12px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
@@ -562,6 +587,16 @@
         placeholder="Search by name, brand or number..."
       />
       <button id="search-clear-btn" title="Clear search">&times;</button>
+    </div>
+
+    <div class="sort-container">
+      <label for="sort-by">Sort By:</label>
+      <select id="sort-by">
+        <option value="default">Default (A-Z)</option>
+        <option value="newest">Newest First</option>
+        <option value="price-asc">Price: Low to High</option>
+        <option value="price-desc">Price: High to Low</option>
+      </select>
     </div>
 
     <div class="navbar" id="brand-navbar">
@@ -2179,6 +2214,7 @@
         const backToTopButton = document.getElementById("back-to-top");
         const searchInput = document.getElementById("search-input");
         const searchClearBtn = document.getElementById("search-clear-btn");
+        const sortBy = document.getElementById("sort-by"); // <-- 新增
         let items = [];
         let cartItems = [];
         const modalControls = document.querySelector(".modal-controls");
@@ -2207,6 +2243,9 @@
         // --- !! UPDATED: RENDER GALLERY (WITH BADGE, PRICE & PREMIUM TEXT) !! ---
         function renderGallery(perfumeList) {
           gallery.innerHTML = "";
+
+          // --- 排序邏輯移至 filterAndSearch ---
+
           perfumeList.forEach((perfume) => {
             const item = document.createElement("div");
             item.className = "item";
@@ -2220,11 +2259,7 @@
             let displayName = perfume.name; // 默认使用完整名字
 
             if (perfume.tier === "Premium") {
-              // 1. 添加徽章
               tierBadge = '<span class="premium-badge">★ Premium</span>';
-
-              // 2. !!! 新增: 替换文本以添加CSS类 !!!
-              // 这会找到 "Premium (Luxe)" 并把它包裹在 <span class="premium-text">...</span> 中
               displayName = displayName.replace(
                 "Premium (Luxe)",
                 '<span class="premium-text">Premium (Luxe)</span>'
@@ -2484,11 +2519,11 @@
 
         // --- !! UPDATED: CORE FILTERING FUNCTION (DUAL FILTERS) !! ---
         function filterAndSearch() {
-          // 1. Get active filters from BOTH navbars
           const activeBrandBtn = brandNavbar.querySelector("button.active");
           const selectedBrand = activeBrandBtn
             ? activeBrandBtn.dataset.brand
             : "All";
+          const selectedSort = sortBy.value; // <-- 新增：獲取排序值
 
           let searchTerm = searchInput.value.toLowerCase().trim();
           if (brandAliases[searchTerm]) {
@@ -2520,11 +2555,23 @@
             );
           }
 
+          // --- 4. 新增：按價格/新舊排序 ---
+          filteredList = filteredList.slice(); // 創建副本以進行排序
+
+          if (selectedSort === "price-asc") {
+            filteredList.sort((a, b) => a.price - b.price);
+          } else if (selectedSort === "price-desc") {
+            filteredList.sort((a, b) => b.price - a.price);
+          } else if (selectedSort === "newest") {
+            filteredList.reverse(); // 假設 DB 中 A186 在最後
+          }
+          // 'default' (A-Z) 是 JS 默認的，但由於 ID 是 A...，它已經是 A-Z 了
+
           renderGallery(filteredList);
 
-          // 4. Save state for BOTH filters
           localStorage.setItem("lastFilterBrand", selectedBrand);
           localStorage.setItem("lastSearchTerm", searchInput.value.trim());
+          localStorage.setItem("lastSort", selectedSort); // <-- 新增：保存排序狀態
         }
 
         // --- !! UPDATED: BRAND NAVBAR EVENT LISTENER !! ---
@@ -2539,7 +2586,6 @@
           button.classList.add("active");
           button.setAttribute("aria-pressed", "true");
 
-          // Clear search bar when filtering
           searchInput.value = "";
           searchClearBtn.style.display = "none";
           filterAndSearch();
@@ -2547,7 +2593,6 @@
 
         // --- !! UPDATED: SEARCH INPUT EVENT LISTENER (RESETS BOTH NAVS) !! ---
         searchInput.addEventListener("input", () => {
-          // Reset Brand Navbar
           allBrandButtons.forEach((btn) => {
             const isAll = btn.dataset.brand === "All";
             btn.classList.toggle("active", isAll);
@@ -2562,6 +2607,9 @@
           searchInput.value = "";
           searchInput.dispatchEvent(new Event("input"));
         });
+
+        // --- 新增：排序下拉選單的事件監聽 ---
+        sortBy.addEventListener("change", filterAndSearch);
 
         function handleNoResults() {
           const visibleItems = gallery.children.length;
@@ -2593,12 +2641,14 @@
         });
 
         // --- !! UPDATED: APPLY LAST STATE (FOR BOTH FILTERS) !! ---
-        // --- !! UPDATED: APPLY LAST STATE (Defaults to Premium Tier) !! ---
         function applyLastState() {
           const lastBrand = localStorage.getItem("lastFilterBrand") || "All";
           const lastSearch = localStorage.getItem("lastSearchTerm") || "";
+          const lastSort = localStorage.getItem("lastSort") || "default"; // <-- 新增
 
-          // Clear search input if filters were last used
+          // 恢復排序下拉選單的狀態
+          sortBy.value = lastSort; // <-- 新增
+
           if (!lastSearch) {
             searchInput.value = "";
             searchClearBtn.style.display = "none";
@@ -2606,10 +2656,8 @@
 
           if (lastSearch) {
             searchInput.value = lastSearch;
-            // Manually trigger the search input handler to reset filters and search
             searchInput.dispatchEvent(new Event("input"));
           } else {
-            // --- Restore or apply default Brand state ---
             let brandApplied = false;
             allBrandButtons.forEach((btn) => {
               const isMatch = btn.dataset.brand === lastBrand;
@@ -2617,7 +2665,6 @@
               btn.setAttribute("aria-pressed", isMatch);
               if (isMatch) brandApplied = true;
             });
-            // Fallback for brand if needed
             if (!brandApplied) {
               const defaultBrandBtn = brandNavbar.querySelector(
                 'button[data-brand="All"]'
@@ -2628,7 +2675,6 @@
               }
             }
 
-            // Apply the filters
             filterAndSearch();
           }
         }
