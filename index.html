@@ -25,12 +25,13 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
       }
-      /* --- Search Input Styles --- */
+      /* 1. 搜索栏 (Search Bar) - 取消吸顶 */
       .search-container {
         max-width: 600px;
-        margin: 25px auto;
+        margin: 20px auto; /* 恢复上下边距 */
         padding: 0 15px;
-        position: relative;
+        position: relative; /* 改回默认定位 */
+        /* 移除了 sticky, top, z-index, box-shadow */
       }
       #search-input {
         width: 100%;
@@ -70,37 +71,46 @@
         background: #999;
       }
 
-      /* --- Navbar Styles --- */
+            /* 2. 品牌导航栏 (Brand Navbar) - 改为吸顶 */
       .navbar {
         display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        padding: 15px 15px;
+        justify-content: flex-start; /* 从左开始排列 */
+        flex-wrap: nowrap; /* 禁止换行 */
+        overflow-x: auto; /* 允许横向滚动 */
+        padding: 10px 15px;
         border-bottom: 1px solid #eee;
-        background: #fff;
+        gap: 10px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; 
+
+        /* === 核心修改：添加吸顶效果 === */
+        position: sticky; 
+        top: 0;           /* 紧贴顶部 */
+        z-index: 100;     /* 保证在最上层 */
+        background: rgba(255, 255, 255, 0.95); /* 背景设为不透明(稍微有点透视感更高级) */
+        backdrop-filter: blur(10px); /* 磨砂玻璃效果 (像 iOS) */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* 添加阴影区分内容 */
+        margin-top: 0; /* 确保没有多余间距影响吸顶 */
       }
-      /* 第二个navbar (brand) 才需要 margin-bottom */
-      #brand-navbar {
-        margin-bottom: 20px;
+
+      .navbar::-webkit-scrollbar {
+        display: block;
+        height: 3px;
+      }
+      .navbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .navbar::-webkit-scrollbar-thumb {
+        background-color: #ddd;
+        border-radius: 10px;
       }
 
       .navbar button {
-        background: #f8f8f8;
-        border: 1px solid #ddd;
-        padding: 8px 16px;
-        margin: 5px;
-        cursor: pointer;
-        font-size: 1rem;
-        border-radius: 20px;
-        transition: all 0.3s ease;
-      }
-      .navbar button:hover {
-        background: #e9e9e9;
-      }
-      .navbar button.active {
-        background: #333;
-        color: #fff;
-        border-color: #333;
+        flex: 0 0 auto;
+        margin: 0;
+        white-space: nowrap;
+        font-size: 0.95rem;
+        padding: 8px 14px;
       }
       /* --- Gallery Styles --- */
       .gallery {
