@@ -1289,12 +1289,13 @@
         // --- 事件监听绑定 ---
         
         // 1. 品牌点击
+        // 1. 品牌点击 (Brand Click)
         if (brandNavbar) {
             brandNavbar.addEventListener("click", (e) => {
               const button = e.target.closest("button[data-brand]");
               if (!button) return;
 
-              // 修复变量名: brandButtons -> allBrandButtons
+              // --- 原有逻辑：切换 active 样式 ---
               if (allBrandButtons) {
                   allBrandButtons.forEach((btn) => {
                     btn.classList.remove("active");
@@ -1304,13 +1305,20 @@
               button.classList.add("active");
               button.setAttribute("aria-pressed", "true");
 
+              // --- ✨ 新增功能：自动滚动到左侧 (Auto Scroll to Left) ---
+              // 减去 15 是为了保留一点左边的空隙(padding)，看起来不那么挤
+              const scrollLeft = button.offsetLeft - 15; 
+              brandNavbar.scrollTo({
+                  left: scrollLeft,
+                  behavior: "smooth" // 平滑滚动效果
+              });
+
+              // --- 原有逻辑：重置搜索并过滤 ---
               searchInput.value = "";
-              // 修复变量名
               if (searchClearBtn) searchClearBtn.style.display = "none";
               window.filterAndSearch();
             });
         }
-
         // 2. 搜索输入
         if (searchInput) {
             searchInput.addEventListener("input", () => {
