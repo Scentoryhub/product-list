@@ -377,11 +377,13 @@
         font-size: 1.1rem;
         color: #555;
       }
+      /* 回到顶部按钮 - 强制固定在左下角 */
       .back-to-top {
-        display: none;
+        display: none; /* 默认隐藏，滑动后显示 */
         position: fixed;
-        bottom: 20px;
-        right: 20px;
+        bottom: 30px; /* 距离底部 */
+        left: 30px; /* 🔴 改为 left，固定在左侧 */
+        right: auto; /* 清除右侧定位 */
         background-color: #333;
         color: white;
         border: none;
@@ -397,6 +399,7 @@
         z-index: 1000;
         opacity: 0.8;
       }
+
       .back-to-top:hover {
         background-color: #555;
         opacity: 1;
