@@ -936,44 +936,49 @@
       <span id="cart-count" class="cart-count">0</span>
     </button>
     <script>
-      // 全局变量定义
+      // =================================================================
+      // 全局变量定义 (Global Variables)
+      // =================================================================
       let currentBrandFilter = "all";
       let currentSupplierFilter = "all";
       let searchTerm = "";
       let cartItems = [];
       
-      // DOM 元素变量 (将在 DOMContentLoaded 中初始化)
-      let perfumeList, searchInput, clearSearchButton, cartButton, cartCount;
-      let brandNavbar, brandButtons, showAllButton, supplierButtons, gallery;
+      // DOM 元素变量 (将在 DOMContentLoaded 中赋值)
+      let perfumeList, searchInput, searchClearBtn, cartButton, cartCount; // 改名: clearSearchButton -> searchClearBtn
+      let brandNavbar, allBrandButtons, showAllButton, supplierButtons, gallery; // 改名: brandButtons -> allBrandButtons
       let sortBy;
 
+      // =================================================================
       // 1. 定义全局渲染入口 (供 db.js 调用)
+      // =================================================================
       window.renderPerfumes = function() {
-         // 如果 DOM 还没准备好，或者 db.js 数据还没准备好，暂时不渲染
+         // 如果 DOM 还没准备好 (gallery 是 null)，或者 db.js 数据还没准备好，暂时不渲染
          if (!gallery) return; 
          
          // 调用原本的过滤和搜索逻辑，它会负责最终的渲染
-         if (typeof applyLastState === 'function') {
-            applyLastState(); 
-         } else {
-            filterAndSearch();
+         if (typeof window.applyLastState === 'function') {
+            window.applyLastState(); 
+         } else if (typeof window.filterAndSearch === 'function') {
+            window.filterAndSearch();
          }
       };
 
       document.addEventListener("DOMContentLoaded", () => {
         // --- 初始化 DOM 元素 ---
-        perfumeList = document.getElementById("gallery"); // 注意：这里对应你的 id="gallery"
+        perfumeList = document.getElementById("gallery");
         gallery = document.getElementById("gallery");
         searchInput = document.getElementById("search-input");
-        clearSearchButton = document.getElementById("search-clear-btn");
+        searchClearBtn = document.getElementById("search-clear-btn"); // 修正变量名
         cartButton = document.getElementById("cart-button");
         cartCount = document.getElementById("cart-count");
         brandNavbar = document.getElementById("brand-navbar");
         sortBy = document.getElementById("sort-by");
         
         // 按钮组
-        brandButtons = document.querySelectorAll(".navbar button[data-brand]");
+        allBrandButtons = document.querySelectorAll(".navbar button[data-brand]"); // 修正变量名
         showAllButton = document.querySelector(".navbar button[data-brand='All']");
+        supplierButtons = document.querySelectorAll(".supplier-btn"); // 确保如果有供应商按钮也能获取到
         
         // =================================================================
         // 方案 1: 品牌栏自动滑动提示
@@ -1051,7 +1056,7 @@
             item.dataset.name = perfume.id;
             item.dataset.img = perfume.img;
             item.dataset.brand = perfume.brand;
-            // stock 可能是字符串，转为数字判断
+            
             const stockVal = Number(perfume.stock);
             item.dataset.stock = stockVal;
 
@@ -1156,15 +1161,16 @@
 
           if (lastSearch) {
             searchInput.value = lastSearch;
-            searchClearBtn.style.display = "flex";
-            // 如果有搜索词，品牌一般不高亮特定品牌，或者保持 All
+            // 修复变量名: clearSearchButton -> searchClearBtn
+            if (searchClearBtn) searchClearBtn.style.display = "flex";
           } else {
             searchInput.value = "";
-            searchClearBtn.style.display = "none";
+            // 修复变量名
+            if (searchClearBtn) searchClearBtn.style.display = "none";
             
             // 恢复品牌按钮状态
             let brandApplied = false;
-            if (allBrandButtons) {
+            if (allBrandButtons) { // 修复变量名
                 allBrandButtons.forEach((btn) => {
                   const isMatch = btn.dataset.brand === lastBrand;
                   btn.classList.toggle("active", isMatch);
@@ -1178,7 +1184,7 @@
             }
           }
           
-          filterAndSearch();
+          window.filterAndSearch();
         };
 
         // --- 购物车逻辑 ---
@@ -1274,69 +1280,88 @@
         // --- 事件监听绑定 ---
         
         // 1. 品牌点击
-        brandNavbar.addEventListener("click", (e) => {
-          const button = e.target.closest("button[data-brand]");
-          if (!button) return;
+        if (brandNavbar) {
+            brandNavbar.addEventListener("click", (e) => {
+              const button = e.target.closest("button[data-brand]");
+              if (!button) return;
 
-          allBrandButtons.forEach((btn) => {
-            btn.classList.remove("active");
-            btn.setAttribute("aria-pressed", "false");
-          });
-          button.classList.add("active");
-          button.setAttribute("aria-pressed", "true");
+              // 修复变量名: brandButtons -> allBrandButtons
+              if (allBrandButtons) {
+                  allBrandButtons.forEach((btn) => {
+                    btn.classList.remove("active");
+                    btn.setAttribute("aria-pressed", "false");
+                  });
+              }
+              button.classList.add("active");
+              button.setAttribute("aria-pressed", "true");
 
-          searchInput.value = "";
-          searchClearBtn.style.display = "none";
-          filterAndSearch();
-        });
+              searchInput.value = "";
+              // 修复变量名
+              if (searchClearBtn) searchClearBtn.style.display = "none";
+              window.filterAndSearch();
+            });
+        }
 
         // 2. 搜索输入
-        searchInput.addEventListener("input", () => {
-          allBrandButtons.forEach((btn) => {
-            const isAll = btn.dataset.brand === "All";
-            btn.classList.toggle("active", isAll);
-            btn.setAttribute("aria-pressed", isAll);
-          });
-          searchClearBtn.style.display = searchInput.value ? "flex" : "none";
-          filterAndSearch();
-        });
+        if (searchInput) {
+            searchInput.addEventListener("input", () => {
+              // 修复变量名
+              if (allBrandButtons) {
+                  allBrandButtons.forEach((btn) => {
+                    const isAll = btn.dataset.brand === "All";
+                    btn.classList.toggle("active", isAll);
+                    btn.setAttribute("aria-pressed", isAll);
+                  });
+              }
+              // 修复变量名
+              if (searchClearBtn) searchClearBtn.style.display = searchInput.value ? "flex" : "none";
+              window.filterAndSearch();
+            });
+        }
 
-        searchClearBtn.addEventListener("click", () => {
-          searchInput.value = "";
-          searchInput.dispatchEvent(new Event("input"));
-        });
+        // 修复变量名
+        if (searchClearBtn) {
+            searchClearBtn.addEventListener("click", () => {
+              searchInput.value = "";
+              searchInput.dispatchEvent(new Event("input"));
+            });
+        }
 
         // 3. 排序改变
         if (sortBy) {
-            sortBy.addEventListener("change", filterAndSearch);
+            sortBy.addEventListener("change", window.filterAndSearch);
         }
 
         // 4. 购物车点击
-        cartButton.addEventListener("click", () => {
-          window.location.href = "cart.html";
-        });
+        if (cartButton) {
+            cartButton.addEventListener("click", () => {
+              window.location.href = "cart.html";
+            });
+        }
         
         // 5. 画廊点击 (加入购物车 / 打开弹窗)
-        gallery.addEventListener("click", function (e) {
-          const addToCartBtn = e.target.closest(".add-to-cart");
-          if (addToCartBtn) {
-            e.stopPropagation();
-            const item = addToCartBtn.closest(".item");
-            addItemToCart(item.dataset.name);
-            showConfirmation(addToCartBtn);
-            return;
-          }
+        if (gallery) {
+            gallery.addEventListener("click", function (e) {
+              const addToCartBtn = e.target.closest(".add-to-cart");
+              if (addToCartBtn) {
+                e.stopPropagation();
+                const item = addToCartBtn.closest(".item");
+                addItemToCart(item.dataset.name);
+                showConfirmation(addToCartBtn);
+                return;
+              }
 
-          const item = e.target.closest(".item");
-          if (item) {
-            currentModalProductId = item.dataset.name;
-            modalImg.src = item.dataset.img;
-            modalImg.alt = item.querySelector(".caption").textContent;
-            modalCaption.innerHTML = item.querySelector(".caption").innerHTML;
-            updateModalControls(currentModalProductId);
-            modal.classList.add("open");
-          }
-        });
+              const item = e.target.closest(".item");
+              if (item) {
+                currentModalProductId = item.dataset.name;
+                modalImg.src = item.dataset.img;
+                modalImg.alt = item.querySelector(".caption").textContent;
+                modalCaption.innerHTML = item.querySelector(".caption").innerHTML;
+                updateModalControls(currentModalProductId);
+                modal.classList.add("open");
+              }
+            });
+        }
 
         // 6. 弹窗内操作
         function updateModalControls(productId) {
@@ -1351,42 +1376,46 @@
           }
         }
 
-        modalControls.addEventListener("click", (e) => {
-          const target = e.target;
-          if (target.matches(".modal-add-btn")) {
-            addItemToCart(currentModalProductId);
-            updateModalControls(currentModalProductId);
-          }
-          const button = target.closest(".modal-qty-btn");
-          if (button) {
-            const action = button.dataset.action;
-            const itemInCart = cartItems.find((item) => item.name === currentModalProductId);
-            if (!itemInCart) return;
+        if (modalControls) {
+            modalControls.addEventListener("click", (e) => {
+              const target = e.target;
+              if (target.matches(".modal-add-btn")) {
+                addItemToCart(currentModalProductId);
+                updateModalControls(currentModalProductId);
+              }
+              const button = target.closest(".modal-qty-btn");
+              if (button) {
+                const action = button.dataset.action;
+                const itemInCart = cartItems.find((item) => item.name === currentModalProductId);
+                if (!itemInCart) return;
 
-            if (action === "increase") itemInCart.quantity++;
-            else if (action === "decrease") itemInCart.quantity--;
+                if (action === "increase") itemInCart.quantity++;
+                else if (action === "decrease") itemInCart.quantity--;
 
-            if (itemInCart.quantity <= 0) {
-              const idx = cartItems.findIndex((item) => item.name === currentModalProductId);
-              if (idx > -1) cartItems.splice(idx, 1);
-            }
-            saveCartToLocalStorage();
-            updateCartCount();
-            renderItemCounts();
-            updateModalControls(currentModalProductId);
-            pulseCartButton();
-          }
-        });
+                if (itemInCart.quantity <= 0) {
+                  const idx = cartItems.findIndex((item) => item.name === currentModalProductId);
+                  if (idx > -1) cartItems.splice(idx, 1);
+                }
+                saveCartToLocalStorage();
+                updateCartCount();
+                renderItemCounts();
+                updateModalControls(currentModalProductId);
+                pulseCartButton();
+              }
+            });
+        }
 
-        modalClose.addEventListener("click", () => modal.classList.remove("open"));
-        modal.addEventListener("click", (e) => {
-           if (e.target === modal) modal.classList.remove("open");
-        });
+        if (modalClose) modalClose.addEventListener("click", () => modal.classList.remove("open"));
+        if (modal) {
+            modal.addEventListener("click", (e) => {
+               if (e.target === modal) modal.classList.remove("open");
+            });
+        }
         
         // Esc关闭弹窗
         document.addEventListener("keydown", (e) => {
           if (e.key === "Escape") {
-            modal.classList.remove("open");
+            if (modal) modal.classList.remove("open");
             if(policyModal) policyModal.classList.remove("open");
             if(receiptModal) receiptModal.classList.remove("open");
           }
@@ -1407,26 +1436,26 @@
         // 回到顶部
         window.addEventListener("scroll", () => {
           if (window.pageYOffset > 300) {
-            backToTopButton.style.display = "block";
+            if (backToTopButton) backToTopButton.style.display = "block";
           } else {
-            backToTopButton.style.display = "none";
+            if (backToTopButton) backToTopButton.style.display = "none";
           }
         });
-        backToTopButton.addEventListener("click", () => {
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        });
+        if (backToTopButton) {
+            backToTopButton.addEventListener("click", () => {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            });
+        }
 
         // --- 初始化 ---
         loadCartFromLocalStorage();
         updateCartCount();
         
-        // 注意：这里调用 applyLastState 会尝试渲染，
-        // 如果 db.js 还没下载完，它会显示 Loading 状态
-        // 等 db.js 下载完后，它会自动再次调用 renderPerfumes (即 applyLastState)
-        applyLastState(); 
+        // 先尝试恢复状态 (这会触发一次渲染, 如果 db.js 还没好, 会显示 Loading)
+        // 这里的 renderPerfumes 会检查 gallery 是否存在
+        window.applyLastState(); 
       });
     </script>
-
     <script src="db.js"></script>
   </body>
 </html>
