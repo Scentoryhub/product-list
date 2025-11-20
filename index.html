@@ -541,6 +541,153 @@
         background-color: #f9f9f9;
         cursor: pointer;
       }
+      /* =========================================
+         MOBILE UX OPTIMIZATIONS (2025 UPDATE)
+         ========================================= */
+
+      /* 1. 搜索栏吸顶优化 (Sticky Search) */
+      .search-container {
+        max-width: 600px;
+        /* 修改 margin 为 padding 配合吸顶效果，避免跳动 */
+        margin: 0 auto;
+        padding: 15px 15px;
+        position: sticky; /* 关键属性 */
+        top: 0;
+        z-index: 100; /* 保证层级最高 */
+        background: #fff; /* 防止背景透明 */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* 吸顶时加一点阴影 */
+      }
+
+      /* 2. 品牌导航栏横向滑动 (Horizontal Scroll Navbar) */
+      .navbar {
+        display: flex;
+        justify-content: flex-start; /* 从左开始排列 */
+        flex-wrap: nowrap; /* 禁止换行！ */
+        overflow-x: auto; /* 允许横向滚动 */
+        padding: 10px 15px;
+        border-bottom: 1px solid #eee;
+        background: #fff;
+        gap: 10px; /* 按钮间距 */
+        -webkit-overflow-scrolling: touch; /* iOS 惯性滚动 */
+        scrollbar-width: none; /* Firefox 隐藏滚动条 */
+      }
+
+      /* === 方案 2：极细滚动条 (Thin Scrollbar) === */
+      .navbar::-webkit-scrollbar {
+        display: block; /* 显示滚动条 */
+        height: 3px; /* 高度极细 */
+      }
+      .navbar::-webkit-scrollbar-track {
+        background: transparent; /* 轨道透明 */
+      }
+      .navbar::-webkit-scrollbar-thumb {
+        background-color: #ddd; /* 颜色浅灰 */
+        border-radius: 10px; /* 圆角 */
+      }
+
+      .navbar button {
+        flex: 0 0 auto; /* 防止按钮被压缩 */
+        margin: 0; /* 使用 gap 控制间距，去掉 margin */
+        white-space: nowrap; /* 防止文字换行 */
+        font-size: 0.95rem; /* 字体稍微改小一点点适应单行 */
+        padding: 8px 14px;
+      }
+
+      /* 3. 商品列表间距优化 (Grid Spacing) */
+      .gallery {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 10px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px; /* 手机端间距缩小到 10px */
+        min-height: 300px;
+      }
+      /* 平板/桌面端保持大间距 */
+      @media (min-width: 768px) {
+        .gallery {
+          grid-template-columns: repeat(4, 1fr);
+          gap: 40px;
+          padding: 0 20px;
+        }
+      }
+
+      /* 4. 按钮位置优化 (Thumb Zone) */
+      /* 购物车按钮 - 移至右下角 (拇指热区) */
+      .cart-button {
+        position: fixed;
+        bottom: 30px;
+        right: 20px; /* 改为右侧 */
+        left: auto; /* 清除左侧定位 */
+        width: 60px; /*稍微加大 */
+        height: 60px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+      /* 购物车图标大小适配 */
+      .cart-icon {
+        width: 32px;
+        height: 32px;
+      }
+
+      /* 回到顶部按钮 - 移至左下角 (避免误触) */
+      .back-to-top {
+        bottom: 35px; /* 稍微比购物车高一点点或者对齐 */
+        left: 20px; /* 改为左侧 */
+        right: auto; /* 清除右侧定位 */
+        width: 45px;
+        height: 45px;
+        line-height: 45px;
+        font-size: 1.2rem;
+        opacity: 0.7;
+      }
+
+      /* 5. 底部抽屉式弹窗 (Mobile Bottom Sheet Modal) */
+      @media (max-width: 767px) {
+        .modal {
+          align-items: flex-end; /* 内容靠底部对齐 */
+          padding: 0; /* 移除内边距 */
+        }
+
+        .modal-content {
+          width: 100%;
+          max-width: 100%; /* 占满宽度 */
+          border-radius: 20px 20px 0 0; /* 只有上方有圆角 */
+          margin: 0;
+          max-height: 85vh; /* 最大高度限制 */
+          animation: slideUp 0.3s ease-out; /* 滑出动画 */
+          padding-bottom: 30px; /* 底部给 iPhone Home条留点空间 */
+        }
+
+        /* 图片在抽屉中稍微缩小，留空间给文字 */
+        .modal-content img {
+          max-height: 50vh;
+          width: 100%;
+          object-fit: contain;
+          background: #f9f9f9;
+        }
+
+        @keyframes slideUp {
+          from {
+            transform: translateY(100%);
+          }
+          to {
+            transform: translateY(0);
+          }
+        }
+
+        /* 关闭按钮稍微调整位置 */
+        .modal-close {
+          top: 10px;
+          right: 15px;
+          color: #333; /* 在白色背景上改用深色 */
+          background: rgba(255, 255, 255, 0.8);
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          text-align: center;
+          line-height: 30px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -792,6 +939,22 @@
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         // =================================================================
+        // === 方案 1: 品牌栏自动滑动提示 (Nudge Animation) ===
+        // =================================================================
+        const brandNav = document.getElementById("brand-navbar");
+        if (brandNav) {
+          setTimeout(() => {
+            // 1. 向右滑一点点 (60px)
+            brandNav.scrollTo({ left: 60, behavior: "smooth" });
+
+            // 2. 0.8秒后自动滑回来
+            setTimeout(() => {
+              brandNav.scrollTo({ left: 0, behavior: "smooth" });
+            }, 800);
+          }, 1000); // 页面加载 1秒后开始执行
+        }
+
+        // =================================================================
         // 1. CENTRALIZED CONFIGURATION
         // =================================================================
         const config = {
@@ -887,7 +1050,7 @@
             name: "Maison Francis Kurkdjian Baccarat Rouge 540 Extrait de parfum",
             brand: "Maison Francis Kurkdjian",
             img: "images/perfume11.webp",
-            stock: 0,
+            stock: 1,
             price: 35,
           },
           {
@@ -1156,7 +1319,7 @@
             name: "Yves Saint Laurent MYSLF",
             brand: "Yves Saint Laurent",
             img: "images/perfume45.webp",
-            stock: 0,
+            stock: 1,
             price: 35,
           },
           {
