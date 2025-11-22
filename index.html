@@ -611,6 +611,65 @@
           font-size: 1.2rem;
           opacity: 0.7;
         }
+        /* 横向滑动容器 */
+        .top-scroll-wrapper {
+          display: flex;
+          overflow-x: auto;
+          gap: 15px;
+          padding: 10px 15px;
+          -webkit-overflow-scrolling: touch; /* iOS顺滑滚动 */
+          scrollbar-width: none; /* Firefox 隐藏滚动条 */
+        }
+        .top-scroll-wrapper::-webkit-scrollbar {
+          display: none; /* Chrome 隐藏滚动条 */
+        }
+
+        /* 横向卡片样式 (比主列表的卡片稍微小一点/不同一点) */
+        .top-card {
+          flex: 0 0 140px; /* 固定宽度，手机上一屏大概看2.5个 */
+          background: #fff;
+          border-radius: 10px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+          overflow: hidden;
+          position: relative;
+          border: 1px solid #f0f0f0;
+        }
+        .top-card img {
+          width: 100%;
+          height: 140px;
+          object-fit: cover;
+          background: #f9f9f9;
+        }
+        .top-card .top-info {
+          padding: 8px;
+          text-align: center;
+        }
+        .top-card .top-name {
+          font-size: 0.8rem;
+          font-weight: bold;
+          margin-bottom: 4px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis; /* 文字太长显示省略号 */
+        }
+        .top-card .top-price {
+          color: #d9534f;
+          font-weight: 800;
+          font-size: 0.9rem;
+        }
+        /* 爆款标签 */
+        .hot-badge {
+          position: absolute;
+          top: 5px;
+          left: 5px;
+          background: #ff3b30;
+          color: white;
+          font-size: 0.6rem;
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-weight: bold;
+          z-index: 2;
+        }
       }
     </style>
   </head>
@@ -697,7 +756,16 @@
       </button>
       <button data-brand="Other" aria-pressed="false">Other Brands</button>
     </div>
-
+    <div
+      id="top-picks-container"
+      style="display: none; max-width: 1200px; margin: 0 auto"
+    >
+      <h3 style="padding: 0 15px; margin-bottom: 10px; font-size: 1.1rem">
+        🔥 Best Sellers
+      </h3>
+      <div class="top-scroll-wrapper" id="top-gallery"></div>
+      <hr style="margin: 20px 15px; border: 0; border-top: 1px solid #eee" />
+    </div>
     <div class="gallery" id="gallery">
       <div class="gallery-loader"></div>
     </div>
@@ -876,11 +944,54 @@
       // =================================================================
       // 1. 定义全局渲染入口 (供 db.js 调用)
       // =================================================================
+      // =================================================================
+      // 1. 定义全局渲染入口 (供 db.js 调用) - 已整合 Top 6 爆款区逻辑
+      // =================================================================
       window.renderPerfumes = function () {
-        // 如果 DOM 还没准备好 (gallery 是 null)，或者 db.js 数据还没准备好，暂时不渲染
+        const db = window.perfumeDB || [];
+        // 如果 DOM 还没准备好，或者 db.js 数据还没准备好，暂时不渲染
         if (!gallery) return;
 
-        // 调用原本的过滤和搜索逻辑，它会负责最终的渲染
+        // === 1. 渲染 Top Picks (新增部分: 爆款区) ===
+        const topContainer = document.getElementById("top-picks-container");
+        const topGallery = document.getElementById("top-gallery");
+
+        // 筛选出表格里 top 列为 1 的产品 (兼容字符串 "1" 和数字 1)
+        const topItems = db.filter((p) => p.top == 1);
+
+        if (topContainer && topGallery) {
+          if (topItems.length > 0) {
+            topContainer.style.display = "block";
+            topGallery.innerHTML = ""; // 清空旧内容
+
+            topItems.forEach((p) => {
+              const el = document.createElement("div");
+              el.className = "top-card";
+              // 点击事件：模拟点击主列表里的商品来触发弹窗
+              el.onclick = (e) => {
+                const mainItem = document.querySelector(
+                  `.item[data-name="${p.id}"]`
+                );
+                if (mainItem) mainItem.click();
+              };
+
+              el.innerHTML = `
+                   <div class="hot-badge">HOT</div>
+                   <img src="${p.img}" loading="lazy">
+                   <div class="top-info">
+                     <div class="top-name">${p.name}</div>
+                     <div class="top-price">$${p.price}</div>
+                   </div>
+                 `;
+              topGallery.appendChild(el);
+            });
+          } else {
+            topContainer.style.display = "none";
+          }
+        }
+
+        // === 2. 渲染主列表 (原有逻辑) ===
+        // 调用原本的过滤和搜索逻辑，它会负责最终的主列表渲染
         if (typeof window.applyLastState === "function") {
           window.applyLastState();
         } else if (typeof window.filterAndSearch === "function") {
