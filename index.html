@@ -611,64 +611,123 @@
           font-size: 1.2rem;
           opacity: 0.7;
         }
-        /* 横向滑动容器 */
-        .top-scroll-wrapper {
-          display: flex;
-          overflow-x: auto;
-          gap: 15px;
-          padding: 10px 15px;
-          -webkit-overflow-scrolling: touch; /* iOS顺滑滚动 */
-          scrollbar-width: none; /* Firefox 隐藏滚动条 */
-        }
-        .top-scroll-wrapper::-webkit-scrollbar {
-          display: none; /* Chrome 隐藏滚动条 */
+        /* =========================================
+   TOP PICKS (HERO SECTION) STYLES
+   ========================================= */
+
+        /* 1. 容器基础样式 */
+        #top-picks-container {
+          display: none; /* 默认隐藏，JS有数据时显示 */
+          max-width: 1200px;
+          margin: 0 auto;
         }
 
-        /* 横向卡片样式 (比主列表的卡片稍微小一点/不同一点) */
+        /* 2. 滚动区域 (默认手机端样式：横向滑动) */
+        .top-scroll-wrapper {
+          display: flex;
+          overflow-x: auto; /* 允许横向滚动 */
+          gap: 15px;
+          padding: 10px 15px;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: none; /* 隐藏滚动条 */
+        }
+        .top-scroll-wrapper::-webkit-scrollbar {
+          display: none;
+        }
+
+        /* 3. 卡片基础样式 */
         .top-card {
-          flex: 0 0 140px; /* 固定宽度，手机上一屏大概看2.5个 */
+          flex: 0 0 140px; /* 手机端固定宽度 */
           background: #fff;
-          border-radius: 10px;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
           overflow: hidden;
           position: relative;
           border: 1px solid #f0f0f0;
+          cursor: pointer;
+          transition: transform 0.2s;
         }
+        /* 鼠标悬停效果 */
+        .top-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 图片样式 */
         .top-card img {
           width: 100%;
-          height: 140px;
+          height: 140px; /* 手机端图片高度 */
           object-fit: cover;
           background: #f9f9f9;
         }
+
+        /* 文字信息区 */
         .top-card .top-info {
-          padding: 8px;
+          padding: 10px;
           text-align: center;
         }
         .top-card .top-name {
-          font-size: 0.8rem;
+          font-size: 0.85rem;
           font-weight: bold;
-          margin-bottom: 4px;
+          margin-bottom: 5px;
+          color: #333;
           white-space: nowrap;
           overflow: hidden;
-          text-overflow: ellipsis; /* 文字太长显示省略号 */
+          text-overflow: ellipsis;
         }
         .top-card .top-price {
-          color: #d9534f;
+          color: #d9534f; /* 红色价格 */
           font-weight: 800;
-          font-size: 0.9rem;
+          font-size: 0.95rem;
         }
-        /* 爆款标签 */
+
+        /* HOT 标签 */
         .hot-badge {
           position: absolute;
-          top: 5px;
-          left: 5px;
-          background: #ff3b30;
+          top: 8px;
+          left: 8px;
+          background: linear-gradient(135deg, #ff6b6b, #ff3b30); /* 渐变红 */
           color: white;
-          font-size: 0.6rem;
-          padding: 2px 6px;
-          border-radius: 4px;
-          font-weight: bold;
+          font-size: 0.7rem;
+          padding: 3px 8px;
+          border-radius: 6px;
+          font-weight: 800;
           z-index: 2;
+          box-shadow: 0 2px 5px rgba(255, 59, 48, 0.4);
+        }
+
+        /* =========================================
+   💻 DESKTOP OPTIMIZATION (关键修改)
+   ========================================= */
+        @media (min-width: 768px) {
+          /* 容器改为网格布局 */
+          .top-scroll-wrapper {
+            display: grid;
+            /* 自动适应列数：每列最小180px，填满为止 (通常会显示6个一排或3个两排) */
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            overflow-x: visible; /* 禁止滚动 */
+            gap: 25px; /* 加大间距 */
+            padding: 20px;
+          }
+
+          /* 卡片样式调整 */
+          .top-card {
+            flex: unset; /* 取消手机端的固定宽度 */
+            width: auto; /* 让它自动填满网格 */
+          }
+
+          /* 图片变大 */
+          .top-card img {
+            height: 200px; /* 电脑端图片高度增加 */
+          }
+
+          /* 文字变大 */
+          .top-card .top-name {
+            font-size: 1rem;
+          }
+          .top-card .top-price {
+            font-size: 1.1rem;
+          }
         }
       }
     </style>
