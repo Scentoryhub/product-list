@@ -544,6 +544,11 @@
               <img src="${item.img}" alt="${item.name}" loading="lazy">
               <div class="item-details">
                 <h3>${displayCaption}</h3>
+                <div style="font-size: 0.85rem; color: #666; margin-bottom: 4px;">
+                    ${item.ml ? item.ml + "ml" : ""} ${
+              item.floz ? "/ " + item.floz + " FL.OZ" : ""
+            }
+                </div>
                 <p style="margin: 5px 0; font-weight: bold;">Original Price: $${
                   item.price || "N/A"
                 }</p>

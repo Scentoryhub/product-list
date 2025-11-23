@@ -336,6 +336,13 @@
         object-fit: cover;
         border-radius: 12px 12px 0 0;
       }
+      /* 容量文字样式 */
+      .product-size {
+        font-size: 0.85rem;
+        color: #888; /* 浅灰色 */
+        margin: 4px 0;
+        font-weight: normal;
+      }
       .caption {
         background: #fff;
         color: #333;
@@ -1178,13 +1185,26 @@
 
             item.innerHTML = `
                         ${tierBadge}
-                        <img src="${perfume.img}" alt="${perfume.id} - ${perfume.name}" loading="lazy" decoding="async"/>
+                        <img src="${perfume.img}" alt="${perfume.id} - ${
+              perfume.name
+            }" loading="lazy" decoding="async"/>
                         <div class="caption">
-                          ${perfume.id} - ${displayName} <strong style="display: block; color: #333; font-size: 1.1rem; margin-top: 5px;">
+                          ${perfume.id} - ${displayName}
+                          
+                          <div class="product-size">
+                            ${perfume.ml ? perfume.ml + "ml" : ""} 
+                            ${
+                              perfume.floz ? "/ " + perfume.floz + " FL.OZ" : ""
+                            }
+                          </div>
+
+                          <strong style="display: block; color: #333; font-size: 1.1rem; margin-top: 5px;">
                             $${perfume.price}
                           </strong>
                         </div>
-                        <button class="add-to-cart" title="Add to Cart" aria-label="Add ${perfume.id} to cart">
+                        <button class="add-to-cart" title="Add to Cart" aria-label="Add ${
+                          perfume.id
+                        } to cart">
                           🛒 <span class="item-cart-count"></span>
                         </button>
                     `;
@@ -1377,9 +1397,11 @@
               quantity: 1,
               price: Number(price),
               tier: tier,
-              // 保存 sku 和 supplier 以便购物车页面使用
-              sku: perfumeData.sku,
-              supplier: perfumeData.supplier,
+              sku: sku,
+              supplier: supplier,
+              // ✨ 新增：保存容量信息
+              ml: perfumeData.ml,
+              floz: perfumeData.floz,
             });
           }
           saveCartToLocalStorage();
