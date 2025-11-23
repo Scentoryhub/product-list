@@ -205,7 +205,7 @@
         margin: 0 auto;
       }
 
-      /* Scroll Wrapper (Mobile Default) */
+      /* Scroll Wrapper (Mobile Default: Horizontal Scroll) */
       .top-scroll-wrapper {
         display: flex;
         overflow-x: auto;
@@ -789,20 +789,26 @@
       <button data-brand="All" class="active" aria-pressed="true">
         All Brands
       </button>
+
       <button data-brand="Giorgio Armani" aria-pressed="false">Armani</button>
       <button data-brand="Azzaro" aria-pressed="false">Azzaro</button>
+      <button data-brand="Burberry" aria-pressed="false">Burberry</button>
+      <button data-brand="BVLGARI" aria-pressed="false">BVLGARI</button>
       <button data-brand="Carolina Herrera" aria-pressed="false">
         Carolina Herrera
       </button>
       <button data-brand="Chanel" aria-pressed="false">Chanel</button>
       <button data-brand="Creed" aria-pressed="false">Creed</button>
       <button data-brand="Dior" aria-pressed="false">Dior</button>
+      <button data-brand="Givenchy" aria-pressed="false">Givenchy</button>
       <button data-brand="Gucci" aria-pressed="false">Gucci</button>
       <button data-brand="Initio" aria-pressed="false">Initio</button>
       <button data-brand="Jean Paul Gaultier" aria-pressed="false">
         Jean Paul Gaultier
       </button>
       <button data-brand="Kayali" aria-pressed="false">Kayali</button>
+      <button data-brand="Kilian" aria-pressed="false">Kilian</button>
+      <button data-brand="Lancôme" aria-pressed="false">Lancôme</button>
       <button data-brand="Lattafa" aria-pressed="false">Lattafa</button>
       <button data-brand="Louis Vuitton" aria-pressed="false">
         Louis Vuitton
@@ -817,6 +823,9 @@
         Parfums de Marly
       </button>
       <button data-brand="Prada" aria-pressed="false">Prada</button>
+      <button data-brand="Ralph Lauren" aria-pressed="false">
+        Ralph Lauren
+      </button>
       <button data-brand="Tom Ford" aria-pressed="false">Tom Ford</button>
       <button data-brand="Valentino" aria-pressed="false">Valentino</button>
       <button data-brand="Versace" aria-pressed="false">Versace</button>
@@ -1025,8 +1034,6 @@
 
         if (topContainer && topGallery) {
           if (topItems.length > 0) {
-            // Only show if filtering All and no search term
-            // (Logic is inside filterAndSearch, so we just prep the HTML here)
             topGallery.innerHTML = "";
 
             topItems.forEach((p) => {
@@ -1318,19 +1325,15 @@
           } else if (selectedSort === "newest") {
             filteredList.reverse();
           } else {
-            // Default Smart Sort: Stock > Rank > ID
+            // Default Sort: ID only (A01, A02...)
+            // Keeps list stable regardless of brand selection
             filteredList.sort((a, b) => {
-              const stockA = Number(a.stock);
-              const stockB = Number(b.stock);
-              if (stockA > 0 && stockB === 0) return -1;
-              if (stockA === 0 && stockB > 0) return 1;
-
-              const rankA = Number(a.rank) || 0;
-              const rankB = Number(b.rank) || 0;
-              if (rankA !== rankB) {
-                return rankB - rankA;
-              }
-              return a.id.localeCompare(b.id);
+              const idA = a.id || "";
+              const idB = b.id || "";
+              return idA.localeCompare(idB, undefined, {
+                numeric: true,
+                sensitivity: "base",
+              });
             });
           }
 
