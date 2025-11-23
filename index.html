@@ -205,7 +205,7 @@
         margin: 0 auto;
       }
 
-      /* Scroll Wrapper (Mobile Default) */
+      /* Scroll Wrapper (Mobile Default: Horizontal Scroll) */
       .top-scroll-wrapper {
         display: flex;
         overflow-x: auto;
@@ -336,13 +336,6 @@
         object-fit: cover;
         border-radius: 12px 12px 0 0;
       }
-      /* 容量文字样式 */
-      .product-size {
-        font-size: 0.85rem;
-        color: #888; /* 浅灰色 */
-        margin: 4px 0;
-        font-weight: normal;
-      }
       .caption {
         background: #fff;
         color: #333;
@@ -356,6 +349,14 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
+      }
+
+      /* Capacity Text Style */
+      .product-size {
+        font-size: 0.85rem;
+        color: #888; /* Light Grey */
+        margin: 4px 0;
+        font-weight: normal;
       }
 
       /* Add to Cart Button (on card) */
@@ -696,7 +697,7 @@
           padding: 0 20px;
         }
 
-        /* Top Picks Grid Layout (Disable Scroll) */
+        /* Top Picks Grid Layout (Disable Scroll, Show as Grid) */
         .top-scroll-wrapper {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -801,16 +802,15 @@
       </button>
       <button data-brand="Other" aria-pressed="false">Other Brands</button>
     </div>
-    <div
-      id="top-picks-container"
-      style="display: none; max-width: 1200px; margin: 0 auto"
-    >
+
+    <div id="top-picks-container" style="display: none">
       <h3 style="padding: 0 15px; margin-bottom: 10px; font-size: 1.1rem">
         🔥 Best Sellers
       </h3>
       <div class="top-scroll-wrapper" id="top-gallery"></div>
       <hr style="margin: 20px 15px; border: 0; border-top: 1px solid #eee" />
     </div>
+
     <div class="gallery" id="gallery">
       <div class="gallery-loader"></div>
     </div>
@@ -982,22 +982,19 @@
       let cartItems = [];
 
       // DOM 元素变量 (将在 DOMContentLoaded 中赋值)
-      let perfumeList, searchInput, searchClearBtn, cartButton, cartCount; // 改名: clearSearchButton -> searchClearBtn
-      let brandNavbar, allBrandButtons, showAllButton, supplierButtons, gallery; // 改名: brandButtons -> allBrandButtons
+      let perfumeList, searchInput, searchClearBtn, cartButton, cartCount;
+      let brandNavbar, allBrandButtons, showAllButton, supplierButtons, gallery;
       let sortBy;
 
       // =================================================================
-      // 1. 定义全局渲染入口 (供 db.js 调用)
-      // =================================================================
-      // =================================================================
-      // 1. 定义全局渲染入口 (供 db.js 调用) - 已整合 Top 6 爆款区逻辑
+      // 1. 定义全局渲染入口 (供 db.js 调用) - 已整合 Top 6 爆款区逻辑 + 容量显示
       // =================================================================
       window.renderPerfumes = function () {
         const db = window.perfumeDB || [];
         // 如果 DOM 还没准备好，或者 db.js 数据还没准备好，暂时不渲染
         if (!gallery) return;
 
-        // === 1. 渲染 Top Picks (新增部分: 爆款区) ===
+        // === 1. 渲染 Top Picks (爆款区) ===
         const topContainer = document.getElementById("top-picks-container");
         const topGallery = document.getElementById("top-gallery");
 
@@ -1036,7 +1033,6 @@
         }
 
         // === 2. 渲染主列表 (原有逻辑) ===
-        // 调用原本的过滤和搜索逻辑，它会负责最终的主列表渲染
         if (typeof window.applyLastState === "function") {
           window.applyLastState();
         } else if (typeof window.filterAndSearch === "function") {
@@ -1058,11 +1054,11 @@
         // 按钮组
         allBrandButtons = document.querySelectorAll(
           ".navbar button[data-brand]"
-        ); // 修正变量名
+        );
         showAllButton = document.querySelector(
           ".navbar button[data-brand='All']"
         );
-        supplierButtons = document.querySelectorAll(".supplier-btn"); // 确保如果有供应商按钮也能获取到
+        supplierButtons = document.querySelectorAll(".supplier-btn");
 
         // =================================================================
         // 方案 1: 品牌栏自动滑动提示
@@ -1217,7 +1213,7 @@
 
         // 过滤和搜索 (核心入口)
         window.filterAndSearch = function () {
-          // 1. 获取数据源 (从 window.perfumeDB 获取)
+          // 1. 获取数据源
           const db = window.perfumeDB || [];
           if (db.length === 0) {
             renderGallery([]); // 触发 Loading 状态
@@ -1294,6 +1290,20 @@
             filteredList.sort((a, b) => Number(b.price) - Number(a.price));
           } else if (selectedSort === "newest") {
             filteredList.reverse();
+          } else {
+            // 默认智能排序: 有货 > 权重 > ID
+            filteredList.sort((a, b) => {
+              const stockA = Number(a.stock);
+              const stockB = Number(b.stock);
+              if (stockA > 0 && stockB === 0) return -1;
+              if (stockA === 0 && stockB > 0) return 1;
+
+              const rankA = Number(a.rank) || 0;
+              const rankB = Number(b.rank) || 0;
+              if (rankA !== rankB) return rankB - rankA;
+
+              return a.id.localeCompare(b.id);
+            });
           }
 
           renderGallery(filteredList);
@@ -1313,17 +1323,13 @@
 
           if (lastSearch) {
             searchInput.value = lastSearch;
-            // 修复变量名: clearSearchButton -> searchClearBtn
             if (searchClearBtn) searchClearBtn.style.display = "flex";
           } else {
             searchInput.value = "";
-            // 修复变量名
             if (searchClearBtn) searchClearBtn.style.display = "none";
 
-            // 恢复品牌按钮状态
             let brandApplied = false;
             if (allBrandButtons) {
-              // 修复变量名
               allBrandButtons.forEach((btn) => {
                 const isMatch = btn.dataset.brand === lastBrand;
                 btn.classList.toggle("active", isMatch);
@@ -1359,7 +1365,6 @@
         }
 
         function renderItemCounts() {
-          // 只有当 gallery 有内容时才运行
           const currentItems = gallery.querySelectorAll(".item");
           currentItems.forEach((item) => {
             const itemName = item.dataset.name;
@@ -1377,12 +1382,14 @@
         }
 
         function addItemToCart(productId) {
-          // 从 window.perfumeDB 查找数据
           const db = window.perfumeDB || [];
           const perfumeData = db.find((p) => p.id === productId);
           if (!perfumeData) return;
 
-          const { id, name, img, price, tier } = perfumeData;
+          // 提取所有需要的数据，包括 ml 和 floz
+          const { id, name, img, price, tier, sku, supplier, ml, floz } =
+            perfumeData;
+
           const existingItem = cartItems.find(
             (cartItem) => cartItem.name === id
           );
@@ -1399,9 +1406,8 @@
               tier: tier,
               sku: sku,
               supplier: supplier,
-              // ✨ 新增：保存容量信息
-              ml: perfumeData.ml,
-              floz: perfumeData.floz,
+              ml: ml,
+              floz: floz,
             });
           }
           saveCartToLocalStorage();
@@ -1447,7 +1453,6 @@
             const button = e.target.closest("button[data-brand]");
             if (!button) return;
 
-            // 修复变量名: brandButtons -> allBrandButtons
             if (allBrandButtons) {
               allBrandButtons.forEach((btn) => {
                 btn.classList.remove("active");
@@ -1457,7 +1462,6 @@
             button.classList.add("active");
             button.setAttribute("aria-pressed", "true");
 
-            // --- 自动滚动 ---
             const scrollLeft = button.offsetLeft - 15;
             brandNavbar.scrollTo({
               left: scrollLeft,
@@ -1465,7 +1469,6 @@
             });
 
             searchInput.value = "";
-            // 修复变量名
             if (searchClearBtn) searchClearBtn.style.display = "none";
             window.filterAndSearch();
           });
@@ -1474,7 +1477,6 @@
         // 2. 搜索输入
         if (searchInput) {
           searchInput.addEventListener("input", () => {
-            // 修复变量名
             if (allBrandButtons) {
               allBrandButtons.forEach((btn) => {
                 const isAll = btn.dataset.brand === "All";
@@ -1482,7 +1484,6 @@
                 btn.setAttribute("aria-pressed", isAll);
               });
             }
-            // 修复变量名
             if (searchClearBtn)
               searchClearBtn.style.display = searchInput.value
                 ? "flex"
@@ -1491,7 +1492,6 @@
           });
         }
 
-        // 修复变量名
         if (searchClearBtn) {
           searchClearBtn.addEventListener("click", () => {
             searchInput.value = "";
@@ -1511,7 +1511,7 @@
           });
         }
 
-        // 5. 画廊点击 (加入购物车 / 打开弹窗)
+        // 5. 画廊点击
         if (gallery) {
           gallery.addEventListener("click", function (e) {
             const addToCartBtn = e.target.closest(".add-to-cart");
@@ -1646,7 +1646,6 @@
         updateCartCount();
 
         // 先尝试恢复状态 (这会触发一次渲染, 如果 db.js 还没好, 会显示 Loading)
-        // 这里的 renderPerfumes 会检查 gallery 是否存在
         window.applyLastState();
       });
     </script>
