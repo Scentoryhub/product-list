@@ -985,7 +985,10 @@
 
       // 1. 首页渲染
       function renderHome() {
-        const db = window.perfumeDB || [];
+        // [新增逻辑] 过滤掉 stock 为 0 的商品
+        const db = (window.perfumeDB || []).filter(
+          (p) => parseInt(p.stock) !== 0
+        );
         const container = document.getElementById("home-content");
         container.innerHTML = "";
 
@@ -1104,7 +1107,10 @@
         document.getElementById("grid-view").style.display = "block";
         window.scrollTo({ top: 0, behavior: "smooth" });
 
-        const db = window.perfumeDB || [];
+        // [新增逻辑] 过滤掉 stock 为 0 的商品
+        const db = (window.perfumeDB || []).filter(
+          (p) => parseInt(p.stock) !== 0
+        );
         let filtered = [];
         let title = "";
 
