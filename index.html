@@ -2,1647 +2,1379 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Perfume List</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <title>Top Outlet Perfume</title>
     <link rel="icon" type="image/png" href="icon/32.png" />
     <link rel="apple-touch-icon" href="icon/180.png" />
+
     <style>
-      /* =========================================
-         1. GLOBAL RESET & BASIC STYLES
-         ========================================= */
+      /* ================= 1. 全局配置 ================= */
+      :root {
+        --header-height: 60px;
+        --sidebar-width: 300px;
+        --accent-color: #b28900;
+        --bg-color: #f8f8f8;
+        --font-main: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      }
+
       * {
         box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
       }
+
       body {
         margin: 0;
         padding: 0;
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        background: #fff;
-        color: #222;
+        padding-top: var(--header-height);
+        padding-bottom: 60px;
+        font-family: var(--font-main);
+        background: var(--bg-color);
+        color: #333;
         -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
+        overflow-x: hidden;
       }
+
       a {
-        color: black;
-        font-weight: bold;
         text-decoration: none;
-      }
-
-      /* =========================================
-         2. HEADER & SEARCH BAR
-         ========================================= */
-      .price-info {
-        max-width: 600px;
-        margin: 0 auto 20px auto;
-        padding: 20px;
-        background-color: #f9f9f9;
-        border: 1px solid #e0e0e0;
-        border-radius: 12px;
-        text-align: center;
-      }
-      .price-info p {
-        margin: 8px 0;
-        font-size: 1rem;
-        color: #333;
-        font-weight: 500;
-      }
-      .TOP {
-        text-align: center;
-        margin-top: 20px;
-      }
-      .info-button {
-        background: none;
-        border: none;
-        color: #333;
-        font-weight: 700;
-        text-decoration: underline;
+        color: inherit;
         cursor: pointer;
-        font-size: 1rem;
-        padding: 5px;
       }
-      .info-button:hover {
-        color: #000;
-      }
-
-      /* Search Bar (No Sticky) */
-      .search-container {
-        max-width: 600px;
-        margin: 20px auto;
-        padding: 0 15px;
-        position: relative;
-      }
-      #search-input {
-        width: 100%;
-        padding: 12px 40px 12px 20px;
-        font-size: 1.1rem;
-        border: 1px solid #ccc;
-        border-radius: 25px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      button {
         outline: none;
-        transition: border-color 0.3s, box-shadow 0.3s;
-      }
-      #search-input:focus {
-        border-color: #333;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      }
-      #search-clear-btn {
-        position: absolute;
-        top: 50%;
-        right: 30px;
-        transform: translateY(-50%);
-        background: #ccc;
-        color: white;
+        font-family: inherit;
         border: none;
-        border-radius: 50%;
-        width: 22px;
-        height: 22px;
-        cursor: pointer;
-        font-weight: bold;
-        font-size: 16px;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        line-height: 22px;
-        transition: background-color 0.2s;
-      }
-      #search-clear-btn:hover {
-        background: #999;
+        background: none;
+        padding: 0;
       }
 
-      /* Sort Dropdown */
-      .sort-container {
-        max-width: 900px;
-        margin: 0 auto 15px auto;
-        padding: 0 20px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-      .sort-container label {
-        margin-right: 10px;
-        font-weight: 600;
-        color: #555;
-      }
-      #sort-by {
-        padding: 8px 12px;
-        font-size: 1rem;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        background-color: #f9f9f9;
-        cursor: pointer;
-      }
-
-      /* =========================================
-         3. BRAND NAVBAR (STICKY & SCROLLABLE)
-         ========================================= */
-      .navbar {
-        /* Layout */
-        display: flex;
-        justify-content: flex-start;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        gap: 10px;
-
-        /* Sticky Positioning */
-        position: sticky;
+      /* ================= 2. 头部 (Header) ================= */
+      .site-header {
+        position: fixed;
         top: 0;
-        z-index: 100;
-        margin-top: 0;
-
-        /* Visuals */
-        padding: 12px 15px;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid #eee;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
-
-        /* Scrolling UX */
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        cursor: grab;
-      }
-      .navbar:active {
-        cursor: grabbing;
-      }
-      .navbar::-webkit-scrollbar {
-        display: none;
-      }
-
-      /* Navbar Buttons */
-      .navbar button {
-        flex: 0 0 auto;
-        margin: 0;
-        white-space: nowrap;
-
-        background: #f8f8f8;
-        border: 1px solid #e0e0e0;
-        padding: 8px 18px;
-        cursor: pointer;
-        font-size: 0.95rem;
-        font-weight: 500;
-        border-radius: 25px;
-        color: #555;
-        transition: all 0.2s ease;
-      }
-      .navbar button:hover {
-        background: #eee;
-        border-color: #ccc;
-        transform: translateY(-1px);
-      }
-      .navbar button.active {
-        background: #222;
-        color: #fff;
-        border-color: #222;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-      }
-
-      /* =========================================
-         4. TOP PICKS (HERO SECTION)
-         ========================================= */
-      #top-picks-container {
-        display: none;
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-
-      /* Scroll Wrapper (Mobile Default: Horizontal Scroll) */
-      .top-scroll-wrapper {
-        display: flex;
-        overflow-x: auto;
-        gap: 15px;
-        padding: 10px 15px;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-      }
-      .top-scroll-wrapper::-webkit-scrollbar {
-        display: none;
-      }
-
-      /* Top Card Style */
-      .top-card {
-        flex: 0 0 140px; /* Mobile Fixed Width */
-        background: #fff;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-        overflow: hidden;
-        position: relative;
-        border: 1px solid #f0f0f0;
-        cursor: pointer;
-        transition: transform 0.2s;
-      }
-      .top-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-      }
-      .top-card img {
+        left: 0;
         width: 100%;
-        height: 140px;
-        object-fit: cover;
-        background: #f9f9f9;
+        height: var(--header-height);
+        background-color: #000;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 15px;
+        z-index: 1000;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
       }
-      .top-card .top-info {
-        padding: 10px;
-        text-align: center;
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        padding: 10px 0;
       }
-      .top-card .top-name {
-        font-size: 0.85rem;
-        font-weight: bold;
-        margin-bottom: 5px;
-        color: #333;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+      .hamburger-icon {
+        font-size: 1.6rem;
+        line-height: 1;
       }
-      .top-card .top-price {
-        color: #d9534f;
-        font-weight: 800;
-        font-size: 0.95rem;
+      .menu-text {
+        font-size: 0.9rem;
+        font-weight: 700;
+        letter-spacing: 1px;
       }
-      .hot-badge {
+
+      .header-right {
+        position: relative;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        padding: 10px 0 10px 15px;
+      }
+      .header-cart-icon {
+        width: 26px;
+        height: 26px;
+        filter: invert(1);
+      }
+      .header-cart-badge {
         position: absolute;
-        top: 8px;
-        left: 8px;
-        background: linear-gradient(135deg, #ff6b6b, #ff3b30);
+        top: -2px;
+        right: -5px;
+        background-color: #d9534f;
         color: white;
         font-size: 0.7rem;
-        padding: 3px 8px;
-        border-radius: 6px;
-        font-weight: 800;
-        z-index: 2;
-        box-shadow: 0 2px 5px rgba(255, 59, 48, 0.4);
-      }
-
-      /* =========================================
-         5. MAIN GALLERY (PRODUCT LIST)
-         ========================================= */
-      .gallery {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 10px;
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px; /* Mobile Gap */
-        min-height: 300px;
-      }
-
-      /* Item Card */
-      .item {
-        position: relative;
-        overflow: hidden;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-        background: #fff;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        animation: fadeIn 0.5s ease-out;
-      }
-      .item:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-      }
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: scale(0.98);
-        }
-        to {
-          opacity: 1;
-          transform: scale(1);
-        }
-      }
-
-      /* Hide Out of Stock Items */
-      .item[data-stock="0"] {
-        display: none;
-      }
-      /* Fallback for Admin View (Optional) */
-      .item[data-stock="0"]::after {
-        content: "Out of Stock";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: rgba(0, 0, 0, 0.7);
-        color: white;
-        padding: 8px 15px;
-        border-radius: 8px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-weight: bold;
-        z-index: 2;
+        border: 2px solid #000;
       }
 
-      .item img {
-        display: block;
+      /* ================= 3. 侧边栏 (Sidebar) ================= */
+      .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
         width: 100%;
-        height: 250px;
-        object-fit: cover;
-        border-radius: 12px 12px 0 0;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 1001;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s;
       }
-      .caption {
+      .sidebar-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 85%;
+        max-width: var(--sidebar-width);
         background: #fff;
-        color: #333;
-        padding: 16px;
-        font-size: 1rem;
-        font-weight: 600;
-        text-align: center;
-        border-top: 1px solid #eee;
-        min-height: 90px;
+        z-index: 1002;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
         display: flex;
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .sidebar.active {
+        transform: translateX(0);
       }
 
-      /* Capacity Text Style */
-      .product-size {
-        font-size: 0.85rem;
-        color: #888; /* Light Grey */
-        margin: 4px 0;
-        font-weight: normal;
-      }
-
-      /* Add to Cart Button (on card) */
-      .item .add-to-cart {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background: rgba(0, 0, 0, 0.7);
-        color: #fff;
-        border: none;
-        border-radius: 50%;
-        width: 36px;
-        height: 36px;
+      .sidebar-header {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        font-size: 1.2rem;
-        transition: background 0.3s ease;
-        z-index: 3;
+        border-bottom: 2px solid #ddd;
       }
-      .item .add-to-cart:hover {
-        background: rgba(0, 0, 0, 0.9);
-      }
-      .item-cart-count {
-        position: absolute;
-        top: -5px;
-        right: -5px;
-        background-color: #f44;
-        color: white;
-        border-radius: 50%;
-        padding: 2px 6px;
-        font-size: 0.8rem;
-        min-width: 1.2em;
+      .sidebar-tab {
+        flex: 1;
         text-align: center;
-        display: none;
-      }
-      .add-to-cart-confirmation {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: #28a745;
-        color: white;
-        padding: 6px 12px;
-        border-radius: 15px;
+        padding: 15px 0;
+        font-weight: 700;
         font-size: 0.9rem;
-        font-weight: bold;
-        opacity: 0;
-        transition: opacity 0.5s ease, transform 0.5s ease;
-        z-index: 10;
-        pointer-events: none;
+        color: #888;
+        background: #f9f9f9;
       }
-      .add-to-cart-confirmation.show {
-        opacity: 1;
-        transform: translate(-50%, -100%);
-      }
-
-      /* Loading Spinner */
-      .gallery-loader {
-        grid-column: 1 / -1;
-        margin: 80px auto;
-        border: 6px solid #f3f3f3;
-        border-top: 6px solid #333;
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        animation: spin 1s linear infinite;
-      }
-      .no-results-message {
-        grid-column: 1 / -1;
-        text-align: center;
-        padding: 40px 15px;
-        font-size: 1.1rem;
-        color: #777;
+      .sidebar-tab.active {
+        background: #fff;
+        color: #000;
+        border-bottom: 2px solid var(--accent-color);
+        margin-bottom: -2px;
       }
 
-      /* =========================================
-         6. FLOATING BUTTONS (CART & BACK TO TOP)
-         ========================================= */
-      /* Back to Top - Fixed Bottom Left */
-      .back-to-top {
-        display: none;
-        position: fixed;
-        bottom: 30px;
-        left: 30px; /* Fixed Left */
-        right: auto;
-        background-color: #333;
-        color: white;
+      .sidebar-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .sidebar-search {
+        position: relative;
+        margin-bottom: 25px;
+      }
+      .sidebar-search input {
+        width: 100%;
+        padding: 12px 35px 12px 5px;
         border: none;
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        font-size: 1.5rem;
-        line-height: 50px;
-        text-align: center;
-        cursor: pointer;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        transition: all 0.3s;
-        z-index: 1000;
-        opacity: 0.8;
-      }
-      .back-to-top:hover {
-        background-color: #555;
-        opacity: 1;
-        transform: scale(1.1);
-      }
-
-      /* Cart Button - Fixed Bottom Right */
-      .cart-button {
-        position: fixed;
-        bottom: 30px;
-        right: 20px; /* Fixed Right */
-        left: auto;
-        background-color: #ffffff;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 60px;
-        height: 60px;
+        border-bottom: 1px solid #ccc;
         font-size: 1rem;
-        text-align: center;
-        cursor: pointer;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        z-index: 1000;
-        transition: background-color 0.3s;
+        outline: none;
+        border-radius: 0;
+        background: transparent;
       }
-      .cart-button:hover {
-        background-color: #555;
-      }
-      .cart-button.added {
-        animation: cart-pulse 0.6s ease-out;
-      }
-      @keyframes cart-pulse {
-        0% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.15);
-        }
-        100% {
-          transform: scale(1);
-        }
-      }
-      .cart-count {
+      .sidebar-search-icon {
         position: absolute;
-        top: -5px;
-        right: -5px;
-        background-color: #f44;
-        color: white;
-        border-radius: 50%;
-        padding: 2px 6px;
-        font-size: 0.8rem;
-      }
-      .cart-icon {
-        width: 32px;
-        height: 32px;
+        right: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.2rem;
+        color: #999;
       }
 
-      /* =========================================
-         7. MODAL STYLES
-         ========================================= */
+      .menu-link {
+        display: block;
+        padding: 15px 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #333;
+        border-bottom: 1px solid #eee;
+        text-transform: uppercase;
+      }
+      .brand-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+      .brand-item {
+        padding: 12px 5px;
+        font-size: 0.95rem;
+        color: #555;
+        cursor: pointer;
+      }
+      .brand-item:hover,
+      .brand-item:active {
+        color: #000;
+        background: #f4f4f4;
+        padding-left: 10px;
+        font-weight: bold;
+      }
+
+      /* ================= 4. 首页 (Home View) ================= */
+      #home-view {
+        padding-top: 10px;
+        padding-bottom: 30px;
+        display: block;
+      }
+
+      .brand-section {
+        margin-bottom: 20px;
+        background: #fff;
+        padding: 20px 0 20px 12px;
+        border-top: 1px solid #eee;
+        border-bottom: 1px solid #eee;
+      }
+      .brand-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-right: 15px;
+        margin-bottom: 15px;
+      }
+      .brand-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #222;
+        margin: 0;
+        text-transform: uppercase;
+      }
+      .brand-see-all {
+        font-size: 0.85rem;
+        color: #666;
+        text-decoration: underline;
+        cursor: pointer;
+        padding: 5px;
+      }
+
+      .scroll-wrapper {
+        display: flex;
+        overflow-x: auto;
+        gap: 12px;
+        padding-bottom: 10px;
+        padding-right: 12px;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+      }
+      .scroll-wrapper::-webkit-scrollbar {
+        display: none;
+      }
+
+      .scroll-card {
+        flex: 0 0 150px;
+        display: flex;
+        flex-direction: column;
+        background: #fff;
+        cursor: pointer;
+        position: relative;
+        scroll-snap-align: start;
+      }
+      .scroll-card img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 4px;
+        margin-bottom: 8px;
+        background: #f9f9f9;
+      }
+      .tag-hot {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #d9534f;
+        color: #fff;
+        font-size: 0.7rem;
+        font-weight: bold;
+        padding: 3px 7px;
+        border-radius: 0 0 6px 0;
+      }
+      .scroll-card-title {
+        font-size: 0.8rem;
+        color: #444;
+        margin-bottom: 4px;
+        height: 2.4em;
+        overflow: hidden;
+        text-transform: uppercase;
+        line-height: 1.2;
+      }
+      .scroll-card-sub {
+        font-size: 0.7rem;
+        color: #999;
+        margin-bottom: 4px;
+      }
+      .scroll-card-price {
+        font-size: 0.95rem;
+        color: var(--accent-color);
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .scroll-card-add {
+        font-size: 0.85rem;
+        color: #000;
+        font-weight: 700;
+        text-decoration: underline;
+        margin-top: auto;
+        padding: 5px 0;
+      }
+
+      /* Shop All Button Section */
+      .shop-all-section {
+        padding: 30px 20px;
+        text-align: center;
+        background: #fff;
+        margin-bottom: 20px;
+        border-top: 1px solid #eee;
+        border-bottom: 1px solid #eee;
+      }
+      .shop-all-btn {
+        background: #000;
+        color: #fff;
+        padding: 15px 40px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        border-radius: 30px;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s;
+      }
+      .shop-all-btn:active {
+        transform: scale(0.95);
+      }
+
+      /* ================= 5. 网格视图 (Grid View) ================= */
+      #grid-view {
+        display: none;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px 12px;
+      }
+      .gallery-header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      .gallery-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+      }
+      .back-home-btn {
+        font-size: 0.9rem;
+        text-decoration: underline;
+        cursor: pointer;
+        color: #666;
+        padding: 5px;
+      }
+
+      .gallery {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      @media (min-width: 768px) {
+        .gallery {
+          grid-template-columns: repeat(4, 1fr);
+          gap: 30px;
+        }
+      }
+
+      .item {
+        background: #fff;
+        border-radius: 8px;
+        border: 1px solid #eee;
+        overflow: hidden;
+      }
+      .item img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        background: #f9f9f9;
+        cursor: pointer;
+      }
+      .item .caption {
+        padding: 10px 8px;
+        text-align: center;
+      }
+      .item-price {
+        font-weight: bold;
+        color: var(--accent-color);
+        font-size: 1rem;
+      }
+      .grid-add-btn {
+        display: block;
+        width: 100%;
+        margin-top: 10px;
+        background: #000;
+        color: #fff;
+        text-align: center;
+        padding: 10px 0;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .pagination-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        margin: 30px 0;
+      }
+      .page-btn {
+        padding: 10px 20px;
+        background-color: #222;
+        color: #fff;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+      .page-btn:disabled {
+        background-color: #eee;
+        color: #aaa;
+      }
+
+      /* ================= 6. 信任与评论 (Trust) ================= */
+      .trust-section {
+        background: #fff;
+        margin-top: 20px;
+        padding: 30px 20px;
+        border-top: 1px solid #eee;
+      }
+      .trust-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        text-align: center;
+      }
+      @media (min-width: 768px) {
+        .trust-grid {
+          grid-template-columns: repeat(2, 1fr);
+          max-width: 800px;
+          margin: 0 auto;
+        }
+      }
+      .trust-item {
+        padding: 20px;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        display: block;
+        background: #fff;
+      }
+      .trust-item h4 {
+        margin: 10px 0 5px;
+        font-size: 1.1rem;
+      }
+      .trust-item p {
+        font-size: 0.9rem;
+        color: #666;
+        margin: 0;
+        line-height: 1.4;
+      }
+
+      /* ================= 7. 弹窗 (Modal) & Lightbox & Toast ================= */
       .modal {
         display: none;
         position: fixed;
-        z-index: 9999;
-        left: 0;
-        top: 0;
-        width: 100vw;
-        height: 100vh;
+        inset: 0;
         background: rgba(0, 0, 0, 0.85);
-        justify-content: center;
+        z-index: 2000;
         align-items: center;
+        justify-content: center;
         padding: 15px;
       }
       .modal.open {
         display: flex;
       }
-      /* --- Modal Styles (修复版) --- */
+
+      /* Modal Content */
       .modal-content {
-        max-width: 600px; /* 限制最大宽度，防止电脑上太宽 */
-        width: 90vw;
-        max-height: 90vh; /* 最大高度 */
-        border-radius: 12px;
-
-        /* 关键修改 1: 允许垂直滚动，防止内容被切掉 */
-        overflow-y: auto;
-        /* 关键修改 2: 使用 Flex 布局，确保布局稳固 */
-        display: flex;
-        flex-direction: column;
-
-        box-shadow: 0 0 40px rgba(0, 0, 0, 0.25);
         background: #fff;
-        text-align: center;
-        position: relative; /* 确保关闭按钮定位准确 */
-      }
-
-      .modal-content img {
         width: 100%;
-        /* 关键修改 3: 降低图片最大高度，给按钮留空间 */
-        max-height: 60vh;
-        object-fit: contain; /* 保持图片比例完整显示 */
-        background-color: #f9f9f9;
-        flex-shrink: 0; /* 防止图片被压缩没了 */
-      }
-
-      /* 优化滚动条样式 (可选) */
-      .modal-content::-webkit-scrollbar {
-        width: 6px;
-      }
-      .modal-content::-webkit-scrollbar-thumb {
-        background-color: #ccc;
-        border-radius: 3px;
-      }
-      .modal-caption {
-        padding: 12px 20px;
-        font-weight: 700;
-        font-size: 1.2rem;
-        color: #222;
+        max-width: 400px;
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        text-align: center;
+        padding-bottom: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
       }
       .modal-close {
         position: absolute;
-        top: 15px;
-        right: 20px;
-        font-size: 2rem;
+        top: 10px;
+        right: 10px;
+        font-size: 1.8rem;
+        cursor: pointer;
+        z-index: 10;
+        width: 36px;
+        height: 36px;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 50%;
+        line-height: 34px;
+      }
+      .modal-img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        background: #f8f8f8;
+      }
+      .modal-info {
+        padding: 20px 15px;
+      }
+
+      .modal-btn {
+        background: #000;
+        color: #fff;
+        padding: 15px 0;
+        width: 100%;
+        font-size: 1.1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-top: 15px;
+        display: block;
+      }
+
+      .qty-control-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #fff;
+        border: 2px solid #000;
+        border-radius: 8px;
+        margin-top: 15px;
+        height: 52px;
+        overflow: hidden;
+      }
+      .qty-btn {
+        width: 60px;
+        height: 100%;
+        font-size: 1.5rem;
+        font-weight: bold;
+        background: #000;
         color: #fff;
         cursor: pointer;
-        user-select: none;
-        transition: transform 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
-      .modal-close:hover {
-        transform: rotate(90deg);
+      .qty-val {
+        flex: 1;
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #000;
       }
 
-      /* Modal Controls */
-      .modal-controls {
-        padding: 10px 20px 20px;
-        display: flex;
+      /* Lightbox */
+      .lightbox {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 3000;
         justify-content: center;
         align-items: center;
+        cursor: zoom-out;
       }
-      .modal-add-btn {
-        background-color: #333;
-        color: white;
-        border: none;
-        padding: 12px 24px;
-        font-size: 1rem;
-        font-weight: bold;
-        border-radius: 25px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-      }
-      .modal-add-btn:hover {
-        background-color: #555;
-      }
-      .modal-qty-controls {
+      .lightbox.open {
         display: flex;
-        align-items: center;
-        gap: 15px;
+        animation: fadeIn 0.2s ease-out;
       }
-      .modal-qty-btn {
-        background-color: #f0f0f0;
-        border: 1px solid #ccc;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        font-size: 1.5rem;
-        font-weight: bold;
+      .lightbox-img {
+        max-width: 95vw;
+        max-height: 85vh;
+        border-radius: 4px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        transform: scale(0.9);
+        transition: transform 0.3s;
+      }
+      .lightbox.open .lightbox-img {
+        transform: scale(1);
+      }
+      .lightbox-close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        color: #fff;
+        font-size: 2.5rem;
         cursor: pointer;
-        transition: background-color 0.2s;
+        padding: 10px;
       }
-      .modal-qty-btn:hover {
-        background-color: #e0e0e0;
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
       }
-      .modal-qty-count {
-        font-size: 1.5rem;
-        font-weight: bold;
-        min-width: 30px;
+
+      #toast {
+        visibility: hidden;
+        min-width: 200px;
+        background-color: rgba(0, 0, 0, 0.9);
+        color: #fff;
         text-align: center;
+        border-radius: 30px;
+        padding: 12px 20px;
+        position: fixed;
+        z-index: 9999;
+        left: 50%;
+        bottom: 80px;
+        transform: translateX(-50%);
+        font-size: 0.95rem;
+        font-weight: 500;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        transition: all 0.3s;
       }
-
-      /* Footer */
-      .contact-info {
-        text-align: center;
-        padding: 30px 15px;
-        background: #fff;
-        margin-top: 20px;
-        border-top: 1px solid #eee;
-      }
-      .contact-info p {
-        margin: 5px 0;
-        font-size: 1.1rem;
-        color: #555;
-      }
-
-      /* =========================================
-         8. RESPONSIVE ADJUSTMENTS (MEDIA QUERIES)
-         ========================================= */
-
-      /* --- Mobile Only Adjustments (< 768px) --- */
-      @media (max-width: 767px) {
-        /* Modal Bottom Sheet Animation */
-        .modal {
-          align-items: flex-end;
-          padding: 0;
-        }
-        .modal-content {
-          width: 100%;
-          max-width: 100%;
-          border-radius: 20px 20px 0 0;
-          margin: 0;
-          max-height: 85vh;
-          animation: slideUp 0.3s ease-out;
-          padding-bottom: 30px;
-        }
-        .modal-content img {
-          max-height: 50vh;
-          width: 100%;
-          object-fit: contain;
-          background: #f9f9f9;
-        }
-        @keyframes slideUp {
-          from {
-            transform: translateY(100%);
-          }
-          to {
-            transform: translateY(0);
-          }
-        }
-        .modal-close {
-          top: 10px;
-          right: 15px;
-          color: #333;
-          background: rgba(255, 255, 255, 0.8);
-          width: 30px;
-          height: 30px;
-          border-radius: 50%;
-          text-align: center;
-          line-height: 30px;
-        }
-
-        /* Button Position Tweak */
-        .back-to-top {
-          bottom: 35px;
-          left: 20px;
-          width: 45px;
-          height: 45px;
-          line-height: 45px;
-          font-size: 1.2rem;
-          opacity: 0.7;
-        }
-      }
-
-      /* --- Desktop Adjustments (>= 768px) --- */
-      @media (min-width: 768px) {
-        /* Gallery Grid Expansion */
-        .gallery {
-          grid-template-columns: repeat(4, 1fr);
-          gap: 40px;
-          padding: 0 20px;
-        }
-
-        /* Top Picks Grid Layout (Disable Scroll) */
-        .top-scroll-wrapper {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-          overflow-x: visible;
-          gap: 25px;
-          padding: 20px;
-        }
-        .top-card {
-          flex: unset;
-          width: auto;
-        }
-        .top-card img {
-          height: 200px;
-        }
-        .top-card .top-name {
-          font-size: 1rem;
-        }
-        .top-card .top-price {
-          font-size: 1.1rem;
-        }
+      #toast.show {
+        visibility: visible;
+        opacity: 1;
+        bottom: 90px;
       }
     </style>
   </head>
   <body>
-    <h2 class="TOP">Perfume List</h2>
-
-    <div class="price-info">
-      <div>
-        <p style="font-size: 1.1rem; font-weight: 700">Perfuems: From $30</p>
-        <p style="font-size: 1.1rem; font-weight: 600">
-          Free Shipping | Buy more save more !
-        </p>
-        <p style="font-size: 1.1rem; font-weight: 700">USA WAREHOUSE</p>
-        <p style="font-size: 0.9rem; color: #555">
-          (Exact price is shown on each product)
-        </p>
+    <header class="site-header">
+      <div class="header-left" id="menu-trigger">
+        <span class="hamburger-icon">☰</span>
+        <span class="menu-text" style="margin-left: 5px">MENU</span>
       </div>
-      <hr class="info-divider" />
 
-      <div style="margin-top: 15px">
-        <button id="policy-btn" class="info-button" style="color: #f44">
-          Compensation Policy
-        </button>
+      <div class="header-right" onclick="window.location.href='cart.html'">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="white"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path
+            d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"
+          ></path>
+        </svg>
+        <span id="header-cart-count" class="header-cart-badge">0</span>
       </div>
-    </div>
+    </header>
 
-    <div class="search-container">
-      <input
-        type="search"
-        id="search-input"
-        placeholder="Search by name, brand or number..."
-      />
-      <button id="search-clear-btn" title="Clear search">&times;</button>
-    </div>
-
-    <div class="sort-container">
-      <label for="sort-by">Sort By:</label>
-      <select id="sort-by">
-        <option value="default">Default (A-Z)</option>
-        <option value="newest">Newest First</option>
-        <option value="price-asc">Price: Low to High</option>
-        <option value="price-desc">Price: High to Low</option>
-      </select>
-    </div>
-
-    <div class="navbar" id="brand-navbar">
-      <button data-brand="All" class="active">All Brands</button>
-      <button data-brand="Giorgio Armani">Armani</button>
-      <button data-brand="Azzaro">Azzaro</button>
-      <button data-brand="Bond No. 9">Bond No. 9</button>
-      <button data-brand="Carolina Herrera">Carolina Herrera</button>
-      <button data-brand="Chanel">Chanel</button>
-      <button data-brand="Creed">Creed</button>
-      <button data-brand="Dior">Dior</button>
-      <button data-brand="Gucci">Gucci</button>
-      <button data-brand="Initio">Initio</button>
-      <button data-brand="Jean Paul Gaultier">Jean Paul Gaultier</button>
-      <button data-brand="Lattafa">Lattafa</button>
-      <button data-brand="Louis Vuitton">Louis Vuitton</button>
-      <button data-brand="Maison Francis Kurkdjian">
-        Maison Francis Kurkdjian
-      </button>
-      <button data-brand="Paco Rabanne">Paco Rabanne</button>
-      <button data-brand="Parfums de Marly">Parfums de Marly</button>
-      <button data-brand="Prada">Prada</button>
-      <button data-brand="Tom Ford">Tom Ford</button>
-      <button data-brand="Valentino">Valentino</button>
-      <button data-brand="Versace">Versace</button>
-      <button data-brand="Xerjoff">Xerjoff</button>
-      <button data-brand="Yves Saint Laurent">Yves Saint Laurent</button>
-      <button data-brand="Other">Other Brands</button>
-    </div>
-
-    <div id="top-picks-container" style="display: none">
-      <h3 style="padding: 0 15px; margin-bottom: 10px; font-size: 1.1rem">
-        🔥 Best Sellers
-      </h3>
-      <div class="top-scroll-wrapper" id="top-gallery"></div>
-      <hr style="margin: 20px 15px; border: 0; border-top: 1px solid #eee" />
-    </div>
-
-    <div class="gallery" id="gallery">
-      <div class="gallery-loader"></div>
-    </div>
-
-    <div
-      class="modal"
-      id="modal"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modal-caption"
-    >
-      <div class="modal-close" id="modal-close" aria-label="Close modal">
-        &times;
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-tab active">MENU</div>
       </div>
-      <div class="modal-content">
-        <img src="" alt="" id="modal-img" />
-        <div class="modal-caption" id="modal-caption"></div>
-        <div class="modal-controls">
-          <button class="modal-add-btn">Add to Cart</button>
-          <div class="modal-qty-controls">
-            <button class="modal-qty-btn" data-action="decrease">-</button>
-            <span class="modal-qty-count">1</span>
-            <button class="modal-qty-btn" data-action="increase">+</button>
+      <div class="sidebar-content">
+        <div class="sidebar-search">
+          <input
+            type="text"
+            id="sidebar-search-input"
+            placeholder="Search brands..."
+          />
+          <span class="sidebar-search-icon">🔍</span>
+        </div>
+
+        <nav>
+          <a class="menu-link" onclick="handleMenuClick('Home')">Home</a>
+          <a class="menu-link" onclick="handleMenuClick('All')">Shop All</a>
+          <a class="menu-link" onclick="handleMenuClick('BestSellers')"
+            >Best Sellers 🔥</a
+          >
+          <a class="menu-link" href="cart.html">My Cart</a>
+          <a class="menu-link" href="https://wa.me/16232027321" target="_blank"
+            >Contact Us</a
+          >
+        </nav>
+
+        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee" />
+
+        <div
+          style="
+            font-weight: 700;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+            color: #999;
+            letter-spacing: 1px;
+          "
+        >
+          POPULAR BRANDS
+        </div>
+        <div class="brand-list">
+          <div class="brand-item" onclick="handleMenuClick('Creed')">Creed</div>
+          <div class="brand-item" onclick="handleMenuClick('Dior')">Dior</div>
+          <div class="brand-item" onclick="handleMenuClick('Chanel')">
+            Chanel
+          </div>
+          <div class="brand-item" onclick="handleMenuClick('Tom Ford')">
+            Tom Ford
+          </div>
+          <div class="brand-item" onclick="handleMenuClick('Louis Vuitton')">
+            Louis Vuitton
+          </div>
+          <div class="brand-item" onclick="handleMenuClick('Gucci')">Gucci</div>
+          <div
+            class="brand-item"
+            onclick="handleMenuClick('Yves Saint Laurent')"
+          >
+            YSL
+          </div>
+          <div class="brand-item" onclick="handleMenuClick('Burberry')">
+            Burberry
+          </div>
+          <div class="brand-item" onclick="handleMenuClick('Versace')">
+            Versace
+          </div>
+          <div class="brand-item" onclick="handleMenuClick('Carolina Herrera')">
+            Carolina Herrera
+          </div>
+          <div class="brand-item" onclick="handleMenuClick('Giorgio Armani')">
+            Armani
+          </div>
+
+          <div style="font-size: 0.8rem; color: #ccc; margin: 15px 0 5px 0">
+            NICHE & OTHERS
+          </div>
+
+          <div
+            class="brand-item"
+            onclick="handleMenuClick('Maison Francis Kurkdjian')"
+          >
+            MFK
+          </div>
+          <div class="brand-item" onclick="handleMenuClick('Parfums de Marly')">
+            Parfums de Marly
+          </div>
+          <div class="brand-item" onclick="handleMenuClick('Le Labo')">
+            Le Labo
+          </div>
+          <div class="brand-item" onclick="handleMenuClick('Byredo')">
+            Byredo
+          </div>
+          <div class="brand-item" onclick="handleMenuClick('Kilian')">
+            Kilian
+          </div>
+          <div
+            class="brand-item"
+            onclick="handleMenuClick('All')"
+            style="
+              font-weight: bold;
+              margin-top: 10px;
+              color: var(--accent-color);
+            "
+          >
+            View All Brands >
           </div>
         </div>
+        <div style="height: 50px"></div>
       </div>
     </div>
 
-    <div
-      class="modal"
-      id="policy-modal"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="policy-modal-caption"
-    >
-      <div class="modal-close" id="policy-modal-close" aria-label="Close modal">
-        &times;
+    <div id="home-view">
+      <div id="home-content"></div>
+    </div>
+
+    <div id="grid-view">
+      <div class="gallery-header-bar">
+        <div class="gallery-title" id="grid-title">Results</div>
+        <div class="back-home-btn" onclick="handleMenuClick('Home')">
+          Back to Home
+        </div>
       </div>
-      <div
-        class="modal-content"
-        style="
-          max-width: 500px;
-          text-align: left;
-          padding: 25px;
-          box-sizing: border-box;
-        "
-      >
-        <h3
-          id="policy-modal-caption"
-          style="text-align: center; margin-top: 0; font-size: 1.4rem"
-        >
-          Compensation Policy
-        </h3>
-        <p style="font-size: 1rem; color: #333">
-          Please check your items upon delivery. If you have any issues, follow
-          these steps for a free reshipment:
-        </p>
-        <ul style="padding-left: 20px; font-size: 1rem">
-          <li style="margin-bottom: 15px">
-            <strong>1. Leaked or Damaged:</strong>
-            <p style="margin-top: 5px; margin-bottom: 0">
-              Provide photos of:
-              <strong>Outer Packaging + Shipping Label + Damaged Goods</strong>.
-            </p>
-          </li>
-          <li>
-            <strong>2. Wrong Product Sent:</strong>
-            <p style="margin-top: 5px; margin-bottom: 0">
-              Provide photos of:
-              <strong>Shipping Label + Incorrect Goods</strong>.
-            </p>
-          </li>
-        </ul>
-        <p
-          style="
-            font-weight: bold;
-            text-align: center;
-            margin-top: 25px;
-            font-size: 1rem;
-            background-color: #f9f9f9;
-            padding: 10px;
-            border-radius: 8px;
-          "
-        >
-          Important: Please keep all shipping packaging until you've checked
-          that everything is okay with your order. An unboxing video is highly
-          recommended.
-        </p>
+      <div class="gallery" id="gallery"></div>
+      <div id="pagination-controls" class="pagination-container">
+        <button id="prev-page" class="page-btn">Prev</button>
+        <span id="page-info" style="font-weight: bold">1</span>
+        <button id="next-page" class="page-btn">Next</button>
       </div>
     </div>
 
-    <div
-      class="modal"
-      id="receipt-modal"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="receipt-modal-caption"
-    >
-      <div
-        class="modal-close"
-        id="receipt-modal-close"
-        aria-label="Close modal"
-      >
-        &times;
+    <div class="trust-section">
+      <div class="trust-grid">
+        <div class="trust-item">
+          <div style="font-size: 2rem; margin-bottom: 10px">🇺🇸</div>
+          <h4>USA Warehouse</h4>
+          <p>Fast delivery within 3-5 days.</p>
+        </div>
+
+        <div class="trust-item">
+          <div style="font-size: 2rem; margin-bottom: 10px">🚚</div>
+          <h4>Free Shipping</h4>
+          <p>On all orders. No hidden fees.</p>
+        </div>
+
+        <div class="trust-item">
+          <div style="font-size: 2rem; color: #3498db; margin-bottom: 10px">
+            🛡️
+          </div>
+          <h4>Broken? We Reship!</h4>
+          <p>Full replacement if damaged in transit.</p>
+          <button
+            onclick="document.getElementById('policy-modal').classList.add('open')"
+            style="
+              text-decoration: underline;
+              cursor: pointer;
+              color: blue;
+              margin-top: 10px;
+              font-size: 0.9rem;
+            "
+          >
+            See Policy
+          </button>
+        </div>
+
+        <a href="https://wa.me/16232027321" target="_blank" class="trust-item">
+          <div style="font-size: 2rem; color: #2ecc71; margin-bottom: 10px">
+            💬
+          </div>
+          <h4>WhatsApp Support</h4>
+          <p>24/7 instant quote & service.</p>
+          <span
+            style="
+              color: blue;
+              text-decoration: underline;
+              margin-top: 10px;
+              display: block;
+              font-size: 0.9rem;
+            "
+            >Chat Now</span
+          >
+        </a>
       </div>
-      <div
-        class="modal-content"
-        style="
-          max-width: 600px;
-          text-align: center;
-          padding: 0;
-          overflow: hidden;
-          background: #fff;
-        "
-      >
-        <img
-          src="images/receipt.webp"
-          alt="Receipt Example"
-          style="
-            max-width: 100%;
-            height: auto;
-            display: block;
-            max-height: 85vh;
-          "
-        />
+    </div>
+
+    <div id="toast">Added to Cart! 🛒</div>
+
+    <div id="modal" class="modal">
+      <div class="modal-content">
         <div
-          id="receipt-modal-caption"
-          style="
-            padding: 12px;
-            font-weight: bold;
-            background: #fff;
-            color: #222;
-          "
+          class="modal-close"
+          onclick="document.getElementById('modal').classList.remove('open')"
         >
-          Example Receipt
+          &times;
+        </div>
+        <img id="modal-img" class="modal-img" src="" />
+        <div class="modal-info">
+          <h3
+            id="modal-title"
+            style="margin: 0 0 5px 0; font-size: 1.2rem"
+          ></h3>
+          <div
+            id="modal-sub"
+            style="color: #666; font-size: 0.9rem; margin-bottom: 15px"
+          ></div>
+          <div
+            id="modal-price"
+            style="
+              font-weight: bold;
+              color: var(--accent-color);
+              font-size: 1.4rem;
+              margin-bottom: 20px;
+            "
+          ></div>
+
+          <div id="modal-action-area"></div>
         </div>
       </div>
     </div>
-    <footer>
-      <div class="contact-info">
-        <a href="https://wa.me/16232027321"
-          >Need help? Contact us on WhatsApp</a
+
+    <div class="modal" id="policy-modal">
+      <div
+        class="modal-content"
+        style="padding: 25px; text-align: left; max-width: 90%"
+      >
+        <div
+          class="modal-close"
+          onclick="document.getElementById('policy-modal').classList.remove('open')"
         >
-        <p>We are available 24/7</p>
+          &times;
+        </div>
+        <h3 style="text-align: center; margin-top: 0">Reshipment Policy</h3>
+        <p>If items arrive broken or leaked:</p>
+        <ul style="padding-left: 20px; color: #555">
+          <li style="margin-bottom: 10px">
+            Take a photo of the <strong>Shipping Label</strong>.
+          </li>
+          <li>Take a photo of the <strong>Damaged Item</strong>.</li>
+        </ul>
+        <p style="text-align: center; font-weight: bold; margin-top: 20px">
+          Send to WhatsApp for free reshipment.
+        </p>
       </div>
-    </footer>
+    </div>
 
-    <button id="back-to-top" class="back-to-top" aria-label="Back to top">
-      &#x25B2;
-    </button>
+    <div class="lightbox" id="lightbox">
+      <span class="lightbox-close">&times;</span>
+      <img class="lightbox-img" id="lightbox-content" />
+    </div>
 
-    <button
-      class="cart-button"
-      id="cart-button"
-      title="View Your Order"
-      aria-label="View Shopping Cart"
-    >
-      <img src="icon/order.png" alt="Cart" class="cart-icon" />
-      <span id="cart-count" class="cart-count">0</span>
-    </button>
-
+    <script src="db.js"></script>
     <script>
-      // =================================================================
-      // GLOBAL VARIABLES & DOM ELEMENTS
-      // =================================================================
-      let currentBrandFilter = "all";
-      let currentSupplierFilter = "all";
-      let searchTerm = "";
+      // ================= 配置区 =================
+      const FEATURED_BRANDS = [
+        "Creed",
+        "Dior",
+        "Chanel",
+        "Tom Ford",
+        "Yves Saint Laurent",
+        "Louis Vuitton",
+        "Gucci",
+        "Burberry",
+        "Versace",
+        "Carolina Herrera", // 新增
+        "Giorgio Armani",
+        "Prada",
+        "Valentino",
+        "Maison Francis Kurkdjian",
+        "Parfums de Marly",
+        "Jean Paul Gaultier",
+        "Paco Rabanne",
+        "Le Labo",
+        "Byredo",
+        "Kilian",
+        "Jo Malone",
+        "Hermès",
+        "Bond No. 9",
+        "Xerjoff",
+        "Initio",
+        "Lattafa",
+        "Ralph Lauren",
+        "Hugo Boss",
+        "Azzaro",
+        "Mugler",
+        "Viktor&Rolf",
+      ];
+
+      // ================= 状态变量 =================
       let cartItems = [];
+      let currentPage = 1;
+      const itemsPerPage = 20;
+      let currentGridData = [];
+      let viewMode = "home";
 
-      // DOM elements will be assigned in DOMContentLoaded
-      let perfumeList, searchInput, searchClearBtn, cartButton, cartCount;
-      let brandNavbar, allBrandButtons, showAllButton, supplierButtons, gallery;
-      let sortBy;
+      // 当前打开的 Modal 产品 ID
+      let currentModalProductId = null;
 
-      // =================================================================
-      // 1. GLOBAL RENDER FUNCTION (Called by db.js)
-      // =================================================================
-      window.renderPerfumes = function () {
+      document.addEventListener("DOMContentLoaded", () => {
+        loadCart();
+        setupMenu();
+        renderHome();
+        setupEventListeners();
+        setupModalBackdropClosing();
+      });
+
+      // 1. 首页渲染
+      function renderHome() {
         const db = window.perfumeDB || [];
-        if (!gallery) return;
+        const container = document.getElementById("home-content");
+        container.innerHTML = "";
 
-        // --- Render Top Picks (Best Sellers) ---
-        const topContainer = document.getElementById("top-picks-container");
-        const topGallery = document.getElementById("top-gallery");
-        const topItems = db.filter((p) => p.top == 1);
-
-        if (topContainer && topGallery) {
-          if (topItems.length > 0) {
-            topGallery.innerHTML = "";
-
-            topItems.forEach((p) => {
-              const el = document.createElement("div");
-              el.className = "top-card";
-              el.onclick = (e) => {
-                // Simulate click on main item to open modal
-                const mainItem = document.querySelector(
-                  `.item[data-name="${p.id}"]`
-                );
-                if (mainItem) mainItem.click();
-              };
-
-              el.innerHTML = `
-                   <div class="hot-badge">HOT</div>
-                   <img src="${p.img}" loading="lazy">
-                   <div class="top-info">
-                     <div class="top-name">${p.name}</div>
-                     <div class="top-price">$${p.price}</div>
-                   </div>
-                 `;
-              topGallery.appendChild(el);
-            });
-          }
+        // 1. Best Sellers
+        const bestSellers = db.filter((p) => p.top == 1);
+        if (bestSellers.length > 0) {
+          container.appendChild(
+            createBrandSection("🔥 Best Sellers", bestSellers)
+          );
         }
 
-        // --- Render Main List ---
-        if (typeof window.applyLastState === "function") {
-          window.applyLastState();
-        } else if (typeof window.filterAndSearch === "function") {
-          window.filterAndSearch();
+        // 2. Featured Brand Sections (独立品牌区)
+        const renderedBrands = new Set(); // 记录展示过的品牌
+
+        FEATURED_BRANDS.forEach((brand) => {
+          const products = db.filter((p) => p.brand.includes(brand));
+          // 只有数量 >= 3 才算“展示过”
+          if (products.length >= 3) {
+            let displayName = brand;
+            if (brand === "Yves Saint Laurent") displayName = "YSL";
+            container.appendChild(
+              createBrandSection(displayName, products, brand)
+            );
+            renderedBrands.add(brand);
+          }
+        });
+
+        // 3. Other Brands (未展示的剩余品牌)
+        // 筛选逻辑：遍历所有产品，排除掉那些“品牌名包含在已展示列表中”的产品
+        const otherProducts = db.filter((p) => {
+          // 检查该产品的品牌是否包含在已展示的品牌名中
+          for (let featured of renderedBrands) {
+            if (p.brand.includes(featured)) return false;
+          }
+          return true;
+        });
+
+        if (otherProducts.length > 0) {
+          container.appendChild(
+            createBrandSection("Other Brands", otherProducts, "Other")
+          );
+        }
+
+        // 4. "Shop All" 独立区域
+        const shopAllContainer = document.createElement("div");
+        shopAllContainer.className = "shop-all-section";
+        shopAllContainer.innerHTML = `
+            <button class="shop-all-btn" onclick="handleMenuClick('All')">
+                Shop All Products
+            </button>
+        `;
+        container.appendChild(shopAllContainer);
+      }
+
+      function createBrandSection(title, products, filterKey) {
+        const section = document.createElement("div");
+        section.className = "brand-section";
+
+        const header = document.createElement("div");
+        header.className = "brand-header";
+
+        const titleEl = document.createElement("h2");
+        titleEl.className = "brand-title";
+        titleEl.textContent = title;
+
+        const seeAll = document.createElement("div");
+        seeAll.className = "brand-see-all";
+        seeAll.textContent = "See All >";
+        seeAll.onclick = () => {
+          const key =
+            filterKey || (title.includes("Best") ? "BestSellers" : "All");
+          switchToGrid(key);
+        };
+
+        header.appendChild(titleEl);
+        header.appendChild(seeAll);
+        section.appendChild(header);
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "scroll-wrapper";
+
+        const displayProducts = products.slice(0, 15);
+
+        displayProducts.forEach((p) => {
+          const card = document.createElement("div");
+          card.className = "scroll-card";
+          // 点击整个卡片打开 Modal
+          card.onclick = (e) => {
+            if (e.target.classList.contains("scroll-card-add")) return;
+            openModal(p);
+          };
+
+          card.innerHTML = `
+            <div style="position:relative;">
+               <img src="${p.img}" loading="lazy" alt="${p.name}">
+               ${title.includes("Best") ? '<div class="tag-hot">HOT</div>' : ""}
+            </div>
+            <div class="scroll-card-title">${p.name}</div>
+            <div class="scroll-card-sub">${p.brand}</div>
+            <div class="scroll-card-price">$${p.price}</div>
+            <div class="scroll-card-add" onclick="addToCart('${
+              p.id
+            }'); event.stopPropagation();">Add To Cart</div>
+          `;
+          wrapper.appendChild(card);
+        });
+
+        section.appendChild(wrapper);
+        return section;
+      }
+
+      // 2. Grid 渲染
+      function switchToGrid(criteria) {
+        viewMode = "grid";
+        document.getElementById("home-view").style.display = "none";
+        document.getElementById("grid-view").style.display = "block";
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
+        const db = window.perfumeDB || [];
+        let filtered = [];
+        let title = "";
+
+        if (criteria === "All") {
+          filtered = db;
+          title = "All Products";
+        } else if (criteria === "BestSellers") {
+          filtered = db.filter((p) => p.top == 1);
+          title = "Best Sellers";
+        } else if (criteria.startsWith("Search:")) {
+          const term = criteria.replace("Search:", "").toLowerCase();
+          filtered = db.filter(
+            (p) =>
+              p.name.toLowerCase().includes(term) ||
+              p.brand.toLowerCase().includes(term)
+          );
+          title = `Results: "${term}"`;
+        } else if (criteria === "Other") {
+          // 找出哪些是Featured
+          const renderedBrands = new Set();
+          FEATURED_BRANDS.forEach((b) => {
+            if (db.filter((p) => p.brand.includes(b)).length >= 3)
+              renderedBrands.add(b);
+          });
+          // 过滤
+          filtered = db.filter((p) => {
+            for (let featured of renderedBrands) {
+              if (p.brand.includes(featured)) return false;
+            }
+            return true;
+          });
+          title = "More Brands";
+        } else {
+          filtered = db.filter((p) => p.brand.includes(criteria));
+          title = criteria;
+        }
+
+        document.getElementById("grid-title").textContent = title;
+        currentGridData = filtered;
+        currentPage = 1;
+        renderGridPage();
+      }
+
+      function renderGridPage() {
+        const gallery = document.getElementById("gallery");
+        gallery.innerHTML = "";
+        const controls = document.getElementById("pagination-controls");
+
+        if (currentGridData.length === 0) {
+          gallery.innerHTML =
+            "<div style='grid-column:1/-1;text-align:center;padding:50px;color:#999;'>No items found.</div>";
+          controls.style.display = "none";
+          return;
+        }
+
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const pageItems = currentGridData.slice(start, end);
+
+        pageItems.forEach((p) => {
+          const div = document.createElement("div");
+          div.className = "item";
+          div.innerHTML = `
+              <img src="${p.img}" loading="lazy" onclick="openModalById('${p.id}')">
+              <div class="caption">
+                 <div style="font-size:0.85rem;height:2.4em;overflow:hidden;margin-bottom:5px;line-height:1.2;">${p.name}</div>
+                 <div class="item-price">$${p.price}</div>
+                 <button class="grid-add-btn" onclick="addToCart('${p.id}')">ADD TO CART</button>
+              </div>
+           `;
+          gallery.appendChild(div);
+        });
+
+        const totalPages = Math.ceil(currentGridData.length / itemsPerPage);
+        if (totalPages > 1) {
+          controls.style.display = "flex";
+          document.getElementById(
+            "page-info"
+          ).textContent = `${currentPage} / ${totalPages}`;
+          document.getElementById("prev-page").disabled = currentPage === 1;
+          document.getElementById("next-page").disabled =
+            currentPage === totalPages;
+        } else {
+          controls.style.display = "none";
+        }
+      }
+
+      // 3. 通用功能
+      window.handleMenuClick = function (action) {
+        document.getElementById("sidebar").classList.remove("active");
+        document.getElementById("sidebar-overlay").classList.remove("active");
+        if (action === "Home") {
+          viewMode = "home";
+          document.getElementById("home-view").style.display = "block";
+          document.getElementById("grid-view").style.display = "none";
+          window.scrollTo({ top: 0 });
+        } else {
+          switchToGrid(action);
         }
       };
 
-      document.addEventListener("DOMContentLoaded", () => {
-        // --- Init DOM Elements ---
-        perfumeList = document.getElementById("gallery");
-        gallery = document.getElementById("gallery");
-        searchInput = document.getElementById("search-input");
-        searchClearBtn = document.getElementById("search-clear-btn");
-        cartButton = document.getElementById("cart-button");
-        cartCount = document.getElementById("cart-count");
-        brandNavbar = document.getElementById("brand-navbar");
-        sortBy = document.getElementById("sort-by");
-
-        allBrandButtons = document.querySelectorAll(
-          ".navbar button[data-brand]"
-        );
-        showAllButton = document.querySelector(
-          ".navbar button[data-brand='All']"
-        );
-        supplierButtons = document.querySelectorAll(".supplier-btn");
-
-        // --- Auto Scroll Hint & Drag Scroll ---
-        if (brandNavbar) {
-          setTimeout(() => {
-            brandNavbar.scrollTo({ left: 60, behavior: "smooth" });
-            setTimeout(() => {
-              brandNavbar.scrollTo({ left: 0, behavior: "smooth" });
-            }, 800);
-          }, 1000);
-
-          // PC Mouse Drag Support
-          let isDown = false;
-          let startX;
-          let scrollLeft;
-
-          brandNavbar.addEventListener("mousedown", (e) => {
-            isDown = true;
-            brandNavbar.classList.add("active");
-            startX = e.pageX - brandNavbar.offsetLeft;
-            scrollLeft = brandNavbar.scrollLeft;
-            e.preventDefault();
-          });
-          brandNavbar.addEventListener("mouseleave", () => {
-            isDown = false;
-          });
-          brandNavbar.addEventListener("mouseup", () => {
-            isDown = false;
-          });
-          brandNavbar.addEventListener("mousemove", (e) => {
-            if (!isDown) return;
-            e.preventDefault();
-            const x = e.pageX - brandNavbar.offsetLeft;
-            const walk = (x - startX) * 2;
-            brandNavbar.scrollLeft = scrollLeft - walk;
-          });
-        }
-
-        const config = {
-          whatsappNumber: "16232027321",
-          brandAliases: {
-            ysl: "yves saint laurent",
-            lv: "Louis Vuitton",
-            tf: "tom ford",
-            jpg: "jean paul gaultier",
-            mfk: "maison francis kurkdjian",
-            pdm: "parfums de marly",
-            ch: "carolina herrera",
-            ga: "giorgio armani",
-          },
-        };
-
-        const { whatsappNumber, brandAliases } = config;
-
-        // --- Modal Elements ---
-        const modal = document.getElementById("modal");
-        const modalImg = document.getElementById("modal-img");
-        const modalCaption = document.getElementById("modal-caption");
-        const modalClose = document.getElementById("modal-close");
-        const backToTopButton = document.getElementById("back-to-top");
-
-        const modalControls = document.querySelector(".modal-controls");
-        const modalAddBtn = document.querySelector(".modal-add-btn");
-        const modalQtyControls = document.querySelector(".modal-qty-controls");
-        const modalQtyCount = document.querySelector(".modal-qty-count");
-        let currentModalProductId = null;
-
-        // --- Policy & Receipt Modals ---
-        const policyBtn = document.getElementById("policy-btn");
-        const policyModal = document.getElementById("policy-modal");
-        const policyModalClose = document.getElementById("policy-modal-close");
-        const receiptBtn = document.getElementById("receipt-btn");
-        const receiptModal = document.getElementById("receipt-modal");
-        const receiptModalClose = document.getElementById(
-          "receipt-modal-close"
-        );
-
-        // =================================================================
-        // CORE LOGIC
-        // =================================================================
-
-        // Render Gallery
-        function renderGallery(perfumeListToRender) {
-          gallery.innerHTML = "";
-          const db = window.perfumeDB || [];
-
-          if (db.length === 0) {
-            gallery.innerHTML = '<div class="gallery-loader"></div>';
-            return;
-          }
-
-          if (perfumeListToRender.length === 0) {
-            handleNoResults();
-            return;
-          }
-
-          perfumeListToRender.forEach((perfume) => {
-            const item = document.createElement("div");
-            item.className = "item";
-            item.tabIndex = 0;
-            item.dataset.name = perfume.id;
-            item.dataset.img = perfume.img;
-            item.dataset.brand = perfume.brand;
-
-            const stockVal = Number(perfume.stock);
-            item.dataset.stock = stockVal;
-
-            let tierBadge = "";
-            let displayName = perfume.name;
-
-            if (perfume.tier === "Premium") {
-              tierBadge = '<span class="premium-badge">★ Premium</span>';
-              displayName = displayName.replace(
-                "Premium (Luxe)",
-                '<span class="premium-text">Premium (Luxe)</span>'
-              );
-            }
-
-            item.innerHTML = `
-                        ${tierBadge}
-                        <img src="${perfume.img}" alt="${perfume.id} - ${
-              perfume.name
-            }" loading="lazy" decoding="async"/>
-                        <div class="caption">
-                          ${perfume.id} - ${displayName}
-                          
-                          <div class="product-size">
-                            ${perfume.ml ? perfume.ml + "ml" : ""} 
-                            ${
-                              perfume.floz ? "/ " + perfume.floz + " FL.OZ" : ""
-                            }
-                          </div>
-
-                          <strong style="display: block; color: #333; font-size: 1.1rem; margin-top: 5px;">
-                            $${perfume.price}
-                          </strong>
-                        </div>
-                        <button class="add-to-cart" title="Add to Cart" aria-label="Add ${
-                          perfume.id
-                        } to cart">
-                          🛒 <span class="item-cart-count"></span>
-                        </button>
-                    `;
-            gallery.appendChild(item);
-          });
-
-          items = Array.from(gallery.querySelectorAll(".item"));
-          renderItemCounts();
-        }
-
-        // Filter & Search Function
-        window.filterAndSearch = function () {
-          const db = window.perfumeDB || [];
-          if (db.length === 0) {
-            renderGallery([]);
-            return;
-          }
-
-          const activeBrandBtn = brandNavbar.querySelector("button.active");
-          const selectedBrand = activeBrandBtn
-            ? activeBrandBtn.dataset.brand
-            : "All";
-          const selectedSort = sortBy ? sortBy.value : "default";
-
-          // --- Control Top Picks Visibility ---
-          const topContainer = document.getElementById("top-picks-container");
-          if (topContainer) {
-            const isSearching = searchInput.value.trim().length > 0;
-            // Show only if "All Brands" and NOT searching
-            const hasTopItems = db.some((p) => p.top == 1);
-
-            if (selectedBrand === "All" && !isSearching && hasTopItems) {
-              topContainer.style.display = "block";
-            } else {
-              topContainer.style.display = "none";
-            }
-          }
-
-          let term = searchInput.value.toLowerCase().trim();
-          if (brandAliases[term]) {
-            term = brandAliases[term];
-          }
-
-          const dedicatedBrands = [
-            "Dior",
-            "Chanel",
-            "Yves Saint Laurent",
-            "Louis Vuitton",
-            "Tom Ford",
-            "Gucci",
-            "Valentino",
-            "Prada",
-            "Versace",
-            "Creed",
-            "Xerjoff",
-            "Kayali",
-            "Initio",
-            "Jean Paul Gaultier",
-            "Maison Francis Kurkdjian",
-            "Parfums de Marly",
-            "Giorgio Armani",
-            "Carolina Herrera",
-            "Lattafa",
-            "Azzaro",
-            "Paco Rabanne",
-          ];
-
-          let filteredList = db.filter((p) => {
-            let brandMatch = true;
-            if (selectedBrand !== "All") {
-              if (selectedBrand === "Other") {
-                brandMatch = !dedicatedBrands.includes(p.brand);
-              } else {
-                brandMatch = p.brand === selectedBrand;
-              }
-            }
-
-            let searchMatch = true;
-            if (term) {
-              const nameStr = p.name ? String(p.name).toLowerCase() : "";
-              const idStr = p.id ? String(p.id).toLowerCase() : "";
-              const brandStr = p.brand ? String(p.brand).toLowerCase() : "";
-              searchMatch =
-                nameStr.includes(term) ||
-                idStr.includes(term) ||
-                brandStr.includes(term);
-            }
-
-            return brandMatch && searchMatch;
-          });
-
-          // Sorting Logic
-          filteredList = filteredList.slice();
-          if (selectedSort === "price-asc") {
-            filteredList.sort((a, b) => Number(a.price) - Number(b.price));
-          } else if (selectedSort === "price-desc") {
-            filteredList.sort((a, b) => Number(b.price) - Number(a.price));
-          } else if (selectedSort === "newest") {
-            filteredList.reverse();
-          } else {
-            // Default Sort: ID only (A01, A02...)
-            // Keeps list stable regardless of brand selection
-            filteredList.sort((a, b) => {
-              const idA = a.id || "";
-              const idB = b.id || "";
-              return idA.localeCompare(idB, undefined, {
-                numeric: true,
-                sensitivity: "base",
-              });
-            });
-          }
-
-          renderGallery(filteredList);
-
-          localStorage.setItem("lastFilterBrand", selectedBrand);
-          localStorage.setItem("lastSearchTerm", searchInput.value.trim());
-          localStorage.setItem("lastSort", selectedSort);
-        };
-
-        // Restore State
-        window.applyLastState = function () {
-          const lastBrand = localStorage.getItem("lastFilterBrand") || "All";
-          const lastSearch = localStorage.getItem("lastSearchTerm") || "";
-          const lastSort = localStorage.getItem("lastSort") || "default";
-
-          if (sortBy) sortBy.value = lastSort;
-
-          if (lastSearch) {
-            searchInput.value = lastSearch;
-            if (searchClearBtn) searchClearBtn.style.display = "flex";
-          } else {
-            searchInput.value = "";
-            if (searchClearBtn) searchClearBtn.style.display = "none";
-
-            let brandApplied = false;
-            if (allBrandButtons) {
-              allBrandButtons.forEach((btn) => {
-                const isMatch = btn.dataset.brand === lastBrand;
-                btn.classList.toggle("active", isMatch);
-                btn.setAttribute("aria-pressed", isMatch);
-                if (isMatch) brandApplied = true;
-              });
-            }
-            if (!brandApplied && showAllButton) {
-              showAllButton.classList.add("active");
-              showAllButton.setAttribute("aria-pressed", "true");
-            }
-          }
-
-          window.filterAndSearch();
-        };
-
-        // --- Cart Functions ---
-        function loadCartFromLocalStorage() {
-          const storedCart = localStorage.getItem("perfumeCart");
-          cartItems = storedCart ? JSON.parse(storedCart) : [];
-        }
-
-        function saveCartToLocalStorage() {
-          localStorage.setItem("perfumeCart", JSON.stringify(cartItems));
-        }
-
-        function updateCartCount() {
-          const count = cartItems.reduce(
-            (total, item) => total + item.quantity,
-            0
-          );
-          cartCount.textContent = count;
-        }
-
-        function renderItemCounts() {
-          const currentItems = gallery.querySelectorAll(".item");
-          currentItems.forEach((item) => {
-            const itemName = item.dataset.name;
-            const itemCartCountBadge = item.querySelector(".item-cart-count");
-            const itemInCart = cartItems.find(
-              (cartItem) => cartItem.name === itemName
-            );
-            if (itemInCart && itemInCart.quantity > 0) {
-              itemCartCountBadge.textContent = itemInCart.quantity;
-              itemCartCountBadge.style.display = "block";
-            } else {
-              itemCartCountBadge.style.display = "none";
-            }
-          });
-        }
-
-        function addItemToCart(productId) {
-          const db = window.perfumeDB || [];
-          const perfumeData = db.find((p) => p.id === productId);
-          if (!perfumeData) return;
-
-          const { id, name, img, price, tier, sku, supplier, ml, floz } =
-            perfumeData;
-          const existingItem = cartItems.find(
-            (cartItem) => cartItem.name === id
-          );
-
-          if (existingItem) {
-            existingItem.quantity++;
-          } else {
-            cartItems.push({
-              name: id,
-              caption: `${id} - ${name}`,
-              img,
-              quantity: 1,
-              price: Number(price),
-              tier: tier,
-              sku: sku,
-              supplier: supplier,
-              ml: ml,
-              floz: floz,
-            });
-          }
-          saveCartToLocalStorage();
-          updateCartCount();
-          renderItemCounts();
-          pulseCartButton();
-        }
-
-        // --- Helper Functions ---
-        function handleNoResults() {
-          let messageEl = gallery.querySelector(".no-results-message");
-          if (!messageEl) {
-            messageEl = document.createElement("div");
-            messageEl.className = "no-results-message";
-            gallery.appendChild(messageEl);
-          }
-          let searchTerm = searchInput.value;
-          messageEl.innerHTML = searchTerm
-            ? `<p>No results found for "<strong>${searchTerm}</strong>".</p><p>Try another keyword.</p>`
-            : `<p>No items found for this filter.</p>`;
-        }
-
-        function pulseCartButton() {
-          cartButton.classList.add("added");
-          setTimeout(() => cartButton.classList.remove("added"), 600);
-        }
-
-        function showConfirmation(button) {
-          const confirmation = document.createElement("div");
-          confirmation.textContent = "Added!";
-          confirmation.className = "add-to-cart-confirmation";
-          const itemElement = button.closest(".item");
-          itemElement.appendChild(confirmation);
-          setTimeout(() => confirmation.classList.add("show"), 10);
-          setTimeout(() => confirmation.remove(), 1500);
-        }
-
-        // --- Event Listeners ---
-        if (brandNavbar) {
-          brandNavbar.addEventListener("click", (e) => {
-            const button = e.target.closest("button[data-brand]");
-            if (!button) return;
-
-            if (allBrandButtons) {
-              allBrandButtons.forEach((btn) => {
-                btn.classList.remove("active");
-                btn.setAttribute("aria-pressed", "false");
-              });
-            }
-            button.classList.add("active");
-            button.setAttribute("aria-pressed", "true");
-
-            const scrollLeft = button.offsetLeft - 15;
-            brandNavbar.scrollTo({
-              left: scrollLeft,
-              behavior: "smooth",
-            });
-
-            searchInput.value = "";
-            if (searchClearBtn) searchClearBtn.style.display = "none";
-            window.filterAndSearch();
-          });
-        }
-
-        if (searchInput) {
-          searchInput.addEventListener("input", () => {
-            if (allBrandButtons) {
-              allBrandButtons.forEach((btn) => {
-                const isAll = btn.dataset.brand === "All";
-                btn.classList.toggle("active", isAll);
-                btn.setAttribute("aria-pressed", isAll);
-              });
-            }
-            if (searchClearBtn)
-              searchClearBtn.style.display = searchInput.value
-                ? "flex"
-                : "none";
-            window.filterAndSearch();
-          });
-        }
-
-        if (searchClearBtn) {
-          searchClearBtn.addEventListener("click", () => {
-            searchInput.value = "";
-            searchInput.dispatchEvent(new Event("input"));
-          });
-        }
-
-        if (sortBy) {
-          sortBy.addEventListener("change", window.filterAndSearch);
-        }
-
-        if (cartButton) {
-          cartButton.addEventListener("click", () => {
-            window.location.href = "cart.html";
-          });
-        }
-
-        if (gallery) {
-          gallery.addEventListener("click", function (e) {
-            const addToCartBtn = e.target.closest(".add-to-cart");
-            if (addToCartBtn) {
-              e.stopPropagation();
-              const item = addToCartBtn.closest(".item");
-              addItemToCart(item.dataset.name);
-              showConfirmation(addToCartBtn);
-              return;
-            }
-
-            const item = e.target.closest(".item");
-            if (item) {
-              currentModalProductId = item.dataset.name;
-              modalImg.src = item.dataset.img;
-              modalImg.alt = item.querySelector(".caption").textContent;
-              modalCaption.innerHTML = item.querySelector(".caption").innerHTML;
-              updateModalControls(currentModalProductId);
-              modal.classList.add("open");
-            }
-          });
-        }
-
-        function updateModalControls(productId) {
-          const itemInCart = cartItems.find(
-            (cartItem) => cartItem.name === productId
-          );
-          if (itemInCart && itemInCart.quantity > 0) {
-            modalAddBtn.style.display = "none";
-            modalQtyControls.style.display = "flex";
-            modalQtyCount.textContent = itemInCart.quantity;
-          } else {
-            modalAddBtn.style.display = "block";
-            modalQtyControls.style.display = "none";
-          }
-        }
-
-        if (modalControls) {
-          modalControls.addEventListener("click", (e) => {
-            const target = e.target;
-            if (target.matches(".modal-add-btn")) {
-              addItemToCart(currentModalProductId);
-              updateModalControls(currentModalProductId);
-            }
-            const button = target.closest(".modal-qty-btn");
-            if (button) {
-              const action = button.dataset.action;
-              const itemInCart = cartItems.find(
-                (item) => item.name === currentModalProductId
-              );
-              if (!itemInCart) return;
-
-              if (action === "increase") itemInCart.quantity++;
-              else if (action === "decrease") itemInCart.quantity--;
-
-              if (itemInCart.quantity <= 0) {
-                const idx = cartItems.findIndex(
-                  (item) => item.name === currentModalProductId
-                );
-                if (idx > -1) cartItems.splice(idx, 1);
-              }
-              saveCartToLocalStorage();
-              updateCartCount();
-              renderItemCounts();
-              updateModalControls(currentModalProductId);
-              pulseCartButton();
-            }
-          });
-        }
-
-        if (modalClose)
-          modalClose.addEventListener("click", () =>
-            modal.classList.remove("open")
-          );
-        if (modal) {
-          modal.addEventListener("click", (e) => {
-            if (e.target === modal) modal.classList.remove("open");
-          });
-        }
-
-        document.addEventListener("keydown", (e) => {
-          if (e.key === "Escape") {
-            if (modal) modal.classList.remove("open");
-            if (policyModal) policyModal.classList.remove("open");
-            if (receiptModal) receiptModal.classList.remove("open");
+      function setupEventListeners() {
+        const searchInput = document.getElementById("sidebar-search-input");
+        searchInput.addEventListener("change", (e) => {
+          if (e.target.value.trim()) {
+            document.getElementById("sidebar").classList.remove("active");
+            document
+              .getElementById("sidebar-overlay")
+              .classList.remove("active");
+            switchToGrid("Search:" + e.target.value.trim());
+            e.target.value = "";
           }
         });
-
-        if (policyBtn && policyModal && policyModalClose) {
-          policyBtn.addEventListener("click", () =>
-            policyModal.classList.add("open")
-          );
-          policyModalClose.addEventListener("click", () =>
-            policyModal.classList.remove("open")
-          );
-          policyModal.addEventListener("click", (e) => {
-            if (e.target === policyModal) policyModal.classList.remove("open");
-          });
-        }
-        if (receiptBtn && receiptModal && receiptModalClose) {
-          receiptBtn.addEventListener("click", () =>
-            receiptModal.classList.add("open")
-          );
-          receiptModalClose.addEventListener("click", () =>
-            receiptModal.classList.remove("open")
-          );
-          receiptModal.addEventListener("click", (e) => {
-            if (e.target === receiptModal)
-              receiptModal.classList.remove("open");
-          });
-        }
-
-        window.addEventListener("scroll", () => {
-          if (window.pageYOffset > 300) {
-            if (backToTopButton) backToTopButton.style.display = "block";
-          } else {
-            if (backToTopButton) backToTopButton.style.display = "none";
+        document.getElementById("prev-page").onclick = () => {
+          if (currentPage > 1) {
+            currentPage--;
+            renderGridPage();
+            window.scrollTo({ top: 0 });
           }
-        });
-        if (backToTopButton) {
-          backToTopButton.addEventListener("click", () => {
-            window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+        document.getElementById("next-page").onclick = () => {
+          const max = Math.ceil(currentGridData.length / itemsPerPage);
+          if (currentPage < max) {
+            currentPage++;
+            renderGridPage();
+            window.scrollTo({ top: 0 });
+          }
+        };
+      }
+
+      function setupMenu() {
+        const trigger = document.getElementById("menu-trigger");
+        const overlay = document.getElementById("sidebar-overlay");
+        const sidebar = document.getElementById("sidebar");
+        function toggle() {
+          sidebar.classList.toggle("active");
+          overlay.classList.toggle("active");
+        }
+        trigger.onclick = toggle;
+        overlay.onclick = toggle;
+      }
+
+      // 4. 加购与提示 (Toast)
+      window.addToCart = function (id) {
+        const db = window.perfumeDB;
+        const product = db.find((p) => p.id === id);
+        if (!product) return;
+
+        const existing = cartItems.find((c) => c.name === id);
+        if (existing) {
+          existing.quantity++;
+        } else {
+          cartItems.push({
+            name: id,
+            caption: `${id} - ${product.name}`,
+            img: product.img,
+            price: Number(product.price),
+            brand: product.brand,
+            ml: product.ml,
+            quantity: 1,
           });
         }
+        saveCart();
+        showToast("Added to Cart! 🛒");
 
-        // --- Initialize ---
-        loadCartFromLocalStorage();
+        if (currentModalProductId === id) {
+          updateModalButtonState(id);
+        }
+      };
+
+      // 5. Modal 内部加购控制
+      function updateModalButtonState(id) {
+        const container = document.getElementById("modal-action-area");
+        const existing = cartItems.find((c) => c.name === id);
+
+        if (!existing || existing.quantity === 0) {
+          container.innerHTML = `<button class="modal-btn" onclick="modalFirstAdd('${id}')">ADD TO CART</button>`;
+        } else {
+          container.innerHTML = `
+                <div class="qty-control-box">
+                    <div class="qty-btn" onclick="modalChangeQty('${id}', -1)">-</div>
+                    <div class="qty-val">${existing.quantity}</div>
+                    <div class="qty-btn" onclick="modalChangeQty('${id}', 1)">+</div>
+                </div>
+            `;
+        }
+      }
+
+      window.modalFirstAdd = function (id) {
+        addToCart(id);
+      };
+
+      window.modalChangeQty = function (id, delta) {
+        const existing = cartItems.find((c) => c.name === id);
+        if (existing) {
+          existing.quantity += delta;
+          if (existing.quantity <= 0) {
+            cartItems = cartItems.filter((c) => c.name !== id);
+          }
+          saveCart();
+          updateModalButtonState(id);
+        }
+      };
+
+      function showToast(message) {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.classList.add("show");
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 2000);
+      }
+
+      function loadCart() {
+        const saved = localStorage.getItem("perfumeCart");
+        cartItems = saved ? JSON.parse(saved) : [];
         updateCartCount();
+      }
+      function saveCart() {
+        localStorage.setItem("perfumeCart", JSON.stringify(cartItems));
+        updateCartCount();
+      }
+      function updateCartCount() {
+        const count = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+        document.getElementById("header-cart-count").textContent = count;
+      }
 
-        window.applyLastState();
-      });
+      // 6. Lightbox Functions
+      window.openLightbox = function (src) {
+        document.getElementById("lightbox-content").src = src;
+        document.getElementById("lightbox").classList.add("open");
+      };
+
+      // 7. Modal Functions
+      window.openModal = function (product) {
+        currentModalProductId = product.id;
+        document.getElementById("modal-img").src = product.img;
+        document.getElementById("modal-title").textContent = product.name;
+        document.getElementById("modal-sub").textContent = product.brand;
+        document.getElementById("modal-price").textContent =
+          "$" + product.price;
+
+        updateModalButtonState(product.id);
+        document.getElementById("modal").classList.add("open");
+      };
+
+      window.openModalById = function (id) {
+        const p = window.perfumeDB.find((x) => x.id === id);
+        if (p) openModal(p);
+      };
+
+      // 8. 全局点击遮罩关闭功能
+      function setupModalBackdropClosing() {
+        const overlays = document.querySelectorAll(".modal, .lightbox");
+        overlays.forEach((overlay) => {
+          overlay.addEventListener("click", (e) => {
+            if (e.target === overlay) {
+              overlay.classList.remove("open");
+              currentModalProductId = null;
+            }
+          });
+        });
+
+        const closeBtns = document.querySelectorAll(".lightbox-close");
+        closeBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            btn.closest(".lightbox").classList.remove("open");
+          });
+        });
+      }
     </script>
-    <script src="db.js"></script>
   </body>
 </html>
