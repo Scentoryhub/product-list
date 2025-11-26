@@ -978,9 +978,21 @@
       document.addEventListener("DOMContentLoaded", () => {
         loadCart();
         setupMenu();
-        renderHome();
         setupEventListeners();
         setupModalBackdropClosing();
+
+        // --- 修改开始：等待数据加载完成后再渲染 ---
+        const checkDataInterval = setInterval(() => {
+          if (window.perfumeDB && window.perfumeDB.length > 0) {
+            // 数据已就绪
+            clearInterval(checkDataInterval);
+            renderHome();
+          } else {
+            // 如果尝试超过 3 秒还没数据，可能是 db.js 加载失败，停止尝试（可选）
+            // console.log("Waiting for data...");
+          }
+        }, 50); // 每 50 毫秒检查一次
+        // --- 修改结束 ---
       });
 
       // 1. 首页渲染
