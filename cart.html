@@ -4,6 +4,40 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Your Cart</title>
+    <script>
+      !(function (f, b, e, v, n, t, s) {
+        if (f.fbq) return;
+        n = f.fbq = function () {
+          n.callMethod
+            ? n.callMethod.apply(n, arguments)
+            : n.queue.push(arguments);
+        };
+        if (!f._fbq) f._fbq = n;
+        n.push = n;
+        n.loaded = !0;
+        n.version = "2.0";
+        n.queue = [];
+        t = b.createElement(e);
+        t.async = !0;
+        t.src = v;
+        s = b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t, s);
+      })(
+        window,
+        document,
+        "script",
+        "https://connect.facebook.net/en_US/fbevents.js"
+      );
+      fbq("init", "9083739771684521");
+      fbq("track", "PageView");
+    </script>
+    <noscript
+      ><img
+        height="1"
+        width="1"
+        style="display: none"
+        src="https://www.facebook.com/tr?id=9083739771684521&ev=PageView&noscript=1"
+    /></noscript>
 
     <link rel="icon" type="image/png" href="icon/32.png" />
     <link rel="apple-touch-icon" href="icon/180.png" />
@@ -376,6 +410,46 @@
         text-decoration: none;
         border-radius: 4px;
       }
+
+      /* Modal */
+      .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .modal-content {
+        background: #fff;
+        width: 100%;
+        max-width: 400px;
+        padding: 25px;
+        border-radius: 8px;
+      }
+      .form-group {
+        margin-bottom: 12px;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        font-size: 0.85rem;
+      }
+      .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1rem;
+      }
+      .modal-btns {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
     </style>
   </head>
   <body>
@@ -484,6 +558,42 @@
       </button>
     </div>
 
+    <div id="order-modal" class="modal">
+      <div class="modal-content">
+        <h3 style="margin-top: 0; text-align: center">Shipping Info</h3>
+
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" id="cust-name" placeholder="Full Name (Fake ok)" />
+        </div>
+        <div class="form-group">
+          <label>Address</label>
+          <input type="text" id="cust-address" placeholder="Street, City" />
+        </div>
+        <div class="form-group">
+          <label>Zip Code</label>
+          <input type="text" id="cust-zip" placeholder="Zip Code" />
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="cust-email" placeholder="Email Address" />
+        </div>
+
+        <div class="modal-btns">
+          <button id="cancel-order-btn" class="action-btn btn-clear">
+            Cancel
+          </button>
+          <button
+            id="confirm-order-btn"
+            class="action-btn btn-order"
+            style="background: #25d366"
+          >
+            Done
+          </button>
+        </div>
+      </div>
+    </div>
+
     <script src="db.js"></script>
     <script>
       // ================= UI Logic =================
@@ -496,6 +606,17 @@
       const cartItemsList = document.getElementById("cart-items-list");
       const clearCartBtn = document.getElementById("clear-cart-btn");
       const makeOrderBtn = document.getElementById("make-order-btn");
+
+      const orderModal = document.getElementById("order-modal");
+      const cancelOrderBtn = document.getElementById("cancel-order-btn");
+      const confirmOrderBtn = document.getElementById("confirm-order-btn");
+
+      const inputs = {
+        name: document.getElementById("cust-name"),
+        address: document.getElementById("cust-address"),
+        zip: document.getElementById("cust-zip"),
+        email: document.getElementById("cust-email"),
+      };
 
       const summaryEls = {
         total: document.getElementById("total-price"),
@@ -665,7 +786,12 @@
         const cart = loadCart();
         if (cart[index]) {
           cart[index].quantity += change;
-          if (cart[index].quantity < 1) cart[index].quantity = 1;
+
+          // 如果数量 <= 0，直接删除该商品
+          if (cart[index].quantity <= 0) {
+            cart.splice(index, 1);
+          }
+
           saveCart(cart);
           renderCart();
         }
@@ -687,21 +813,40 @@
         }
       };
 
-      // 直接生成订单消息，不需输入地址
+      // Modal Logic
       makeOrderBtn.onclick = () => {
-        const cart = loadCart();
-        if (cart.length === 0) return alert("Cart is empty");
+        if (loadCart().length === 0) return alert("Cart is empty");
+        orderModal.style.display = "flex";
+      };
 
+      const closeModal = () => (orderModal.style.display = "none");
+      cancelOrderBtn.onclick = closeModal;
+      orderModal.onclick = (e) => {
+        if (e.target === orderModal) closeModal();
+      };
+
+      confirmOrderBtn.onclick = () => {
+        const name = inputs.name.value.trim();
+        const addr = inputs.address.value.trim();
+        const zip = inputs.zip.value.trim();
+        const email = inputs.email.value.trim();
+
+        if (!name || !addr || !zip)
+          return alert("Please fill in shipping details");
+
+        const cart = loadCart();
         let msg = `*New Order Request*%0A`;
+        msg += `Name: ${name}%0AAddress: ${addr}%0AZip: ${zip}%0AEmail: ${email}%0A%0A`;
         msg += `*Items:*%0A`;
 
         cart.forEach((item) => {
-          msg += `- ${getCleanName(item.caption)} (x${item.quantity})%0A`;
+          msg += `- ${item.caption} (x${item.quantity})%0A`;
         });
 
         msg += `%0A*Total:* ${summaryEls.total.textContent}`;
 
         window.open(`https://wa.me/${whatsappNumber}?text=${msg}`, "_blank");
+        closeModal();
       };
 
       // Init
