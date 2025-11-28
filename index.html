@@ -18,6 +18,11 @@
         --accent-color: #b28900;
         --bg-color: #f8f8f8;
         --font-main: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+        /* 标签颜色配置 */
+        --tag-hot: #d9534f; /* 红色 */
+        --tag-new: #007bff; /* 蓝色 */
+        --tag-sale: #28a745; /* 绿色 */
       }
 
       * {
@@ -50,7 +55,7 @@
         padding: 0;
       }
 
-      /* ================= 2. 头部 (Header) ================= */
+      /* ================= 2. 头部 (Header) - 含搜索栏 ================= */
       .site-header {
         position: fixed;
         top: 0;
@@ -61,27 +66,59 @@
         color: #fff;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        padding: 0 15px;
+        padding: 0 10px;
         z-index: 1000;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        gap: 10px; /* 元素间距 */
       }
 
       .header-left {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 5px;
         cursor: pointer;
-        padding: 10px 0;
+        flex-shrink: 0;
       }
       .hamburger-icon {
         font-size: 1.6rem;
         line-height: 1;
       }
       .menu-text {
-        font-size: 0.9rem;
+        font-size: 0.8rem;
         font-weight: 700;
         letter-spacing: 1px;
+        display: none;
+      } /* 手机端隐藏 MENU 文字以节省空间给搜索框 */
+      @media (min-width: 360px) {
+        .menu-text {
+          display: inline;
+        }
+      }
+
+      /* 中间搜索栏 */
+      .header-center {
+        flex-grow: 1;
+        display: flex;
+        justify-content: flex-end; /* 靠右对齐靠近购物车 */
+      }
+      .header-search-input {
+        width: 100%;
+        background: #333;
+        border: 1px solid #444;
+        color: #fff;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        outline: none;
+        transition: all 0.2s;
+      }
+      .header-search-input:focus {
+        background: #fff;
+        color: #000;
+        border-color: #fff;
+      }
+      .header-search-input::placeholder {
+        color: #aaa;
       }
 
       .header-right {
@@ -89,7 +126,8 @@
         cursor: pointer;
         display: flex;
         align-items: center;
-        padding: 10px 0 10px 15px;
+        flex-shrink: 0;
+        padding-right: 5px;
       }
       .header-cart-icon {
         width: 26px;
@@ -98,7 +136,7 @@
       }
       .header-cart-badge {
         position: absolute;
-        top: -2px;
+        top: -5px;
         right: -5px;
         background-color: #d9534f;
         color: white;
@@ -169,37 +207,12 @@
         border-bottom: 2px solid var(--accent-color);
         margin-bottom: -2px;
       }
-
       .sidebar-content {
         flex: 1;
         overflow-y: auto;
         padding: 20px;
         -webkit-overflow-scrolling: touch;
       }
-
-      .sidebar-search {
-        position: relative;
-        margin-bottom: 25px;
-      }
-      .sidebar-search input {
-        width: 100%;
-        padding: 12px 35px 12px 5px;
-        border: none;
-        border-bottom: 1px solid #ccc;
-        font-size: 1rem;
-        outline: none;
-        border-radius: 0;
-        background: transparent;
-      }
-      .sidebar-search-icon {
-        position: absolute;
-        right: 5px;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 1.2rem;
-        color: #999;
-      }
-
       .menu-link {
         display: block;
         padding: 15px 0;
@@ -209,19 +222,13 @@
         border-bottom: 1px solid #eee;
         text-transform: uppercase;
       }
-      .brand-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-      }
       .brand-item {
         padding: 12px 5px;
         font-size: 0.95rem;
         color: #555;
         cursor: pointer;
       }
-      .brand-item:hover,
-      .brand-item:active {
+      .brand-item:hover {
         color: #000;
         background: #f4f4f4;
         padding-left: 10px;
@@ -234,7 +241,6 @@
         padding-bottom: 30px;
         display: block;
       }
-
       .brand-section {
         margin-bottom: 20px;
         background: #fff;
@@ -295,17 +301,38 @@
         margin-bottom: 8px;
         background: #f9f9f9;
       }
-      .tag-hot {
+
+      /* 新增：左上角标签容器 */
+      .badges-container {
         position: absolute;
         top: 0;
         left: 0;
-        background: #d9534f;
-        color: #fff;
-        font-size: 0.7rem;
-        font-weight: bold;
-        padding: 3px 7px;
-        border-radius: 0 0 6px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        z-index: 2;
       }
+      .badge-tag {
+        font-size: 0.65rem;
+        font-weight: bold;
+        color: #fff;
+        padding: 3px 6px;
+        margin-bottom: 2px;
+        border-radius: 0 0 4px 0; /* 这里的圆角样式可以微调 */
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        text-transform: uppercase;
+      }
+      /* 标签颜色定义 */
+      .badge-hot {
+        background: var(--tag-hot);
+      }
+      .badge-new {
+        background: var(--tag-new);
+      }
+      .badge-sale {
+        background: var(--tag-sale);
+      }
+
       .scroll-card-title {
         font-size: 0.8rem;
         color: #444;
@@ -327,7 +354,6 @@
         margin-bottom: 8px;
         display: flex;
         align-items: center;
-        flex-wrap: wrap;
       }
       .scroll-card-add {
         font-size: 0.85rem;
@@ -338,7 +364,6 @@
         padding: 5px 0;
       }
 
-      /* Shop All Button Section */
       .shop-all-section {
         padding: 30px 20px;
         text-align: center;
@@ -454,7 +479,7 @@
         color: #aaa;
       }
 
-      /* ================= 6. 信任与评论 (Trust) ================= */
+      /* ================= 6. Trust Section ================= */
       .trust-section {
         background: #fff;
         margin-top: 20px;
@@ -492,7 +517,7 @@
         line-height: 1.4;
       }
 
-      /* ================= 7. 弹窗 (Modal) & Lightbox & Toast ================= */
+      /* ================= 7. Modal & Toast ================= */
       .modal {
         display: none;
         position: fixed;
@@ -506,8 +531,6 @@
       .modal.open {
         display: flex;
       }
-
-      /* Modal Content */
       .modal-content {
         background: #fff;
         width: 100%;
@@ -541,7 +564,6 @@
       .modal-info {
         padding: 20px 15px;
       }
-
       .modal-btn {
         background: #000;
         color: #fff;
@@ -585,50 +607,6 @@
         color: #000;
       }
 
-      /* Lightbox */
-      .lightbox {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.95);
-        z-index: 3000;
-        justify-content: center;
-        align-items: center;
-        cursor: zoom-out;
-      }
-      .lightbox.open {
-        display: flex;
-        animation: fadeIn 0.2s ease-out;
-      }
-      .lightbox-img {
-        max-width: 95vw;
-        max-height: 85vh;
-        border-radius: 4px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
-        transform: scale(0.9);
-        transition: transform 0.3s;
-      }
-      .lightbox.open .lightbox-img {
-        transform: scale(1);
-      }
-      .lightbox-close {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        color: #fff;
-        font-size: 2.5rem;
-        cursor: pointer;
-        padding: 10px;
-      }
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-        }
-        to {
-          opacity: 1;
-        }
-      }
-
       #toast {
         visibility: hidden;
         min-width: 200px;
@@ -662,6 +640,15 @@
         <span class="menu-text" style="margin-left: 5px">MENU</span>
       </div>
 
+      <div class="header-center">
+        <input
+          type="text"
+          id="global-search-input"
+          class="header-search-input"
+          placeholder="Search..."
+        />
+      </div>
+
       <div class="header-right" onclick="window.location.href='cart.html'">
         <svg
           width="24"
@@ -689,21 +676,16 @@
         <div class="sidebar-tab active">MENU</div>
       </div>
       <div class="sidebar-content">
-        <div class="sidebar-search">
-          <input
-            type="text"
-            id="sidebar-search-input"
-            placeholder="Search brands..."
-          />
-          <span class="sidebar-search-icon">🔍</span>
-        </div>
-
         <nav>
           <a class="menu-link" onclick="handleMenuClick('Home')">Home</a>
           <a class="menu-link" onclick="handleMenuClick('All')">Shop All</a>
           <a class="menu-link" onclick="handleMenuClick('BestSellers')"
             >Best Sellers 🔥</a
           >
+          <a class="menu-link" onclick="handleMenuClick('New')"
+            >New Arrivals 🆕</a
+          >
+          <a class="menu-link" onclick="handleMenuClick('Sale')">On Sale 🏷️</a>
           <a class="menu-link" href="cart.html">My Cart</a>
           <a class="menu-link" href="https://wa.me/16232027321" target="_blank"
             >Contact Us</a
@@ -758,7 +740,6 @@
           <div style="font-size: 0.8rem; color: #ccc; margin: 15px 0 5px 0">
             NICHE & OTHERS
           </div>
-
           <div
             class="brand-item"
             onclick="handleMenuClick('Maison Francis Kurkdjian')"
@@ -819,13 +800,11 @@
           <h4>USA Warehouse</h4>
           <p>Fast delivery within 3-5 days.</p>
         </div>
-
         <div class="trust-item">
           <div style="font-size: 2rem; margin-bottom: 10px">🚚</div>
           <h4>Free Shipping</h4>
           <p>On all orders. No hidden fees.</p>
         </div>
-
         <div class="trust-item">
           <div style="font-size: 2rem; color: #3498db; margin-bottom: 10px">
             🛡️
@@ -845,7 +824,6 @@
             See Policy
           </button>
         </div>
-
         <a href="https://wa.me/16232027321" target="_blank" class="trust-item">
           <div style="font-size: 2rem; color: #2ecc71; margin-bottom: 10px">
             💬
@@ -895,7 +873,6 @@
               margin-bottom: 20px;
             "
           ></div>
-
           <div id="modal-action-area"></div>
         </div>
       </div>
@@ -981,8 +958,8 @@
         setupMenu();
         setupEventListeners();
         setupModalBackdropClosing();
+        setupSearch();
 
-        // 等待数据加载
         const checkDataInterval = setInterval(() => {
           if (window.perfumeDB && window.perfumeDB.length > 0) {
             clearInterval(checkDataInterval);
@@ -991,7 +968,6 @@
         }, 50);
       });
 
-      // --- 辅助函数：格式化容量 (ML -> FL OZ) ---
       function formatSize(item) {
         if (!item.ml) return "";
         const ml = parseInt(item.ml);
@@ -1000,21 +976,13 @@
         return `${ml}ml <span style="color:#999;font-weight:normal">(${flOz} oz)</span>`;
       }
 
-      // --- 1. 首页渲染 ---
+      // --- 1. 首页渲染逻辑 (核心修改) ---
       function renderHome() {
-        // 过滤掉 stock 为 0 的商品
         const db = (window.perfumeDB || []).filter(
           (p) => parseInt(p.stock) !== 0
         );
-
-        // 关键修复点：增加安全检查，防止找不到 home-content 时报错
         const container = document.getElementById("home-content");
-        if (!container) {
-          console.error(
-            "Critical Error: 'home-content' element is missing from HTML."
-          );
-          return;
-        }
+        if (!container) return;
 
         container.innerHTML = "";
 
@@ -1026,7 +994,16 @@
           );
         }
 
-        // 2. Featured Brands
+        // 2. New Arrivals (新增位置：Best Seller 下方)
+        // 假设表格里有 new 列，值为 1
+        const newArrivals = db.filter((p) => p.new == 1);
+        if (newArrivals.length > 0) {
+          container.appendChild(
+            createBrandSection("🆕 New Arrivals", newArrivals, "New")
+          );
+        }
+
+        // 3. Featured Brands (中间品牌列表)
         const renderedBrands = new Set();
         FEATURED_BRANDS.forEach((brand) => {
           const products = db.filter((p) =>
@@ -1041,7 +1018,7 @@
           }
         });
 
-        // 3. Other Brands
+        // 4. Other Brands (剩余品牌)
         const otherProducts = db.filter((p) => {
           for (let featured of renderedBrands) {
             if (p.brand.toLowerCase().includes(featured.toLowerCase()))
@@ -1049,14 +1026,22 @@
           }
           return true;
         });
-
         if (otherProducts.length > 0) {
           container.appendChild(
             createBrandSection("Other Brands", otherProducts, "Other")
           );
         }
 
-        // 4. Shop All Button
+        // 5. On Sale (新增位置：Shop All 上方)
+        // 假设表格里有 sale 列，值为 1
+        const saleItems = db.filter((p) => p.sale == 1);
+        if (saleItems.length > 0) {
+          container.appendChild(
+            createBrandSection("🏷️ On Sale", saleItems, "Sale")
+          );
+        }
+
+        // 6. Shop All Button
         const shopAllContainer = document.createElement("div");
         shopAllContainer.className = "shop-all-section";
         shopAllContainer.innerHTML = `
@@ -1090,11 +1075,21 @@
             openModal(p);
           };
 
-          // --- 卡片显示 ID 和 ML ---
+          // --- 标签生成逻辑 ---
+          let badgesHtml = "";
+          if (p.top == 1)
+            badgesHtml += '<div class="badge-tag badge-hot">HOT</div>';
+          if (p.new == 1)
+            badgesHtml += '<div class="badge-tag badge-new">NEW</div>';
+          if (p.sale == 1)
+            badgesHtml += '<div class="badge-tag badge-sale">SALE</div>';
+
           card.innerHTML = `
             <div style="position:relative;">
                <img src="${p.img}" loading="lazy" alt="${p.name}">
-               ${p.top == 1 ? '<div class="tag-hot">HOT</div>' : ""}
+               <div class="badges-container">
+                 ${badgesHtml}
+               </div>
             </div>
             <div class="scroll-card-title">${p.name}</div>
             
@@ -1144,6 +1139,12 @@
         } else if (criteria === "BestSellers") {
           filtered = db.filter((p) => p.top == 1);
           title = "Best Sellers";
+        } else if (criteria === "New") {
+          filtered = db.filter((p) => p.new == 1);
+          title = "New Arrivals";
+        } else if (criteria === "Sale") {
+          filtered = db.filter((p) => p.sale == 1);
+          title = "On Sale";
         } else if (criteria.startsWith("Search:")) {
           const term = criteria.replace("Search:", "").toLowerCase();
           filtered = db.filter(
@@ -1185,12 +1186,23 @@
         pageItems.forEach((p) => {
           const div = document.createElement("div");
           div.className = "item";
-          // --- Grid 卡片显示 ID 和 ML ---
+
+          let badgesHtml = "";
+          if (p.top == 1)
+            badgesHtml += '<div class="badge-tag badge-hot">HOT</div>';
+          if (p.new == 1)
+            badgesHtml += '<div class="badge-tag badge-new">NEW</div>';
+          if (p.sale == 1)
+            badgesHtml += '<div class="badge-tag badge-sale">SALE</div>';
+
           div.innerHTML = `
               <div style="position:relative">
                   <img src="${p.img}" loading="lazy" onclick="openModalById('${
             p.id
           }')">
+                  <div class="badges-container">
+                     ${badgesHtml}
+                  </div>
                   <div style="position:absolute; bottom:5px; right:5px; background:rgba(255,255,255,0.9); padding:2px 6px; font-size:0.7rem; border-radius:4px; color:#555;">
                     #${p.id}
                   </div>
@@ -1229,12 +1241,26 @@
         document.getElementById("modal-img").src = product.img;
         document.getElementById("modal-title").textContent = product.name;
 
-        // --- 弹窗显示 ID 和 容量 ---
         document.getElementById("modal-sub").innerHTML = `
             <div>${product.brand}</div>
             <div style="margin-top:5px; font-size:0.9rem; color:#555;">
                 ID: ${product.id} &nbsp;|&nbsp; Size: ${formatSize(product)}
             </div>
+            ${
+              product.top == 1
+                ? '<span style="color:red; font-weight:bold; font-size:0.8rem; margin-right:5px;">🔥 HOT</span>'
+                : ""
+            }
+            ${
+              product.new == 1
+                ? '<span style="color:blue; font-weight:bold; font-size:0.8rem; margin-right:5px;">🆕 NEW</span>'
+                : ""
+            }
+            ${
+              product.sale == 1
+                ? '<span style="color:green; font-weight:bold; font-size:0.8rem;">🏷️ SALE</span>'
+                : ""
+            }
         `;
 
         document.getElementById("modal-price").textContent =
@@ -1248,7 +1274,18 @@
         if (p) openModal(p);
       };
 
-      // --- 4. 通用功能 ---
+      // --- 4. 搜索与通用功能 ---
+      function setupSearch() {
+        const globalSearch = document.getElementById("global-search-input");
+        // 监听回车键或内容变化（加一点延迟防抖动更好，这里用 change 简单处理）
+        globalSearch.addEventListener("change", (e) => {
+          const val = e.target.value.trim();
+          if (val) {
+            switchToGrid("Search:" + val);
+          }
+        });
+      }
+
       window.handleMenuClick = function (action) {
         document.getElementById("sidebar").classList.remove("active");
         document.getElementById("sidebar-overlay").classList.remove("active");
@@ -1263,17 +1300,8 @@
       };
 
       function setupEventListeners() {
-        const searchInput = document.getElementById("sidebar-search-input");
-        searchInput.addEventListener("change", (e) => {
-          if (e.target.value.trim()) {
-            document.getElementById("sidebar").classList.remove("active");
-            document
-              .getElementById("sidebar-overlay")
-              .classList.remove("active");
-            switchToGrid("Search:" + e.target.value.trim());
-            e.target.value = "";
-          }
-        });
+        // 侧边栏搜索保留
+        // 翻页
         document.getElementById("prev-page").onclick = () => {
           currentPage--;
           renderGridPage();
@@ -1363,15 +1391,10 @@
         updateCartCount();
       }
 
-      // 关键修复点：增加安全检查，防止找不到 header-cart-count 时报错
       function updateCartCount() {
         const el = document.getElementById("header-cart-count");
         if (el) {
           el.textContent = cartItems.reduce((s, i) => s + i.quantity, 0);
-        } else {
-          console.error(
-            "Critical Error: 'header-cart-count' element is missing from HTML."
-          );
         }
       }
 
