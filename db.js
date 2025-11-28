@@ -1,341 +1,94 @@
-<script src="db.js"></script>
-    <script>
-      // ================= 配置区 =================
-      const FEATURED_BRANDS = [
-        "Creed", "Dior", "Chanel", "Tom Ford", "Yves Saint Laurent", 
-        "Louis Vuitton", "Gucci", "Burberry", "Versace", "Carolina Herrera",
-        "Giorgio Armani", "Prada", "Valentino", "Maison Francis Kurkdjian",
-        "Parfums de Marly", "Le Labo", "Byredo", "Kilian", "Jo Malone"
-      ];
+// ==========================================
+// db.js - 产品数据管理中心
+// ==========================================
 
-      // ================= 状态变量 =================
-      let cartItems = [];
-      let currentPage = 1;
-      const itemsPerPage = 20;
-      let currentGridData = [];
-      let viewMode = "home";
-      let currentModalProductId = null;
+// 🔴 请确保这个链接是您“发布到网络”后生成的 CSV 链接
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTwZ_BgnXtX_ZdO87jkvLU_IMUByJwFKZoyzVVI0Sghwe-2_Qq676JsqsrO0AnGubJGuCxonKizijyj/pub?gid=0&single=true&output=csv";
 
-      document.addEventListener("DOMContentLoaded", () => {
-        loadCart();
-        setupMenu();
-        setupEventListeners();
-        setupModalBackdropClosing();
+// 缓存时间
+const CACHE_DURATION = 1 * 60 * 1000; 
 
-        // 等待数据加载
-        const checkDataInterval = setInterval(() => {
-          if (window.perfumeDB && window.perfumeDB.length > 0) {
-            clearInterval(checkDataInterval);
-            renderHome();
-          }
-        }, 50);
-      });
+window.perfumeDB = [];
 
-      // --- 辅助函数：格式化容量 (ML -> FL OZ) ---
-      // 假设您的表格列名是 'ml'，如果是其他名字请在这里修改
-      function formatSize(item) {
-        if (!item.ml) return "";
-        const ml = parseInt(item.ml);
-        if (isNaN(ml)) return item.ml; // 如果不是数字，直接显示
-        const flOz = (ml / 29.57).toFixed(1); // 自动换算
-        return `${ml}ml <span style="color:#999;font-weight:normal">(${flOz} oz)</span>`;
-      }
+document.addEventListener("DOMContentLoaded", () => {
+  initProductData();
+});
 
-      // --- 1. 首页渲染 ---
-      function renderHome() {
-        const db = (window.perfumeDB || []).filter(p => parseInt(p.stock) !== 0);
-        const container = document.getElementById("home-content");
-        container.innerHTML = "";
+async function initProductData() {
+  const cacheKey = "perfumeDB_Data_V3"; 
+  const timeKey = "perfumeDB_Time_V3";
+  const now = new Date().getTime();
+  const cachedTime = localStorage.getItem(timeKey);
+  const cachedData = localStorage.getItem(cacheKey);
 
-        // 1. Best Sellers
-        const bestSellers = db.filter((p) => p.top == 1);
-        if (bestSellers.length > 0) {
-          container.appendChild(createBrandSection("🔥 Best Sellers", bestSellers));
-        }
+  // 1. 尝试加载缓存
+  if (cachedData && cachedTime && now - cachedTime < CACHE_DURATION) {
+    console.log("🚀 加载缓存数据");
+    try {
+        window.perfumeDB = JSON.parse(cachedData);
+        runPageLogic();
+        return;
+    } catch (e) {
+        console.warn("缓存数据损坏，重新下载");
+    }
+  }
 
-        // 2. Featured Brands
-        const renderedBrands = new Set();
-        FEATURED_BRANDS.forEach((brand) => {
-          const products = db.filter((p) => p.brand.toLowerCase().includes(brand.toLowerCase()));
-          if (products.length >= 3) {
-            let displayName = brand === "Yves Saint Laurent" ? "YSL" : brand;
-            container.appendChild(createBrandSection(displayName, products, brand));
-            renderedBrands.add(brand);
-          }
-        });
+  // 2. 下载新数据
+  console.log("🌐 下载最新数据...");
+  try {
+    const response = await fetch(SHEET_URL);
+    if (!response.ok) throw new Error("网络响应错误");
+    const data = await response.text();
+    window.perfumeDB = parseCSV(data);
 
-        // 3. Other Brands
-        const otherProducts = db.filter((p) => {
-          for (let featured of renderedBrands) {
-            if (p.brand.toLowerCase().includes(featured.toLowerCase())) return false;
-          }
-          return true;
-        });
+    // 存入缓存
+    localStorage.setItem(cacheKey, JSON.stringify(window.perfumeDB));
+    localStorage.setItem(timeKey, now);
 
-        if (otherProducts.length > 0) {
-          container.appendChild(createBrandSection("Other Brands", otherProducts, "Other"));
-        }
+    runPageLogic();
+  } catch (error) {
+    console.error("下载失败:", error);
+    if (cachedData) {
+      window.perfumeDB = JSON.parse(cachedData);
+      runPageLogic();
+      alert("网络较慢，已加载离线数据");
+    }
+  }
+}
 
-        // 4. Shop All Button
-        const shopAllContainer = document.createElement("div");
-        shopAllContainer.className = "shop-all-section";
-        shopAllContainer.innerHTML = `
-            <button class="shop-all-btn" onclick="handleMenuClick('All')">Shop All Products</button>
-        `;
-        container.appendChild(shopAllContainer);
-      }
+function runPageLogic() {
+  if (typeof renderHome === "function") renderHome();         
+  if (typeof renderCart === "function") renderCart();         
+}
 
-      function createBrandSection(title, products, filterKey) {
-        const section = document.createElement("div");
-        section.className = "brand-section";
+function parseCSV(csvText) {
+  const lines = csvText.trim().split("\n");
+  if (lines.length < 2) return [];
+  
+  // 获取表头并转小写，去空格
+  const headers = lines[0].trim().split(",").map(h => h.trim().toLowerCase()); 
 
-        const header = document.createElement("div");
-        header.className = "brand-header";
-        header.innerHTML = `
-            <h2 class="brand-title">${title}</h2>
-            <div class="brand-see-all" onclick="switchToGrid('${filterKey || (title.includes("Best") ? "BestSellers" : "All")}')">See All ></div>
-        `;
-        section.appendChild(header);
+  return lines.slice(1).map(line => {
+    // 处理 CSV 中的逗号和引号
+    const values = [];
+    let current = '';
+    let inQuote = false;
+    for (let char of line) {
+      if (char === '"') { inQuote = !inQuote; }
+      else if (char === ',' && !inQuote) { values.push(current.trim()); current = ''; }
+      else { current += char; }
+    }
+    values.push(current.trim());
 
-        const wrapper = document.createElement("div");
-        wrapper.className = "scroll-wrapper";
+    const obj = {};
+    // 如果列数不匹配，跳过
+    if (values.length < headers.length) return null;
 
-        // 只显示前 15 个
-        products.slice(0, 15).forEach((p) => {
-          const card = document.createElement("div");
-          card.className = "scroll-card";
-          card.onclick = (e) => {
-            if (e.target.classList.contains("scroll-card-add")) return;
-            openModal(p);
-          };
-
-          // --- 关键修改：加入 ID 和 容量显示 ---
-          card.innerHTML = `
-            <div style="position:relative;">
-               <img src="${p.img}" loading="lazy" alt="${p.name}">
-               ${p.top == 1 ? '<div class="tag-hot">HOT</div>' : ""}
-            </div>
-            <div class="scroll-card-title">${p.name}</div>
-            
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                <span class="scroll-card-sub" style="margin:0;">${p.brand}</span>
-                <span style="font-size:0.7rem; color:#aaa;">#${p.id || ''}</span>
-            </div>
-
-            <div class="scroll-card-price">
-                $${p.price} 
-                <span style="font-size:0.75rem; color:#666; font-weight:normal; margin-left:5px;">
-                    ${p.ml ? p.ml + 'ml' : ''}
-                </span>
-            </div>
-            
-            <div class="scroll-card-add" onclick="addToCart('${p.id}'); event.stopPropagation();">Add To Cart</div>
-          `;
-          wrapper.appendChild(card);
-        });
-
-        section.appendChild(wrapper);
-        return section;
-      }
-
-      // --- 2. Grid 渲染 (查看全部页) ---
-      function switchToGrid(criteria) {
-        viewMode = "grid";
-        document.getElementById("home-view").style.display = "none";
-        document.getElementById("grid-view").style.display = "block";
-        window.scrollTo({ top: 0, behavior: "smooth" });
-
-        const db = (window.perfumeDB || []).filter(p => parseInt(p.stock) !== 0);
-        let filtered = [];
-        let title = "";
-
-        // 搜索与筛选逻辑
-        if (criteria === "All") {
-            filtered = db; title = "All Products";
-        } else if (criteria === "BestSellers") {
-            filtered = db.filter((p) => p.top == 1); title = "Best Sellers";
-        } else if (criteria.startsWith("Search:")) {
-            const term = criteria.replace("Search:", "").toLowerCase();
-            filtered = db.filter(p => 
-                p.name.toLowerCase().includes(term) || p.brand.toLowerCase().includes(term) || (p.id && p.id.toString().includes(term))
-            );
-            title = `Results: "${term}"`;
-        } else if (criteria === "Other") {
-             // 简化的 Other 逻辑
-             filtered = db; 
-             title = "More Brands";
-        } else {
-            filtered = db.filter((p) => p.brand.includes(criteria)); title = criteria;
-        }
-
-        document.getElementById("grid-title").textContent = title;
-        currentGridData = filtered;
-        currentPage = 1;
-        renderGridPage();
-      }
-
-      function renderGridPage() {
-        const gallery = document.getElementById("gallery");
-        gallery.innerHTML = "";
-        const controls = document.getElementById("pagination-controls");
-
-        if (currentGridData.length === 0) {
-          gallery.innerHTML = "<div style='grid-column:1/-1;text-align:center;padding:50px;color:#999;'>No items found.</div>";
-          controls.style.display = "none";
-          return;
-        }
-
-        const start = (currentPage - 1) * itemsPerPage;
-        const pageItems = currentGridData.slice(start, start + itemsPerPage);
-
-        pageItems.forEach((p) => {
-          const div = document.createElement("div");
-          div.className = "item";
-          // --- Grid 视图也加入 ID 和 ML ---
-          div.innerHTML = `
-              <div style="position:relative">
-                  <img src="${p.img}" loading="lazy" onclick="openModalById('${p.id}')">
-                  <div style="position:absolute; bottom:5px; right:5px; background:rgba(255,255,255,0.9); padding:2px 6px; font-size:0.7rem; border-radius:4px; color:#555;">
-                    #${p.id}
-                  </div>
-              </div>
-              <div class="caption">
-                 <div style="font-size:0.85rem; height:2.4em; overflow:hidden; margin-bottom:5px; line-height:1.2;">${p.name}</div>
-                 <div style="font-size:0.8rem; color:#888; margin-bottom:5px;">${formatSize(p)}</div>
-                 <div class="item-price">$${p.price}</div>
-                 <button class="grid-add-btn" onclick="addToCart('${p.id}')">ADD TO CART</button>
-              </div>
-           `;
-          gallery.appendChild(div);
-        });
-
-        // 翻页逻辑
-        const totalPages = Math.ceil(currentGridData.length / itemsPerPage);
-        controls.style.display = totalPages > 1 ? "flex" : "none";
-        if (totalPages > 1) {
-            document.getElementById("page-info").textContent = `${currentPage} / ${totalPages}`;
-            document.getElementById("prev-page").disabled = currentPage === 1;
-            document.getElementById("next-page").disabled = currentPage === totalPages;
-        }
-      }
-
-      // --- 3. 弹窗逻辑 (Modal) ---
-      window.openModal = function (product) {
-        currentModalProductId = product.id;
-        document.getElementById("modal-img").src = product.img;
-        document.getElementById("modal-title").textContent = product.name;
-        
-        // --- 弹窗显示完整信息 ---
-        // 显示: Brand | ID | Size
-        document.getElementById("modal-sub").innerHTML = `
-            <div>${product.brand}</div>
-            <div style="margin-top:5px; font-size:0.9rem; color:#555;">
-                ID: ${product.id} &nbsp;|&nbsp; Size: ${formatSize(product)}
-            </div>
-        `;
-        
-        document.getElementById("modal-price").textContent = "$" + product.price;
-        updateModalButtonState(product.id);
-        document.getElementById("modal").classList.add("open");
-      };
-
-      window.openModalById = function (id) {
-        const p = window.perfumeDB.find((x) => x.id === id);
-        if (p) openModal(p);
-      };
-
-      // --- 4. 其他通用功能 (菜单, 购物车, Lightbox) ---
-      window.handleMenuClick = function (action) {
-        document.getElementById("sidebar").classList.remove("active");
-        document.getElementById("sidebar-overlay").classList.remove("active");
-        if (action === "Home") {
-          viewMode = "home";
-          document.getElementById("home-view").style.display = "block";
-          document.getElementById("grid-view").style.display = "none";
-          window.scrollTo({ top: 0 });
-        } else {
-          switchToGrid(action);
-        }
-      };
-
-      function setupEventListeners() {
-        const searchInput = document.getElementById("sidebar-search-input");
-        searchInput.addEventListener("change", (e) => {
-          if (e.target.value.trim()) {
-             // 也可以搜 ID 了
-            document.getElementById("sidebar").classList.remove("active");
-            document.getElementById("sidebar-overlay").classList.remove("active");
-            switchToGrid("Search:" + e.target.value.trim());
-            e.target.value = "";
-          }
-        });
-        document.getElementById("prev-page").onclick = () => { currentPage--; renderGridPage(); window.scrollTo(0,0); };
-        document.getElementById("next-page").onclick = () => { currentPage++; renderGridPage(); window.scrollTo(0,0); };
-      }
-
-      function setupMenu() {
-        const trigger = document.getElementById("menu-trigger");
-        const overlay = document.getElementById("sidebar-overlay");
-        const sidebar = document.getElementById("sidebar");
-        function toggle() { sidebar.classList.toggle("active"); overlay.classList.toggle("active"); }
-        trigger.onclick = toggle; overlay.onclick = toggle;
-      }
-
-      window.addToCart = function (id) {
-        const db = window.perfumeDB;
-        const product = db.find((p) => p.id === id);
-        if (!product) return;
-        const existing = cartItems.find((c) => c.name === id);
-        if (existing) { existing.quantity++; } else {
-          cartItems.push({
-            name: id,
-            caption: `${id} - ${product.name} (${product.ml}ml)`, // 购物车也带上ml
-            img: product.img,
-            price: Number(product.price),
-            brand: product.brand,
-            ml: product.ml,
-            quantity: 1,
-          });
-        }
-        saveCart();
-        showToast("Added to Cart! 🛒");
-        if (currentModalProductId === id) updateModalButtonState(id);
-      };
-
-      function updateModalButtonState(id) {
-        const container = document.getElementById("modal-action-area");
-        const existing = cartItems.find((c) => c.name === id);
-        if (!existing || existing.quantity === 0) {
-          container.innerHTML = `<button class="modal-btn" onclick="modalFirstAdd('${id}')">ADD TO CART</button>`;
-        } else {
-          container.innerHTML = `
-                <div class="qty-control-box">
-                    <div class="qty-btn" onclick="modalChangeQty('${id}', -1)">-</div>
-                    <div class="qty-val">${existing.quantity}</div>
-                    <div class="qty-btn" onclick="modalChangeQty('${id}', 1)">+</div>
-                </div>`;
-        }
-      }
-
-      window.modalFirstAdd = (id) => addToCart(id);
-      window.modalChangeQty = (id, delta) => {
-        const existing = cartItems.find((c) => c.name === id);
-        if (existing) {
-          existing.quantity += delta;
-          if (existing.quantity <= 0) cartItems = cartItems.filter((c) => c.name !== id);
-          saveCart(); updateModalButtonState(id);
-        }
-      };
-
-      function showToast(msg) {
-        const t = document.getElementById("toast");
-        t.textContent = msg; t.classList.add("show");
-        setTimeout(() => t.classList.remove("show"), 2000);
-      }
-      function loadCart() { cartItems = JSON.parse(localStorage.getItem("perfumeCart") || "[]"); updateCartCount(); }
-      function saveCart() { localStorage.setItem("perfumeCart", JSON.stringify(cartItems)); updateCartCount(); }
-      function updateCartCount() { document.getElementById("header-cart-count").textContent = cartItems.reduce((s, i) => s + i.quantity, 0); }
-      function setupModalBackdropClosing() {
-        document.querySelectorAll(".modal, .lightbox").forEach(o => o.addEventListener("click", e => { if(e.target===o){o.classList.remove("open"); currentModalProductId=null;} }));
-      }
-    </script>
+    headers.forEach((header, index) => {
+      let val = values[index] ? values[index].replace(/^"|"$/g, '') : ""; 
+      if (header === "price" || header === "stock") val = Number(val);
+      obj[header] = val;
+    });
+    return obj;
+  }).filter(item => item !== null);
+}
