@@ -723,21 +723,38 @@
         const cart = loadCart();
         if (cart.length === 0) return alert("Cart is empty");
 
-        let msg = `*New Order Request*%0A%0A`;
-        msg += `*Items:*%0A`;
+        let totalQty = 0;
+        let lvCount = 0;
+        let otherCount = 0;
 
         cart.forEach((item) => {
-          // item.caption 已经包含 "ID - Name" (例如 "1001 - Creed")
-          // 这样发送给客户/商家时，ID 就会显示出来
-          msg += `- ${item.caption} (x${item.quantity})%0A`;
+          const qty = item.quantity;
+          totalQty += qty;
+          if (item.caption.toLowerCase().includes("louis vuitton")) {
+            lvCount += qty;
+          } else {
+            otherCount += qty;
+          }
         });
 
-        msg += `%0A*Total:* ${summaryEls.total.textContent}`;
+        let msg = `*New Order Request* 📦%0A`;
+        msg += `----------------------------%0A`;
 
-        // 直接打开 WhatsApp
+        cart.forEach((item) => {
+          // 修改处：用两个 %0A%0A 来增加空行
+          msg += `${item.caption} x *${item.quantity}*%0A%0A`;
+        });
+
+        msg += `----------------------------%0A`;
+        msg += `LV Quantity: ${lvCount}%0A`;
+        msg += `Other Quantity: ${otherCount}%0A`;
+        msg += `*Total Quantity: ${totalQty} pcs*%0A`;
+
+        msg += `----------------------------%0A`;
+        msg += `*Total Amount:* ${summaryEls.total.textContent}`;
+
         window.open(`https://wa.me/${whatsappNumber}?text=${msg}`, "_blank");
       };
-
       // Init
       document.addEventListener("DOMContentLoaded", renderCart);
     </script>
