@@ -69,7 +69,7 @@
         padding: 0 10px;
         z-index: 1000;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        gap: 10px; /* 元素间距 */
+        gap: 10px;
       }
 
       .header-left {
@@ -88,7 +88,7 @@
         font-weight: 700;
         letter-spacing: 1px;
         display: none;
-      } /* 手机端隐藏 MENU 文字以节省空间给搜索框 */
+      }
       @media (min-width: 360px) {
         .menu-text {
           display: inline;
@@ -99,7 +99,7 @@
       .header-center {
         flex-grow: 1;
         display: flex;
-        justify-content: flex-end; /* 靠右对齐靠近购物车 */
+        justify-content: flex-end;
       }
       .header-search-input {
         width: 100%;
@@ -247,6 +247,7 @@
         padding: 20px 0 20px 12px;
         border-top: 1px solid #eee;
         border-bottom: 1px solid #eee;
+        scroll-margin-top: 70px; /* 配合滚动跳转的偏移量 */
       }
       .brand-header {
         display: flex;
@@ -302,7 +303,6 @@
         background: #f9f9f9;
       }
 
-      /* 新增：左上角标签容器 */
       .badges-container {
         position: absolute;
         top: 0;
@@ -318,11 +318,10 @@
         color: #fff;
         padding: 3px 6px;
         margin-bottom: 2px;
-        border-radius: 0 0 4px 0; /* 这里的圆角样式可以微调 */
+        border-radius: 0 0 4px 0;
         box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
         text-transform: uppercase;
       }
-      /* 标签颜色定义 */
       .badge-hot {
         background: var(--tag-hot);
       }
@@ -706,34 +705,29 @@
           POPULAR BRANDS
         </div>
         <div class="brand-list">
-          <div class="brand-item" onclick="handleMenuClick('Creed')">Creed</div>
-          <div class="brand-item" onclick="handleMenuClick('Dior')">Dior</div>
-          <div class="brand-item" onclick="handleMenuClick('Chanel')">
-            Chanel
-          </div>
-          <div class="brand-item" onclick="handleMenuClick('Tom Ford')">
+          <div class="brand-item" onclick="scrollToBrand('Creed')">Creed</div>
+          <div class="brand-item" onclick="scrollToBrand('Dior')">Dior</div>
+          <div class="brand-item" onclick="scrollToBrand('Chanel')">Chanel</div>
+          <div class="brand-item" onclick="scrollToBrand('Tom Ford')">
             Tom Ford
           </div>
-          <div class="brand-item" onclick="handleMenuClick('Louis Vuitton')">
+          <div class="brand-item" onclick="scrollToBrand('Louis Vuitton')">
             Louis Vuitton
           </div>
-          <div class="brand-item" onclick="handleMenuClick('Gucci')">Gucci</div>
-          <div
-            class="brand-item"
-            onclick="handleMenuClick('Yves Saint Laurent')"
-          >
+          <div class="brand-item" onclick="scrollToBrand('Gucci')">Gucci</div>
+          <div class="brand-item" onclick="scrollToBrand('Yves Saint Laurent')">
             YSL
           </div>
-          <div class="brand-item" onclick="handleMenuClick('Burberry')">
+          <div class="brand-item" onclick="scrollToBrand('Burberry')">
             Burberry
           </div>
-          <div class="brand-item" onclick="handleMenuClick('Versace')">
+          <div class="brand-item" onclick="scrollToBrand('Versace')">
             Versace
           </div>
-          <div class="brand-item" onclick="handleMenuClick('Carolina Herrera')">
+          <div class="brand-item" onclick="scrollToBrand('Carolina Herrera')">
             Carolina Herrera
           </div>
-          <div class="brand-item" onclick="handleMenuClick('Giorgio Armani')">
+          <div class="brand-item" onclick="scrollToBrand('Giorgio Armani')">
             Armani
           </div>
 
@@ -742,22 +736,18 @@
           </div>
           <div
             class="brand-item"
-            onclick="handleMenuClick('Maison Francis Kurkdjian')"
+            onclick="scrollToBrand('Maison Francis Kurkdjian')"
           >
             MFK
           </div>
-          <div class="brand-item" onclick="handleMenuClick('Parfums de Marly')">
+          <div class="brand-item" onclick="scrollToBrand('Parfums de Marly')">
             Parfums de Marly
           </div>
-          <div class="brand-item" onclick="handleMenuClick('Le Labo')">
+          <div class="brand-item" onclick="scrollToBrand('Le Labo')">
             Le Labo
           </div>
-          <div class="brand-item" onclick="handleMenuClick('Byredo')">
-            Byredo
-          </div>
-          <div class="brand-item" onclick="handleMenuClick('Kilian')">
-            Kilian
-          </div>
+          <div class="brand-item" onclick="scrollToBrand('Byredo')">Byredo</div>
+          <div class="brand-item" onclick="scrollToBrand('Kilian')">Kilian</div>
           <div
             class="brand-item"
             onclick="handleMenuClick('All')"
@@ -976,7 +966,7 @@
         return `${ml}ml <span style="color:#999;font-weight:normal">(${flOz} oz)</span>`;
       }
 
-      // --- 1. 首页渲染逻辑 (核心修改) ---
+      // --- 1. 首页渲染逻辑 (已更新) ---
       function renderHome() {
         const db = (window.perfumeDB || []).filter(
           (p) => parseInt(p.stock) !== 0
@@ -994,8 +984,7 @@
           );
         }
 
-        // 2. New Arrivals (新增位置：Best Seller 下方)
-        // 假设表格里有 new 列，值为 1
+        // 2. New Arrivals
         const newArrivals = db.filter((p) => p.new == 1);
         if (newArrivals.length > 0) {
           container.appendChild(
@@ -1011,14 +1000,17 @@
           );
           if (products.length >= 3) {
             let displayName = brand === "Yves Saint Laurent" ? "YSL" : brand;
-            container.appendChild(
-              createBrandSection(displayName, products, brand)
-            );
+
+            const section = createBrandSection(displayName, products, brand);
+            // 给板块增加ID，方便跳转
+            section.id = "brand-" + brand.replace(/\s+/g, "");
+            container.appendChild(section);
+
             renderedBrands.add(brand);
           }
         });
 
-        // 4. Other Brands (剩余品牌)
+        // 4. Other Brands
         const otherProducts = db.filter((p) => {
           for (let featured of renderedBrands) {
             if (p.brand.toLowerCase().includes(featured.toLowerCase()))
@@ -1032,8 +1024,7 @@
           );
         }
 
-        // 5. On Sale (新增位置：Shop All 上方)
-        // 假设表格里有 sale 列，值为 1
+        // 5. On Sale
         const saleItems = db.filter((p) => p.sale == 1);
         if (saleItems.length > 0) {
           container.appendChild(
@@ -1075,7 +1066,6 @@
             openModal(p);
           };
 
-          // --- 标签生成逻辑 ---
           let badgesHtml = "";
           if (p.top == 1)
             badgesHtml += '<div class="badge-tag badge-hot">HOT</div>';
@@ -1277,7 +1267,6 @@
       // --- 4. 搜索与通用功能 ---
       function setupSearch() {
         const globalSearch = document.getElementById("global-search-input");
-        // 监听回车键或内容变化（加一点延迟防抖动更好，这里用 change 简单处理）
         globalSearch.addEventListener("change", (e) => {
           const val = e.target.value.trim();
           if (val) {
@@ -1299,9 +1288,39 @@
         }
       };
 
+      // *** 新增：滚动到品牌锚点函数 ***
+      window.scrollToBrand = function (brandName) {
+        if (viewMode !== "home") {
+          document.getElementById("home-view").style.display = "block";
+          document.getElementById("grid-view").style.display = "none";
+          viewMode = "home";
+        }
+
+        document.getElementById("sidebar").classList.remove("active");
+        document.getElementById("sidebar-overlay").classList.remove("active");
+
+        setTimeout(() => {
+          const targetId = "brand-" + brandName.replace(/\s+/g, "");
+          const element = document.getElementById(targetId);
+
+          if (element) {
+            const headerOffset = 65;
+            const elementPosition = element.getBoundingClientRect().top;
+            const offsetPosition =
+              elementPosition + window.pageYOffset - headerOffset;
+
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: "smooth",
+            });
+          } else {
+            // 如果首页没有该品牌区域，则跳转到 Grid View 显示该品牌所有产品
+            switchToGrid(brandName);
+          }
+        }, 50);
+      };
+
       function setupEventListeners() {
-        // 侧边栏搜索保留
-        // 翻页
         document.getElementById("prev-page").onclick = () => {
           currentPage--;
           renderGridPage();
