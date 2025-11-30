@@ -222,11 +222,17 @@
         border-bottom: 1px solid #eee;
         text-transform: uppercase;
       }
+      .brand-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
       .brand-item {
         padding: 12px 5px;
         font-size: 0.95rem;
         color: #555;
         cursor: pointer;
+        border-bottom: 1px solid #f0f0f0;
       }
       .brand-item:hover {
         color: #000;
@@ -630,6 +636,52 @@
         opacity: 1;
         bottom: 90px;
       }
+
+      /* ================= 8. Loading Spinner ================= */
+      .loading-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 300px; /* 占据一定高度，防止布局塌陷 */
+        width: 100%;
+      }
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid #eee;
+        border-top: 3px solid var(--accent-color); /* 使用你的金色主题色 */
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin-bottom: 15px;
+      }
+      .loading-text {
+        font-size: 0.9rem;
+        color: #999;
+        font-weight: 500;
+        letter-spacing: 1px;
+        animation: pulse 1.5s ease-in-out infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes pulse {
+        0% {
+          opacity: 0.6;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0.6;
+        }
+      }
     </style>
   </head>
   <body>
@@ -704,56 +756,74 @@
         >
           POPULAR BRANDS
         </div>
+
         <div class="brand-list">
-          <div class="brand-item" onclick="scrollToBrand('Creed')">Creed</div>
-          <div class="brand-item" onclick="scrollToBrand('Dior')">Dior</div>
-          <div class="brand-item" onclick="scrollToBrand('Chanel')">Chanel</div>
+          <div class="brand-item" onclick="scrollToBrand('Creed')">CREED</div>
+          <div class="brand-item" onclick="scrollToBrand('Dior')">DIOR</div>
+          <div class="brand-item" onclick="scrollToBrand('Chanel')">CHANEL</div>
           <div class="brand-item" onclick="scrollToBrand('Tom Ford')">
-            Tom Ford
+            TOM FORD
           </div>
-          <div class="brand-item" onclick="scrollToBrand('Louis Vuitton')">
-            Louis Vuitton
-          </div>
-          <div class="brand-item" onclick="scrollToBrand('Gucci')">Gucci</div>
           <div class="brand-item" onclick="scrollToBrand('Yves Saint Laurent')">
             YSL
           </div>
+          <div class="brand-item" onclick="scrollToBrand('Louis Vuitton')">
+            LOUIS VUITTON
+          </div>
+          <div class="brand-item" onclick="scrollToBrand('Gucci')">GUCCI</div>
           <div class="brand-item" onclick="scrollToBrand('Burberry')">
-            Burberry
+            BURBERRY
           </div>
           <div class="brand-item" onclick="scrollToBrand('Versace')">
-            Versace
+            VERSACE
           </div>
           <div class="brand-item" onclick="scrollToBrand('Carolina Herrera')">
-            Carolina Herrera
+            CAROLINA HERRERA
           </div>
           <div class="brand-item" onclick="scrollToBrand('Giorgio Armani')">
-            Armani
+            GIORGIO ARMANI
           </div>
-
-          <div style="font-size: 0.8rem; color: #ccc; margin: 15px 0 5px 0">
-            NICHE & OTHERS
+          <div class="brand-item" onclick="scrollToBrand('Valentino')">
+            VALENTINO
           </div>
           <div
             class="brand-item"
             onclick="scrollToBrand('Maison Francis Kurkdjian')"
           >
-            MFK
+            MAISON FRANCIS KURKDJIAN
           </div>
           <div class="brand-item" onclick="scrollToBrand('Parfums de Marly')">
-            Parfums de Marly
+            PARFUMS DE MARLY
           </div>
-          <div class="brand-item" onclick="scrollToBrand('Kilian')">Kilian</div>
+          <div class="brand-item" onclick="scrollToBrand('Jean Paul Gaultier')">
+            JEAN PAUL GAULTIER
+          </div>
+          <div class="brand-item" onclick="scrollToBrand('Paco Rabanne')">
+            PACO RABANNE
+          </div>
+          <div class="brand-item" onclick="scrollToBrand('Bond No. 9')">
+            BOND NO. 9
+          </div>
+          <div class="brand-item" onclick="scrollToBrand('Xerjoff')">
+            XERJOFF
+          </div>
+          <div class="brand-item" onclick="scrollToBrand('Initio')">INITIO</div>
+          <div class="brand-item" onclick="scrollToBrand('Lattafa')">
+            LATTAFA
+          </div>
+          <div class="brand-item" onclick="scrollToBrand('Azzaro')">AZZARO</div>
+
           <div
             class="brand-item"
-            onclick="handleMenuClick('All')"
+            onclick="scrollToBrand('Other')"
             style="
               font-weight: bold;
               margin-top: 10px;
               color: var(--accent-color);
+              border-bottom: none;
             "
           >
-            View All Brands >
+            OTHER BRANDS
           </div>
         </div>
         <div style="height: 50px"></div>
@@ -761,7 +831,12 @@
     </div>
 
     <div id="home-view">
-      <div id="home-content"></div>
+      <div id="home-content">
+        <div class="loading-container">
+          <div class="spinner"></div>
+          <div class="loading-text">LOADING...</div>
+        </div>
+      </div>
     </div>
 
     <div id="grid-view">
@@ -902,33 +977,23 @@
         "Dior",
         "Chanel",
         "Tom Ford",
-        "Yves Saint Laurent",
+        "Yves Saint Laurent", // 显示为 YSL
         "Louis Vuitton",
         "Gucci",
         "Burberry",
         "Versace",
         "Carolina Herrera",
         "Giorgio Armani",
-        "Prada",
         "Valentino",
         "Maison Francis Kurkdjian",
         "Parfums de Marly",
         "Jean Paul Gaultier",
         "Paco Rabanne",
-        "Le Labo",
-        "Byredo",
-        "Kilian",
-        "Jo Malone",
-        "Hermès",
         "Bond No. 9",
         "Xerjoff",
         "Initio",
         "Lattafa",
-        "Ralph Lauren",
-        "Hugo Boss",
         "Azzaro",
-        "Mugler",
-        "Viktor&Rolf",
       ];
 
       // ================= 状态变量 =================
@@ -995,7 +1060,8 @@
             p.brand.toLowerCase().includes(brand.toLowerCase())
           );
           if (products.length >= 3) {
-            let displayName = brand === "Yves Saint Laurent" ? "YSL" : brand;
+            let displayName =
+              brand === "Yves Saint Laurent" ? "YSL" : brand.toUpperCase();
 
             const section = createBrandSection(displayName, products, brand);
             // 给板块增加ID，方便跳转
@@ -1014,10 +1080,16 @@
           }
           return true;
         });
+
+        // 渲染 Other Brands 并加上 ID，让菜单栏点击能跳过来
         if (otherProducts.length > 0) {
-          container.appendChild(
-            createBrandSection("Other Brands", otherProducts, "Other")
+          const otherSection = createBrandSection(
+            "Other Brands",
+            otherProducts,
+            "Other"
           );
+          otherSection.id = "brand-Other";
+          container.appendChild(otherSection);
         }
 
         // 5. On Sale
@@ -1284,7 +1356,7 @@
         }
       };
 
-      // *** 新增：滚动到品牌锚点函数 ***
+      // *** 滚动到品牌锚点函数 (增加了对 'Other' 的支持) ***
       window.scrollToBrand = function (brandName) {
         if (viewMode !== "home") {
           document.getElementById("home-view").style.display = "block";
@@ -1296,7 +1368,12 @@
         document.getElementById("sidebar-overlay").classList.remove("active");
 
         setTimeout(() => {
-          const targetId = "brand-" + brandName.replace(/\s+/g, "");
+          // 如果是 "Other"，ID 是 brand-Other
+          // 否则去除空格，例如 Tom Ford -> brand-TomFord
+          const safeName =
+            brandName === "Other" ? "Other" : brandName.replace(/\s+/g, "");
+          const targetId = "brand-" + safeName;
+
           const element = document.getElementById(targetId);
 
           if (element) {
@@ -1310,8 +1387,8 @@
               behavior: "smooth",
             });
           } else {
-            // 如果首页没有该品牌区域，则跳转到 Grid View 显示该品牌所有产品
-            switchToGrid(brandName);
+            // 如果首页没有该品牌区域，跳转到网格搜索
+            switchToGrid(brandName === "Other" ? "Other" : brandName);
           }
         }, 50);
       };
