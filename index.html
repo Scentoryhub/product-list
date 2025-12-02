@@ -11,37 +11,32 @@
     <link rel="apple-touch-icon" href="icon/180.png" />
 
     <style>
-      /* ================= 1. 全局配置 ================= */
+      /* ================= 1. 全局与变量 ================= */
       :root {
         --header-height: 60px;
         --sidebar-width: 300px;
         --accent-color: #b28900;
         --bg-color: #f8f8f8;
         --font-main: "Helvetica Neue", Helvetica, Arial, sans-serif;
-
-        /* 标签颜色配置 */
-        --tag-hot: #d9534f; /* 红色 */
-        --tag-new: #007bff; /* 蓝色 */
-        --tag-sale: #28a745; /* 绿色 */
+        --skeleton-base: #e0e0e0;
+        --skeleton-highlight: #f5f5f5;
       }
 
       * {
         box-sizing: border-box;
         -webkit-tap-highlight-color: transparent;
       }
-
       body {
         margin: 0;
         padding: 0;
         padding-top: var(--header-height);
-        padding-bottom: 60px;
+        padding-bottom: 80px;
         font-family: var(--font-main);
         background: var(--bg-color);
         color: #333;
         -webkit-font-smoothing: antialiased;
         overflow-x: hidden;
       }
-
       a {
         text-decoration: none;
         color: inherit;
@@ -53,9 +48,51 @@
         border: none;
         background: none;
         padding: 0;
+        cursor: pointer;
       }
 
-      /* ================= 2. 头部 (Header) - 含搜索栏 ================= */
+      /* ================= 2. 骨架屏动画 (Skeleton) ================= */
+      @keyframes shimmer {
+        0% {
+          background-position: -200% 0;
+        }
+        100% {
+          background-position: 200% 0;
+        }
+      }
+      .skeleton {
+        background: linear-gradient(
+          90deg,
+          var(--skeleton-base) 25%,
+          var(--skeleton-highlight) 50%,
+          var(--skeleton-base) 75%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+        border-radius: 4px;
+      }
+      /* 图片容器，用于占位 */
+      .img-wrapper {
+        width: 100%;
+        height: 150px;
+        background: #f9f9f9;
+        border-radius: 4px;
+        margin-bottom: 8px;
+        position: relative;
+        overflow: hidden;
+      }
+      .img-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .img-wrapper img.loaded {
+        opacity: 1;
+      }
+
+      /* ================= 3. 头部与搜索增强 ================= */
       .site-header {
         position: fixed;
         top: 0;
@@ -71,23 +108,21 @@
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         gap: 10px;
       }
-
       .header-left {
         display: flex;
         align-items: center;
-        gap: 5px;
+        gap: 10px;
         cursor: pointer;
-        flex-shrink: 0;
+        padding: 5px;
       }
       .hamburger-icon {
         font-size: 1.6rem;
-        line-height: 1;
       }
       .menu-text {
+        display: none;
         font-size: 0.8rem;
         font-weight: 700;
         letter-spacing: 1px;
-        display: none;
       }
       @media (min-width: 360px) {
         .menu-text {
@@ -95,20 +130,19 @@
         }
       }
 
-      /* 中间搜索栏 */
+      /* 搜索容器 */
       .header-center {
         flex-grow: 1;
-        display: flex;
-        justify-content: flex-end;
+        position: relative;
       }
       .header-search-input {
         width: 100%;
         background: #333;
         border: 1px solid #444;
         color: #fff;
-        padding: 8px 12px;
+        padding: 10px 12px;
         border-radius: 4px;
-        font-size: 0.9rem;
+        font-size: 1rem;
         outline: none;
         transition: all 0.2s;
       }
@@ -117,32 +151,60 @@
         color: #000;
         border-color: #fff;
       }
-      .header-search-input::placeholder {
-        color: #aaa;
+
+      /* 实时搜索建议下拉框 */
+      .search-suggestions {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: #fff;
+        color: #000;
+        border-radius: 0 0 4px 4px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        z-index: 1001;
+        max-height: 300px;
+        overflow-y: auto;
+        display: none;
+      }
+      .suggestion-item {
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+      }
+      .suggestion-item:active {
+        background: #f0f0f0;
+      }
+      .suggestion-thumb {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: 4px;
+        background: #eee;
+      }
+      .suggestion-text {
+        font-size: 0.9rem;
+        flex: 1;
       }
 
       .header-right {
         position: relative;
         cursor: pointer;
-        display: flex;
-        align-items: center;
-        flex-shrink: 0;
-        padding-right: 5px;
-      }
-      .header-cart-icon {
-        width: 26px;
-        height: 26px;
-        filter: invert(1);
+        padding: 5px;
+        margin-right: 5px;
       }
       .header-cart-badge {
         position: absolute;
         top: -5px;
         right: -5px;
-        background-color: #d9534f;
+        background: #d9534f;
         color: white;
         font-size: 0.7rem;
-        width: 18px;
-        height: 18px;
+        width: 20px;
+        height: 20px;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -151,13 +213,10 @@
         border: 2px solid #000;
       }
 
-      /* ================= 3. 侧边栏 (Sidebar) ================= */
+      /* ================= 4. 侧边栏 ================= */
       .sidebar-overlay {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        inset: 0;
         background: rgba(0, 0, 0, 0.6);
         z-index: 1001;
         opacity: 0;
@@ -168,7 +227,6 @@
         opacity: 1;
         visibility: visible;
       }
-
       .sidebar {
         position: fixed;
         top: 0;
@@ -182,78 +240,35 @@
         transition: transform 0.3s ease-in-out;
         display: flex;
         flex-direction: column;
-        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
       }
       .sidebar.active {
         transform: translateX(0);
-      }
-
-      .sidebar-header {
-        display: flex;
-        border-bottom: 2px solid #ddd;
-      }
-      .sidebar-tab {
-        flex: 1;
-        text-align: center;
-        padding: 15px 0;
-        font-weight: 700;
-        font-size: 0.9rem;
-        color: #888;
-        background: #f9f9f9;
-      }
-      .sidebar-tab.active {
-        background: #fff;
-        color: #000;
-        border-bottom: 2px solid var(--accent-color);
-        margin-bottom: -2px;
       }
       .sidebar-content {
         flex: 1;
         overflow-y: auto;
         padding: 20px;
-        -webkit-overflow-scrolling: touch;
       }
       .menu-link {
         display: block;
         padding: 15px 0;
-        font-size: 1rem;
         font-weight: 600;
-        color: #333;
         border-bottom: 1px solid #eee;
-        text-transform: uppercase;
-      }
-      .brand-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0;
+        font-size: 1.1rem;
       }
       .brand-item {
         padding: 12px 5px;
-        font-size: 0.95rem;
-        color: #555;
-        cursor: pointer;
+        font-size: 1rem;
         border-bottom: 1px solid #f0f0f0;
       }
-      .brand-item:hover {
-        color: #000;
-        background: #f4f4f4;
-        padding-left: 10px;
-        font-weight: bold;
-      }
 
-      /* ================= 4. 首页 (Home View) ================= */
-      #home-view {
-        padding-top: 10px;
-        padding-bottom: 30px;
-        display: block;
-      }
+      /* ================= 5. 首页卡片与滚动优化 ================= */
       .brand-section {
-        margin-bottom: 20px;
         background: #fff;
         padding: 20px 0 20px 12px;
+        margin-bottom: 15px;
         border-top: 1px solid #eee;
-        border-bottom: 1px solid #eee;
-        scroll-margin-top: 70px; /* 配合滚动跳转的偏移量 */
+        position: relative;
       }
       .brand-header {
         display: flex;
@@ -263,164 +278,188 @@
         margin-bottom: 15px;
       }
       .brand-title {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         font-weight: 700;
-        color: #222;
         margin: 0;
         text-transform: uppercase;
       }
-      .brand-see-all {
-        font-size: 0.85rem;
-        color: #666;
-        text-decoration: underline;
-        cursor: pointer;
-        padding: 5px;
+
+      /* 滚动容器包装器，用于放置箭头 */
+      .scroll-container-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
       }
 
       .scroll-wrapper {
         display: flex;
         overflow-x: auto;
         gap: 12px;
-        padding-bottom: 10px;
+        padding-bottom: 15px;
         padding-right: 12px;
         scrollbar-width: none;
         -webkit-overflow-scrolling: touch;
         scroll-snap-type: x mandatory;
+        flex: 1;
       }
       .scroll-wrapper::-webkit-scrollbar {
         display: none;
       }
 
+      /* 桌面端滚动箭头 */
+      .scroll-nav-btn {
+        display: none;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid #ddd;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        z-index: 5;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        position: absolute;
+        top: 35%;
+        transition: all 0.2s;
+      }
+      .scroll-nav-btn:hover {
+        background: #000;
+        color: #fff;
+        border-color: #000;
+      }
+      .scroll-nav-btn.left {
+        left: 5px;
+      }
+      .scroll-nav-btn.right {
+        right: 5px;
+      }
+      @media (min-width: 768px) {
+        .scroll-nav-btn {
+          display: flex;
+        }
+      }
+
       .scroll-card {
-        flex: 0 0 150px;
+        flex: 0 0 160px;
         display: flex;
         flex-direction: column;
         background: #fff;
         cursor: pointer;
         position: relative;
         scroll-snap-align: start;
+        user-select: none;
       }
-      .scroll-card img {
-        width: 100%;
-        height: 150px;
-        object-fit: cover;
-        border-radius: 4px;
-        margin-bottom: 8px;
-        background: #f9f9f9;
+      /* 长按时的视觉反馈 */
+      .scroll-card:active {
+        transform: scale(0.98);
       }
 
       .badges-container {
         position: absolute;
         top: 0;
         left: 0;
+        z-index: 2;
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
-        z-index: 2;
       }
       .badge-tag {
         font-size: 0.65rem;
-        font-weight: bold;
         color: #fff;
-        padding: 3px 6px;
+        padding: 4px 8px;
         margin-bottom: 2px;
         border-radius: 0 0 4px 0;
-        box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-        text-transform: uppercase;
+        font-weight: bold;
       }
       .badge-hot {
-        background: var(--tag-hot);
+        background: #d9534f;
       }
       .badge-new {
-        background: var(--tag-new);
+        background: #007bff;
       }
       .badge-sale {
-        background: var(--tag-sale);
+        background: #28a745;
       }
 
+      .card-info {
+        padding-right: 5px;
+      }
       .scroll-card-title {
-        font-size: 0.8rem;
-        color: #444;
-        margin-bottom: 4px;
+        font-size: 0.85rem;
+        color: #333;
         height: 2.4em;
         overflow: hidden;
-        text-transform: uppercase;
         line-height: 1.2;
-      }
-      .scroll-card-sub {
-        font-size: 0.7rem;
-        color: #999;
-        margin-bottom: 4px;
+        margin: 5px 0;
       }
       .scroll-card-price {
-        font-size: 0.95rem;
+        font-size: 1rem;
         color: var(--accent-color);
         font-weight: 700;
-        margin-bottom: 8px;
+      }
+
+      .add-to-cart-text {
+        font-size: 0.9rem;
+        font-weight: bold;
+        text-decoration: underline;
+        padding: 8px 0;
+        display: inline-block;
+      }
+
+      /* ================= 6. 悬浮购物车按钮 (Floating Cart) ================= */
+      .floating-cart-btn {
+        position: fixed;
+        bottom: 30px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        background: #000;
+        border-radius: 50%;
         display: flex;
         align-items: center;
-      }
-      .scroll-card-add {
-        font-size: 0.85rem;
-        color: #000;
-        font-weight: 700;
-        text-decoration: underline;
-        margin-top: auto;
-        padding: 5px 0;
-      }
-
-      .shop-all-section {
-        padding: 30px 20px;
-        text-align: center;
-        background: #fff;
-        margin-bottom: 20px;
-        border-top: 1px solid #eee;
-        border-bottom: 1px solid #eee;
-      }
-      .shop-all-btn {
-        background: #000;
-        color: #fff;
-        padding: 15px 40px;
-        font-size: 1.1rem;
-        font-weight: bold;
-        border-radius: 30px;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        z-index: 990;
         cursor: pointer;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         transition: transform 0.2s;
       }
-      .shop-all-btn:active {
-        transform: scale(0.95);
+      .floating-cart-btn:active {
+        transform: scale(0.9);
+      }
+      .floating-cart-icon {
+        width: 30px;
+        height: 30px;
+        filter: invert(1);
+      }
+      .floating-badge {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: #d9534f;
+        color: #fff;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        border: 2px solid #fff;
+        font-size: 0.8rem;
       }
 
-      /* ================= 5. 网格视图 (Grid View) ================= */
+      /* ================= 7. 网格与通用 ================= */
       #grid-view {
         display: none;
         max-width: 1200px;
         margin: 0 auto;
-        padding: 20px 12px;
+        padding: 20px 10px;
       }
-      .gallery-header-bar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-      }
-      .gallery-title {
-        font-size: 1.3rem;
-        font-weight: 700;
-      }
-      .back-home-btn {
-        font-size: 0.9rem;
-        text-decoration: underline;
-        cursor: pointer;
-        color: #666;
-        padding: 5px;
-      }
-
       .gallery {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
+        gap: 15px;
       }
       @media (min-width: 768px) {
         .gallery {
@@ -428,101 +467,24 @@
           gap: 30px;
         }
       }
-
-      .item {
+      .grid-item {
         background: #fff;
         border-radius: 8px;
         border: 1px solid #eee;
         overflow: hidden;
       }
-      .item img {
-        width: 100%;
-        height: 180px;
-        object-fit: cover;
-        background: #f9f9f9;
-        cursor: pointer;
-      }
-      .item .caption {
-        padding: 10px 8px;
-        text-align: center;
-      }
-      .item-price {
-        font-weight: bold;
-        color: var(--accent-color);
-        font-size: 1rem;
-      }
       .grid-add-btn {
-        display: block;
         width: 100%;
-        margin-top: 10px;
         background: #000;
         color: #fff;
-        text-align: center;
-        padding: 10px 0;
-        border-radius: 4px;
-        cursor: pointer;
+        padding: 12px 0;
         font-weight: bold;
+        border-radius: 4px;
+        margin-top: 10px;
+        font-size: 1rem;
       }
 
-      .pagination-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 15px;
-        margin: 30px 0;
-      }
-      .page-btn {
-        padding: 10px 20px;
-        background-color: #222;
-        color: #fff;
-        border-radius: 25px;
-        cursor: pointer;
-        font-size: 0.9rem;
-      }
-      .page-btn:disabled {
-        background-color: #eee;
-        color: #aaa;
-      }
-
-      /* ================= 6. Trust Section ================= */
-      .trust-section {
-        background: #fff;
-        margin-top: 20px;
-        padding: 30px 20px;
-        border-top: 1px solid #eee;
-      }
-      .trust-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 20px;
-        text-align: center;
-      }
-      @media (min-width: 768px) {
-        .trust-grid {
-          grid-template-columns: repeat(2, 1fr);
-          max-width: 800px;
-          margin: 0 auto;
-        }
-      }
-      .trust-item {
-        padding: 20px;
-        border: 1px solid #eee;
-        border-radius: 8px;
-        display: block;
-        background: #fff;
-      }
-      .trust-item h4 {
-        margin: 10px 0 5px;
-        font-size: 1.1rem;
-      }
-      .trust-item p {
-        font-size: 0.9rem;
-        color: #666;
-        margin: 0;
-        line-height: 1.4;
-      }
-
-      /* ================= 7. Modal & Toast ================= */
+      /* ================= 8. Modal & Toast ================= */
       .modal {
         display: none;
         position: fixed;
@@ -531,7 +493,7 @@
         z-index: 2000;
         align-items: center;
         justify-content: center;
-        padding: 15px;
+        padding: 20px;
       }
       .modal.open {
         display: flex;
@@ -543,144 +505,75 @@
         border-radius: 12px;
         overflow: hidden;
         position: relative;
-        text-align: center;
-        padding-bottom: 25px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        animation: popUp 0.3s ease;
       }
-      .modal-close {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        font-size: 1.8rem;
-        cursor: pointer;
-        z-index: 10;
-        width: 36px;
-        height: 36px;
-        background: rgba(0, 0, 0, 0.1);
-        border-radius: 50%;
-        line-height: 34px;
-      }
-      .modal-img {
-        width: 100%;
-        height: 300px;
-        object-fit: cover;
-        background: #f8f8f8;
-      }
-      .modal-info {
-        padding: 20px 15px;
-      }
-      .modal-btn {
-        background: #000;
-        color: #fff;
-        padding: 15px 0;
-        width: 100%;
-        font-size: 1.1rem;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: bold;
-        margin-top: 15px;
-        display: block;
+      @keyframes popUp {
+        from {
+          transform: scale(0.9);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
       }
 
+      /* 大尺寸数量控制 */
       .qty-control-box {
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: #fff;
+        height: 56px;
         border: 2px solid #000;
         border-radius: 8px;
-        margin-top: 15px;
-        height: 52px;
-        overflow: hidden;
+        margin-top: 20px;
       }
       .qty-btn {
-        width: 60px;
-        height: 100%;
-        font-size: 1.5rem;
-        font-weight: bold;
+        width: 70px;
         background: #000;
         color: #fff;
-        cursor: pointer;
+        font-size: 1.8rem;
         display: flex;
         align-items: center;
         justify-content: center;
       }
       .qty-val {
         flex: 1;
-        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
         font-weight: bold;
-        color: #000;
+      }
+
+      .modal-add-btn {
+        width: 100%;
+        background: #000;
+        color: #fff;
+        padding: 18px;
+        font-size: 1.2rem;
+        border-radius: 8px;
+        margin-top: 15px;
+        font-weight: bold;
       }
 
       #toast {
         visibility: hidden;
-        min-width: 200px;
-        background-color: rgba(0, 0, 0, 0.9);
+        background: rgba(0, 0, 0, 0.9);
         color: #fff;
-        text-align: center;
-        border-radius: 30px;
-        padding: 12px 20px;
+        border-radius: 50px;
+        padding: 12px 24px;
         position: fixed;
-        z-index: 9999;
         left: 50%;
-        bottom: 80px;
+        bottom: 100px;
         transform: translateX(-50%);
-        font-size: 0.95rem;
-        font-weight: 500;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        z-index: 9999;
         opacity: 0;
         transition: all 0.3s;
+        font-weight: 500;
       }
       #toast.show {
         visibility: visible;
         opacity: 1;
-        bottom: 90px;
-      }
-
-      /* ================= 8. Loading Spinner ================= */
-      .loading-container {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        height: 300px; /* 占据一定高度，防止布局塌陷 */
-        width: 100%;
-      }
-      .spinner {
-        width: 40px;
-        height: 40px;
-        border: 3px solid #eee;
-        border-top: 3px solid var(--accent-color); /* 使用你的金色主题色 */
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-        margin-bottom: 15px;
-      }
-      .loading-text {
-        font-size: 0.9rem;
-        color: #999;
-        font-weight: 500;
-        letter-spacing: 1px;
-        animation: pulse 1.5s ease-in-out infinite;
-      }
-
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-      @keyframes pulse {
-        0% {
-          opacity: 0.6;
-        }
-        50% {
-          opacity: 1;
-        }
-        100% {
-          opacity: 0.6;
-        }
+        bottom: 110px;
       }
     </style>
   </head>
@@ -688,34 +581,32 @@
     <header class="site-header">
       <div class="header-left" id="menu-trigger">
         <span class="hamburger-icon">☰</span>
-        <span class="menu-text" style="margin-left: 5px">MENU</span>
+        <span class="menu-text">MENU</span>
       </div>
-
       <div class="header-center">
         <input
           type="text"
           id="global-search-input"
           class="header-search-input"
           placeholder="Search..."
+          autocomplete="off"
         />
+        <div id="search-suggestions" class="search-suggestions"></div>
       </div>
-
       <div class="header-right" onclick="window.location.href='cart.html'">
         <svg
-          width="24"
-          height="24"
+          width="28"
+          height="28"
           viewBox="0 0 24 24"
           fill="none"
           stroke="white"
           stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
         >
-          <circle cx="9" cy="21" r="1"></circle>
-          <circle cx="20" cy="21" r="1"></circle>
+          <circle cx="9" cy="21" r="1" />
+          <circle cx="20" cy="21" r="1" />
           <path
             d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"
-          ></path>
+          />
         </svg>
         <span id="header-cart-count" class="header-cart-badge">0</span>
       </div>
@@ -723,9 +614,6 @@
 
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <div class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="sidebar-tab active">MENU</div>
-      </div>
       <div class="sidebar-content">
         <nav>
           <a class="menu-link" onclick="handleMenuClick('Home')">Home</a>
@@ -736,191 +624,125 @@
           <a class="menu-link" onclick="handleMenuClick('New')"
             >New Arrivals 🆕</a
           >
-          <a class="menu-link" onclick="handleMenuClick('Sale')">On Sale 🏷️</a>
-          <a class="menu-link" href="cart.html">My Cart</a>
-          <a class="menu-link" href="https://wa.me/16232027321" target="_blank"
-            >Contact Us</a
-          >
+          <a class="menu-link" href="cart.html">My Cart 🛒</a>
         </nav>
-
-        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee" />
-
         <div
           style="
+            margin-top: 20px;
             font-weight: 700;
-            margin-bottom: 15px;
-            font-size: 0.85rem;
             color: #999;
-            letter-spacing: 1px;
+            font-size: 0.9rem;
           "
         >
-          POPULAR BRANDS
+          BRANDS
         </div>
-
-        <div class="brand-list">
-          <div class="brand-item" onclick="scrollToBrand('Creed')">CREED</div>
-          <div class="brand-item" onclick="scrollToBrand('Dior')">DIOR</div>
-          <div class="brand-item" onclick="scrollToBrand('Chanel')">CHANEL</div>
-          <div class="brand-item" onclick="scrollToBrand('Tom Ford')">
-            TOM FORD
-          </div>
-          <div class="brand-item" onclick="scrollToBrand('Yves Saint Laurent')">
-            YSL
-          </div>
-          <div class="brand-item" onclick="scrollToBrand('Louis Vuitton')">
-            LOUIS VUITTON
-          </div>
-          <div class="brand-item" onclick="scrollToBrand('Gucci')">GUCCI</div>
-          <div class="brand-item" onclick="scrollToBrand('Burberry')">
-            BURBERRY
-          </div>
-          <div class="brand-item" onclick="scrollToBrand('Versace')">
-            VERSACE
-          </div>
-          <div class="brand-item" onclick="scrollToBrand('Carolina Herrera')">
-            CAROLINA HERRERA
-          </div>
-          <div class="brand-item" onclick="scrollToBrand('Giorgio Armani')">
-            GIORGIO ARMANI
-          </div>
-          <div class="brand-item" onclick="scrollToBrand('Valentino')">
-            VALENTINO
-          </div>
-          <div
-            class="brand-item"
-            onclick="scrollToBrand('Maison Francis Kurkdjian')"
-          >
-            MAISON FRANCIS KURKDJIAN
-          </div>
-          <div class="brand-item" onclick="scrollToBrand('Parfums de Marly')">
-            PARFUMS DE MARLY
-          </div>
-          <div class="brand-item" onclick="scrollToBrand('Jean Paul Gaultier')">
-            JEAN PAUL GAULTIER
-          </div>
-          <div class="brand-item" onclick="scrollToBrand('Paco Rabanne')">
-            PACO RABANNE
-          </div>
-          <div class="brand-item" onclick="scrollToBrand('Bond No. 9')">
-            BOND NO. 9
-          </div>
-          <div class="brand-item" onclick="scrollToBrand('Xerjoff')">
-            XERJOFF
-          </div>
-          <div class="brand-item" onclick="scrollToBrand('Initio')">INITIO</div>
-          <div class="brand-item" onclick="scrollToBrand('Lattafa')">
-            LATTAFA
-          </div>
-          <div class="brand-item" onclick="scrollToBrand('Azzaro')">AZZARO</div>
-
-          <div
-            class="brand-item"
-            onclick="scrollToBrand('Other')"
-            style="
-              font-weight: bold;
-              margin-top: 10px;
-              color: var(--accent-color);
-              border-bottom: none;
-            "
-          >
-            OTHER BRANDS
-          </div>
-        </div>
-        <div style="height: 50px"></div>
+        <div id="sidebar-brands" class="brand-list"></div>
       </div>
     </div>
 
     <div id="home-view">
       <div id="home-content">
-        <div class="loading-container">
-          <div class="spinner"></div>
-          <div class="loading-text">LOADING...</div>
+        <div style="padding: 40px; text-align: center; color: #999">
+          Loading products...
         </div>
       </div>
     </div>
 
     <div id="grid-view">
-      <div class="gallery-header-bar">
-        <div class="gallery-title" id="grid-title">Results</div>
-        <div class="back-home-btn" onclick="handleMenuClick('Home')">
-          Back to Home
-        </div>
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 15px;
+        "
+      >
+        <h2 id="grid-title" style="margin: 0">Results</h2>
+        <button
+          onclick="handleMenuClick('Home')"
+          style="text-decoration: underline; padding: 5px"
+        >
+          Back
+        </button>
       </div>
       <div class="gallery" id="gallery"></div>
-      <div id="pagination-controls" class="pagination-container">
-        <button id="prev-page" class="page-btn">Prev</button>
+      <div id="pagination" style="text-align: center; margin: 30px 0">
+        <button
+          id="prev-page"
+          style="
+            padding: 10px 20px;
+            background: #ddd;
+            border-radius: 20px;
+            margin-right: 10px;
+          "
+        >
+          Prev
+        </button>
         <span id="page-info" style="font-weight: bold">1</span>
-        <button id="next-page" class="page-btn">Next</button>
+        <button
+          id="next-page"
+          style="
+            padding: 10px 20px;
+            background: #000;
+            color: #fff;
+            border-radius: 20px;
+            margin-left: 10px;
+          "
+        >
+          Next
+        </button>
       </div>
     </div>
 
-    <div class="trust-section">
-      <div class="trust-grid">
-        <div class="trust-item">
-          <div style="font-size: 2rem; margin-bottom: 10px">🇺🇸</div>
-          <h4>USA Warehouse</h4>
-          <p>Fast delivery within 3-5 days.</p>
-        </div>
-        <div class="trust-item">
-          <div style="font-size: 2rem; margin-bottom: 10px">🚚</div>
-          <h4>Free Shipping</h4>
-          <p>On all orders. No hidden fees.</p>
-        </div>
-        <div class="trust-item">
-          <div style="font-size: 2rem; color: #3498db; margin-bottom: 10px">
-            🛡️
-          </div>
-          <h4>Broken? We Reship!</h4>
-          <p>Full replacement if damaged in transit.</p>
-          <button
-            onclick="document.getElementById('policy-modal').classList.add('open')"
-            style="
-              text-decoration: underline;
-              cursor: pointer;
-              color: blue;
-              margin-top: 10px;
-              font-size: 0.9rem;
-            "
-          >
-            See Policy
-          </button>
-        </div>
-        <a href="https://wa.me/16232027321" target="_blank" class="trust-item">
-          <div style="font-size: 2rem; color: #2ecc71; margin-bottom: 10px">
-            💬
-          </div>
-          <h4>WhatsApp Support</h4>
-          <p>24/7 instant quote & service.</p>
-          <span
-            style="
-              color: blue;
-              text-decoration: underline;
-              margin-top: 10px;
-              display: block;
-              font-size: 0.9rem;
-            "
-            >Chat Now</span
-          >
-        </a>
-      </div>
+    <div class="floating-cart-btn" onclick="window.location.href='cart.html'">
+      <svg
+        class="floating-cart-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="black"
+        stroke-width="2"
+      >
+        <circle cx="9" cy="21" r="1" />
+        <circle cx="20" cy="21" r="1" />
+        <path
+          d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"
+        />
+      </svg>
+      <span class="floating-badge" id="float-cart-count">0</span>
     </div>
-
-    <div id="toast">Added to Cart! 🛒</div>
 
     <div id="modal" class="modal">
       <div class="modal-content">
         <div
-          class="modal-close"
-          onclick="document.getElementById('modal').classList.remove('open')"
+          onclick="closeModal()"
+          style="
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 10;
+          "
         >
           &times;
         </div>
-        <img id="modal-img" class="modal-img" src="" />
-        <div class="modal-info">
-          <h3
-            id="modal-title"
-            style="margin: 0 0 5px 0; font-size: 1.2rem"
-          ></h3>
+        <img
+          id="modal-img"
+          src=""
+          style="
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            background: #eee;
+          "
+        />
+        <div style="padding: 20px">
+          <h3 id="modal-title" style="margin: 0 0 5px"></h3>
           <div
             id="modal-sub"
             style="color: #666; font-size: 0.9rem; margin-bottom: 15px"
@@ -928,10 +750,9 @@
           <div
             id="modal-price"
             style="
-              font-weight: bold;
+              font-size: 1.5rem;
               color: var(--accent-color);
-              font-size: 1.4rem;
-              margin-bottom: 20px;
+              font-weight: bold;
             "
           ></div>
           <div id="modal-action-area"></div>
@@ -939,567 +760,523 @@
       </div>
     </div>
 
-    <div class="modal" id="policy-modal">
-      <div
-        class="modal-content"
-        style="padding: 25px; text-align: left; max-width: 90%"
-      >
-        <div
-          class="modal-close"
-          onclick="document.getElementById('policy-modal').classList.remove('open')"
-        >
-          &times;
-        </div>
-        <h3 style="text-align: center; margin-top: 0">Reshipment Policy</h3>
-        <p>If items arrive broken or leaked:</p>
-        <ul style="padding-left: 20px; color: #555">
-          <li style="margin-bottom: 10px">
-            Take a photo of the <strong>Shipping Label</strong>.
-          </li>
-          <li>Take a photo of the <strong>Damaged Item</strong>.</li>
-        </ul>
-        <p style="text-align: center; font-weight: bold; margin-top: 20px">
-          Send to WhatsApp for free reshipment.
-        </p>
-      </div>
-    </div>
-
-    <div class="lightbox" id="lightbox">
-      <span class="lightbox-close">&times;</span>
-      <img class="lightbox-img" id="lightbox-content" />
-    </div>
+    <div id="toast">Added to Cart! 🛒</div>
 
     <script src="db.js"></script>
     <script>
-      // ================= 配置区 =================
+      // ================= 配置 =================
       const FEATURED_BRANDS = [
         "Creed",
         "Dior",
         "Chanel",
         "Tom Ford",
-        "Yves Saint Laurent", // 显示为 YSL
+        "Yves Saint Laurent",
         "Louis Vuitton",
         "Gucci",
         "Burberry",
         "Versace",
-        "Carolina Herrera",
-        "Giorgio Armani",
-        "Valentino",
         "Maison Francis Kurkdjian",
         "Parfums de Marly",
         "Jean Paul Gaultier",
-        "Paco Rabanne",
-        "Bond No. 9",
-        "Xerjoff",
-        "Initio",
-        "Lattafa",
-        "Azzaro",
+        "Other",
       ];
-
-      // ================= 状态变量 =================
       let cartItems = [];
       let currentPage = 1;
-      const itemsPerPage = 20;
       let currentGridData = [];
       let viewMode = "home";
-      let currentModalProductId = null;
 
+      // ================= 初始化 =================
       document.addEventListener("DOMContentLoaded", () => {
         loadCart();
-        setupMenu();
-        setupEventListeners();
-        setupModalBackdropClosing();
+        setupSidebar();
         setupSearch();
+        setupScrollRestoration();
 
-        const checkDataInterval = setInterval(() => {
-          if (window.perfumeDB && window.perfumeDB.length > 0) {
-            clearInterval(checkDataInterval);
-            renderHome();
+        // 模拟等待 DB 加载
+        const checkDB = setInterval(() => {
+          if (window.perfumeDB) {
+            clearInterval(checkDB);
+            // 如果 sessionStorage 有状态则恢复，否则渲染首页
+            if (!restoreState()) {
+              renderHome();
+            }
           }
         }, 50);
       });
 
-      function formatSize(item) {
-        if (!item.ml) return "";
-        const ml = parseInt(item.ml);
-        if (isNaN(ml)) return item.ml;
-        const flOz = (ml / 29.57).toFixed(1);
-        return `${ml}ml <span style="color:#999;font-weight:normal">(${flOz} oz)</span>`;
+      // ================= 1. 骨架屏与图片懒加载 =================
+      function createImgHtml(src, alt) {
+        // 返回包含 Skeleton 样式的 HTML 结构
+        // onerror 增加回退处理
+        return `
+          <div class="img-wrapper skeleton">
+            <img src="${src}" alt="${alt}" loading="lazy" 
+              onload="this.parentElement.classList.remove('skeleton'); this.classList.add('loaded')"
+              onerror="this.src='https://via.placeholder.com/150?text=No+Image'; this.parentElement.classList.remove('skeleton'); this.classList.add('loaded')"
+            >
+          </div>
+        `;
       }
 
-      // --- 1. 首页渲染逻辑 (已更新) ---
-      function renderHome() {
-        const db = (window.perfumeDB || []).filter(
-          (p) => parseInt(p.stock) !== 0
-        );
-        const container = document.getElementById("home-content");
-        if (!container) return;
+      // ================= 2. 搜索增强 (实时 + Debounce) =================
+      function debounce(func, wait) {
+        let timeout;
+        return function (...args) {
+          clearTimeout(timeout);
+          timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+      }
 
+      function setupSearch() {
+        const input = document.getElementById("global-search-input");
+        const suggestBox = document.getElementById("search-suggestions");
+
+        input.addEventListener(
+          "input",
+          debounce((e) => {
+            const val = e.target.value.trim().toLowerCase();
+            if (!val) {
+              suggestBox.style.display = "none";
+              return;
+            }
+
+            const matches = window.perfumeDB
+              .filter(
+                (p) =>
+                  p.name.toLowerCase().includes(val) ||
+                  p.brand.toLowerCase().includes(val) ||
+                  (p.id && p.id.toString().includes(val))
+              )
+              .slice(0, 6); // 限制显示6条
+
+            if (matches.length > 0) {
+              suggestBox.innerHTML = matches
+                .map(
+                  (p) => `
+              <div class="suggestion-item" onclick="openModalById('${p.id}'); document.getElementById('search-suggestions').style.display='none'">
+                <img src="${p.img}" class="suggestion-thumb" loading="lazy">
+                <div class="suggestion-text">
+                  <div style="font-weight:bold; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; width:100%">${p.name}</div>
+                  <div style="color:#666; font-size:0.8rem">${p.brand}</div>
+                </div>
+              </div>
+            `
+                )
+                .join("");
+              suggestBox.style.display = "block";
+            } else {
+              suggestBox.style.display = "none";
+            }
+          }, 300)
+        );
+
+        // 点击外部关闭建议
+        document.addEventListener("click", (e) => {
+          if (!e.target.closest(".header-center"))
+            suggestBox.style.display = "none";
+        });
+
+        // 回车仍跳转网格
+        input.addEventListener("change", (e) => {
+          if (e.target.value) switchToGrid("Search:" + e.target.value);
+        });
+      }
+
+      // ================= 3. 首页渲染 (含滚动箭头) =================
+      function renderHome() {
+        const container = document.getElementById("home-content");
         container.innerHTML = "";
+        const db = window.perfumeDB || [];
+
+        // 辅助：生成卡片HTML
+        const renderCard = (p) => `
+          <div class="scroll-card" oncontextmenu="return false;" 
+               ontouchstart="handleTouchStart(event, '${p.id}')" 
+               ontouchend="handleTouchEnd(event, '${p.id}')"
+               onmousedown="handleMouseDown(event, '${p.id}')"
+               onmouseup="handleMouseUp(event, '${p.id}')"
+               onclick="handleClick(event, '${p.id}')">
+             <div class="badges-container">
+               ${
+                 p.top == 1
+                   ? '<span class="badge-tag badge-hot">HOT</span>'
+                   : ""
+               }
+               ${
+                 p.new == 1
+                   ? '<span class="badge-tag badge-new">NEW</span>'
+                   : ""
+               }
+               ${
+                 p.sale == 1
+                   ? '<span class="badge-tag badge-sale">SALE</span>'
+                   : ""
+               }
+             </div>
+             ${createImgHtml(p.img, p.name)}
+             <div class="card-info">
+               <div class="scroll-card-title">${p.name}</div>
+               <div class="scroll-card-price">$${p.price}</div>
+               <div class="add-to-cart-text">Add to Cart</div>
+             </div>
+          </div>
+        `;
+
+        // 辅助：创建带箭头的板块
+        const createSection = (title, items, linkKey) => {
+          const section = document.createElement("div");
+          section.className = "brand-section";
+          section.id = "anchor-" + linkKey.replace(/\s+/g, "");
+
+          const wrapperId = `scroll-${Math.random().toString(36).substr(2, 9)}`;
+
+          section.innerHTML = `
+            <div class="brand-header">
+              <h2 class="brand-title">${title}</h2>
+              <div onclick="switchToGrid('${linkKey}')" style="font-size:0.85rem; color:#666; text-decoration:underline;">See All ></div>
+            </div>
+            <div class="scroll-container-wrapper">
+              <button class="scroll-nav-btn left" onclick="scrollRef('${wrapperId}', -200)">&#8249;</button>
+              <div class="scroll-wrapper" id="${wrapperId}">
+                 ${items.slice(0, 15).map(renderCard).join("")}
+                 <div class="scroll-card" style="justify-content:center; align-items:center; color:#666;" onclick="switchToGrid('${linkKey}')">
+                    <span>View All</span>
+                    <span style="font-size:1.5rem">→</span>
+                 </div>
+              </div>
+              <button class="scroll-nav-btn right" onclick="scrollRef('${wrapperId}', 200)">&#8250;</button>
+            </div>
+          `;
+          return section;
+        };
 
         // 1. Best Sellers
-        const bestSellers = db.filter((p) => p.top == 1);
-        if (bestSellers.length > 0) {
+        const best = db.filter((p) => p.top == 1);
+        if (best.length)
           container.appendChild(
-            createBrandSection("🔥 Best Sellers", bestSellers)
+            createSection("🔥 Best Sellers", best, "BestSellers")
           );
-        }
 
-        // 2. New Arrivals
-        const newArrivals = db.filter((p) => p.new == 1);
-        if (newArrivals.length > 0) {
-          container.appendChild(
-            createBrandSection("🆕 New Arrivals", newArrivals, "New")
-          );
-        }
-
-        // 3. Featured Brands (中间品牌列表)
-        const renderedBrands = new Set();
+        // 2. Brands
+        const rendered = new Set();
         FEATURED_BRANDS.forEach((brand) => {
-          const products = db.filter((p) =>
-            p.brand.toLowerCase().includes(brand.toLowerCase())
-          );
-          if (products.length >= 3) {
-            let displayName =
-              brand === "Yves Saint Laurent" ? "YSL" : brand.toUpperCase();
+          let items;
+          if (brand === "Other") {
+            items = db.filter(
+              (p) =>
+                !rendered.has(p.brand) && !FEATURED_BRANDS.includes(p.brand)
+            ); // Simplified logic
+          } else {
+            items = db.filter((p) =>
+              p.brand.toLowerCase().includes(brand.toLowerCase())
+            );
+            items.forEach(() => rendered.add(brand)); // Track logical brands
+          }
 
-            const section = createBrandSection(displayName, products, brand);
-            // 给板块增加ID，方便跳转
-            section.id = "brand-" + brand.replace(/\s+/g, "");
-            container.appendChild(section);
-
-            renderedBrands.add(brand);
+          if (items.length >= 3) {
+            container.appendChild(
+              createSection(brand.toUpperCase(), items, brand)
+            );
           }
         });
-
-        // 4. Other Brands
-        const otherProducts = db.filter((p) => {
-          for (let featured of renderedBrands) {
-            if (p.brand.toLowerCase().includes(featured.toLowerCase()))
-              return false;
-          }
-          return true;
-        });
-
-        // 渲染 Other Brands 并加上 ID，让菜单栏点击能跳过来
-        if (otherProducts.length > 0) {
-          const otherSection = createBrandSection(
-            "Other Brands",
-            otherProducts,
-            "Other"
-          );
-          otherSection.id = "brand-Other";
-          container.appendChild(otherSection);
-        }
-
-        // 5. On Sale
-        const saleItems = db.filter((p) => p.sale == 1);
-        if (saleItems.length > 0) {
-          container.appendChild(
-            createBrandSection("🏷️ On Sale", saleItems, "Sale")
-          );
-        }
-
-        // 6. Shop All Button
-        const shopAllContainer = document.createElement("div");
-        shopAllContainer.className = "shop-all-section";
-        shopAllContainer.innerHTML = `
-            <button class="shop-all-btn" onclick="handleMenuClick('All')">Shop All Products</button>
-        `;
-        container.appendChild(shopAllContainer);
       }
 
-      function createBrandSection(title, products, filterKey) {
-        const section = document.createElement("div");
-        section.className = "brand-section";
+      window.scrollRef = function (id, offset) {
+        const el = document.getElementById(id);
+        if (el) el.scrollBy({ left: offset, behavior: "smooth" });
+      };
 
-        const header = document.createElement("div");
-        header.className = "brand-header";
-        header.innerHTML = `
-            <h2 class="brand-title">${title}</h2>
-            <div class="brand-see-all" onclick="switchToGrid('${
-              filterKey || (title.includes("Best") ? "BestSellers" : "All")
-            }')">See All ></div>
-        `;
-        section.appendChild(header);
+      // ================= 4. 长按交互逻辑 (Long Press) =================
+      let pressTimer;
+      let isLongPress = false;
 
-        const wrapper = document.createElement("div");
-        wrapper.className = "scroll-wrapper";
+      window.handleTouchStart = (e, id) => {
+        isLongPress = false;
+        pressTimer = setTimeout(() => {
+          isLongPress = true;
+          navigator.vibrate && navigator.vibrate(50); // 震动反馈
+          addToCart(id); // 长按直接加购物车
+        }, 600);
+      };
 
-        products.slice(0, 15).forEach((p) => {
-          const card = document.createElement("div");
-          card.className = "scroll-card";
-          card.onclick = (e) => {
-            if (e.target.classList.contains("scroll-card-add")) return;
-            openModal(p);
-          };
+      window.handleTouchEnd = () => clearTimeout(pressTimer);
 
-          let badgesHtml = "";
-          if (p.top == 1)
-            badgesHtml += '<div class="badge-tag badge-hot">HOT</div>';
-          if (p.new == 1)
-            badgesHtml += '<div class="badge-tag badge-new">NEW</div>';
-          if (p.sale == 1)
-            badgesHtml += '<div class="badge-tag badge-sale">SALE</div>';
+      // Desktop Mouse events simulating long press
+      window.handleMouseDown = (e, id) => {
+        isLongPress = false;
+        pressTimer = setTimeout(() => {
+          isLongPress = true;
+          addToCart(id);
+        }, 600);
+      };
+      window.handleMouseUp = () => clearTimeout(pressTimer);
 
-          card.innerHTML = `
-            <div style="position:relative;">
-               <img src="${p.img}" loading="lazy" alt="${p.name}">
-               <div class="badges-container">
-                 ${badgesHtml}
-               </div>
-            </div>
-            <div class="scroll-card-title">${p.name}</div>
-            
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                <span class="scroll-card-sub" style="margin:0;">${
-                  p.brand
-                }</span>
-                <span style="font-size:0.7rem; color:#aaa;">#${
-                  p.id || ""
-                }</span>
-            </div>
+      window.handleClick = (e, id) => {
+        if (isLongPress) return; // 如果触发了长按，则不触发点击
+        // 只有点击"Add to Cart"文本时才加购，否则开弹窗
+        if (e.target.classList.contains("add-to-cart-text")) {
+          addToCart(id);
+        } else {
+          openModalById(id);
+        }
+      };
 
-            <div class="scroll-card-price">
-                $${p.price} 
-                <span style="font-size:0.75rem; color:#666; font-weight:normal; margin-left:5px;">
-                    ${p.ml ? p.ml + "ml" : ""}
-                </span>
-            </div>
-            
-            <div class="scroll-card-add" onclick="addToCart('${
-              p.id
-            }'); event.stopPropagation();">Add To Cart</div>
-          `;
-          wrapper.appendChild(card);
-        });
-
-        section.appendChild(wrapper);
-        return section;
-      }
-
-      // --- 2. Grid 渲染 ---
-      function switchToGrid(criteria) {
+      // ================= 5. Grid View & State =================
+      window.switchToGrid = function (criteria) {
+        saveState(); // 离开前保存
         viewMode = "grid";
         document.getElementById("home-view").style.display = "none";
         document.getElementById("grid-view").style.display = "block";
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        window.scrollTo(0, 0);
 
-        const db = (window.perfumeDB || []).filter(
-          (p) => parseInt(p.stock) !== 0
-        );
+        const db = window.perfumeDB;
         let filtered = [];
-        let title = "";
+        let title = criteria;
 
-        if (criteria === "All") {
-          filtered = db;
-          title = "All Products";
-        } else if (criteria === "BestSellers") {
+        if (criteria === "All") filtered = db;
+        else if (criteria === "BestSellers")
           filtered = db.filter((p) => p.top == 1);
-          title = "Best Sellers";
-        } else if (criteria === "New") {
-          filtered = db.filter((p) => p.new == 1);
-          title = "New Arrivals";
-        } else if (criteria === "Sale") {
-          filtered = db.filter((p) => p.sale == 1);
-          title = "On Sale";
-        } else if (criteria.startsWith("Search:")) {
+        else if (criteria === "New") filtered = db.filter((p) => p.new == 1);
+        else if (criteria.startsWith("Search:")) {
           const term = criteria.replace("Search:", "").toLowerCase();
           filtered = db.filter(
             (p) =>
               p.name.toLowerCase().includes(term) ||
-              p.brand.toLowerCase().includes(term) ||
-              (p.id && p.id.toString().includes(term))
+              p.brand.toLowerCase().includes(term)
           );
           title = `Results: "${term}"`;
-        } else if (criteria === "Other") {
-          filtered = db;
-          title = "More Brands";
         } else {
           filtered = db.filter((p) => p.brand.includes(criteria));
-          title = criteria;
         }
 
-        document.getElementById("grid-title").textContent = title;
         currentGridData = filtered;
         currentPage = 1;
-        renderGridPage();
-      }
+        document.getElementById("grid-title").textContent = title;
+        renderGrid();
+      };
 
-      function renderGridPage() {
+      function renderGrid() {
         const gallery = document.getElementById("gallery");
         gallery.innerHTML = "";
-        const controls = document.getElementById("pagination-controls");
+        const start = (currentPage - 1) * 20;
+        const pageData = currentGridData.slice(start, start + 20);
 
-        if (currentGridData.length === 0) {
+        if (!pageData.length)
           gallery.innerHTML =
-            "<div style='grid-column:1/-1;text-align:center;padding:50px;color:#999;'>No items found.</div>";
-          controls.style.display = "none";
-          return;
-        }
+            "<div style='grid-column:1/-1;padding:20px;text-align:center'>No items found.</div>";
 
-        const start = (currentPage - 1) * itemsPerPage;
-        const pageItems = currentGridData.slice(start, start + itemsPerPage);
-
-        pageItems.forEach((p) => {
+        pageData.forEach((p) => {
           const div = document.createElement("div");
-          div.className = "item";
-
-          let badgesHtml = "";
-          if (p.top == 1)
-            badgesHtml += '<div class="badge-tag badge-hot">HOT</div>';
-          if (p.new == 1)
-            badgesHtml += '<div class="badge-tag badge-new">NEW</div>';
-          if (p.sale == 1)
-            badgesHtml += '<div class="badge-tag badge-sale">SALE</div>';
-
+          div.className = "grid-item";
           div.innerHTML = `
-              <div style="position:relative">
-                  <img src="${p.img}" loading="lazy" onclick="openModalById('${
-            p.id
-          }')">
-                  <div class="badges-container">
-                     ${badgesHtml}
-                  </div>
-                  <div style="position:absolute; bottom:5px; right:5px; background:rgba(255,255,255,0.9); padding:2px 6px; font-size:0.7rem; border-radius:4px; color:#555;">
-                    #${p.id}
-                  </div>
-              </div>
-              <div class="caption">
-                 <div style="font-size:0.85rem; height:2.4em; overflow:hidden; margin-bottom:5px; line-height:1.2;">${
-                   p.name
-                 }</div>
-                 <div style="font-size:0.8rem; color:#888; margin-bottom:5px;">${formatSize(
-                   p
-                 )}</div>
-                 <div class="item-price">$${p.price}</div>
-                 <button class="grid-add-btn" onclick="addToCart('${
-                   p.id
-                 }')">ADD TO CART</button>
-              </div>
-           `;
+            <div style="position:relative" onclick="openModalById('${p.id}')">
+              ${createImgHtml(p.img, p.name)}
+              ${
+                p.top == 1
+                  ? '<span style="position:absolute;top:0;left:0;background:red;color:white;padding:2px 5px;font-size:0.7rem">HOT</span>'
+                  : ""
+              }
+            </div>
+            <div style="padding:10px;">
+               <div style="height:2.4em;overflow:hidden;font-size:0.9rem;line-height:1.2;margin-bottom:5px;">${
+                 p.name
+               }</div>
+               <div style="font-weight:bold;color:#b28900;">$${p.price}</div>
+               <button class="grid-add-btn" onclick="addToCart('${
+                 p.id
+               }')">ADD TO CART</button>
+            </div>
+          `;
           gallery.appendChild(div);
         });
 
-        const totalPages = Math.ceil(currentGridData.length / itemsPerPage);
-        controls.style.display = totalPages > 1 ? "flex" : "none";
-        if (totalPages > 1) {
-          document.getElementById(
-            "page-info"
-          ).textContent = `${currentPage} / ${totalPages}`;
-          document.getElementById("prev-page").disabled = currentPage === 1;
-          document.getElementById("next-page").disabled =
-            currentPage === totalPages;
+        // Pagination logic (simplified)
+        document.getElementById("page-info").textContent = `${currentPage} / ${
+          Math.ceil(currentGridData.length / 20) || 1
+        }`;
+      }
+
+      document.getElementById("prev-page").onclick = () => {
+        if (currentPage > 1) {
+          currentPage--;
+          renderGrid();
+          window.scrollTo(0, 0);
+        }
+      };
+      document.getElementById("next-page").onclick = () => {
+        if (currentPage < Math.ceil(currentGridData.length / 20)) {
+          currentPage++;
+          renderGrid();
+          window.scrollTo(0, 0);
+        }
+      };
+
+      // ================= 6. 状态保持 (SessionStorage) =================
+      function saveState() {
+        sessionStorage.setItem("perfume_posY", window.scrollY);
+        sessionStorage.setItem("perfume_view", viewMode);
+      }
+
+      function restoreState() {
+        const savedView = sessionStorage.getItem("perfume_view");
+        const savedY = sessionStorage.getItem("perfume_posY");
+
+        if (savedView === "grid") {
+          // 如果上次是 Grid，这里为了简单直接回首页，或者你可以实现恢复 Grid 参数的逻辑
+          // 这里我们简单处理：如果有保存位置，且是home，则恢复滚动
+          renderHome();
+          return false;
+        } else {
+          renderHome();
+          if (savedY)
+            setTimeout(() => window.scrollTo(0, parseInt(savedY)), 100);
+          return true;
         }
       }
 
-      // --- 3. 弹窗逻辑 ---
-      window.openModal = function (product) {
-        currentModalProductId = product.id;
-        document.getElementById("modal-img").src = product.img;
-        document.getElementById("modal-title").textContent = product.name;
+      // 监听离开页面事件
+      window.addEventListener("beforeunload", saveState);
 
-        document.getElementById("modal-sub").innerHTML = `
-            <div>${product.brand}</div>
-            <div style="margin-top:5px; font-size:0.9rem; color:#555;">
-                ID: ${product.id} &nbsp;|&nbsp; Size: ${formatSize(product)}
-            </div>
-            ${
-              product.top == 1
-                ? '<span style="color:red; font-weight:bold; font-size:0.8rem; margin-right:5px;">🔥 HOT</span>'
-                : ""
-            }
-            ${
-              product.new == 1
-                ? '<span style="color:blue; font-weight:bold; font-size:0.8rem; margin-right:5px;">🆕 NEW</span>'
-                : ""
-            }
-            ${
-              product.sale == 1
-                ? '<span style="color:green; font-weight:bold; font-size:0.8rem;">🏷️ SALE</span>'
-                : ""
-            }
-        `;
-
-        document.getElementById("modal-price").textContent =
-          "$" + product.price;
-        updateModalButtonState(product.id);
-        document.getElementById("modal").classList.add("open");
-      };
-
-      window.openModalById = function (id) {
-        const p = window.perfumeDB.find((x) => x.id === id);
-        if (p) openModal(p);
-      };
-
-      // --- 4. 搜索与通用功能 ---
-      function setupSearch() {
-        const globalSearch = document.getElementById("global-search-input");
-        globalSearch.addEventListener("change", (e) => {
-          const val = e.target.value.trim();
-          if (val) {
-            switchToGrid("Search:" + val);
-          }
+      // ================= 7. 通用逻辑 =================
+      function setupSidebar() {
+        // 生成侧边栏品牌链接
+        const list = document.getElementById("sidebar-brands");
+        FEATURED_BRANDS.forEach((b) => {
+          const div = document.createElement("div");
+          div.className = "brand-item";
+          div.textContent = b;
+          div.onclick = () => {
+            document.getElementById("sidebar").classList.remove("active");
+            document
+              .getElementById("sidebar-overlay")
+              .classList.remove("active");
+            window.scrollToBrand(b);
+          };
+          list.appendChild(div);
         });
+
+        // 绑定开关
+        const toggle = () => {
+          document.getElementById("sidebar").classList.toggle("active");
+          document.getElementById("sidebar-overlay").classList.toggle("active");
+        };
+        document.getElementById("menu-trigger").onclick = toggle;
+        document.getElementById("sidebar-overlay").onclick = toggle;
       }
 
-      window.handleMenuClick = function (action) {
+      window.scrollToBrand = (brand) => {
+        if (viewMode !== "home") {
+          document.getElementById("grid-view").style.display = "none";
+          document.getElementById("home-view").style.display = "block";
+          viewMode = "home";
+        }
+        setTimeout(() => {
+          const id = "anchor-" + brand.replace(/\s+/g, "");
+          const el = document.getElementById(id);
+          if (el) {
+            const y = el.getBoundingClientRect().top + window.pageYOffset - 65;
+            window.scrollTo({ top: y, behavior: "smooth" });
+          } else {
+            switchToGrid(brand);
+          }
+        }, 100);
+      };
+
+      window.handleMenuClick = (action) => {
         document.getElementById("sidebar").classList.remove("active");
         document.getElementById("sidebar-overlay").classList.remove("active");
         if (action === "Home") {
           viewMode = "home";
           document.getElementById("home-view").style.display = "block";
           document.getElementById("grid-view").style.display = "none";
-          window.scrollTo({ top: 0 });
+          window.scrollTo(0, 0);
         } else {
           switchToGrid(action);
         }
       };
 
-      // *** 滚动到品牌锚点函数 (增加了对 'Other' 的支持) ***
-      window.scrollToBrand = function (brandName) {
-        if (viewMode !== "home") {
-          document.getElementById("home-view").style.display = "block";
-          document.getElementById("grid-view").style.display = "none";
-          viewMode = "home";
-        }
-
-        document.getElementById("sidebar").classList.remove("active");
-        document.getElementById("sidebar-overlay").classList.remove("active");
-
-        setTimeout(() => {
-          // 如果是 "Other"，ID 是 brand-Other
-          // 否则去除空格，例如 Tom Ford -> brand-TomFord
-          const safeName =
-            brandName === "Other" ? "Other" : brandName.replace(/\s+/g, "");
-          const targetId = "brand-" + safeName;
-
-          const element = document.getElementById(targetId);
-
-          if (element) {
-            const headerOffset = 65;
-            const elementPosition = element.getBoundingClientRect().top;
-            const offsetPosition =
-              elementPosition + window.pageYOffset - headerOffset;
-
-            window.scrollTo({
-              top: offsetPosition,
-              behavior: "smooth",
-            });
-          } else {
-            // 如果首页没有该品牌区域，跳转到网格搜索
-            switchToGrid(brandName === "Other" ? "Other" : brandName);
-          }
-        }, 50);
-      };
-
-      function setupEventListeners() {
-        document.getElementById("prev-page").onclick = () => {
-          currentPage--;
-          renderGridPage();
-          window.scrollTo(0, 0);
-        };
-        document.getElementById("next-page").onclick = () => {
-          currentPage++;
-          renderGridPage();
-          window.scrollTo(0, 0);
-        };
-      }
-
-      function setupMenu() {
-        const trigger = document.getElementById("menu-trigger");
-        const overlay = document.getElementById("sidebar-overlay");
-        const sidebar = document.getElementById("sidebar");
-        function toggle() {
-          sidebar.classList.toggle("active");
-          overlay.classList.toggle("active");
-        }
-        trigger.onclick = toggle;
-        overlay.onclick = toggle;
-      }
-
-      window.addToCart = function (id) {
-        const db = window.perfumeDB;
-        const product = db.find((p) => p.id === id);
+      // 购物车逻辑
+      window.addToCart = (id) => {
+        const product = window.perfumeDB.find((p) => p.id == id);
         if (!product) return;
-        const existing = cartItems.find((c) => c.name === id);
-        if (existing) {
-          existing.quantity++;
-        } else {
+        const exist = cartItems.find((c) => c.name == id);
+        if (exist) exist.quantity++;
+        else
           cartItems.push({
             name: id,
-            caption: `${id} - ${product.name} (${product.ml}ml)`,
+            caption: product.name,
             img: product.img,
-            price: Number(product.price),
-            brand: product.brand,
-            ml: product.ml,
+            price: product.price,
             quantity: 1,
           });
-        }
+
         saveCart();
-        showToast("Added to Cart! 🛒");
-        if (currentModalProductId === id) updateModalButtonState(id);
+        showToast(`Added: ${product.name}`);
+        if (document.getElementById("modal").classList.contains("open"))
+          updateModalBtn(id);
       };
 
-      function updateModalButtonState(id) {
-        const container = document.getElementById("modal-action-area");
-        const existing = cartItems.find((c) => c.name === id);
-        if (!existing || existing.quantity === 0) {
-          container.innerHTML = `<button class="modal-btn" onclick="modalFirstAdd('${id}')">ADD TO CART</button>`;
-        } else {
-          container.innerHTML = `
-                <div class="qty-control-box">
-                    <div class="qty-btn" onclick="modalChangeQty('${id}', -1)">-</div>
-                    <div class="qty-val">${existing.quantity}</div>
-                    <div class="qty-btn" onclick="modalChangeQty('${id}', 1)">+</div>
-                </div>`;
-        }
+      function saveCart() {
+        localStorage.setItem("perfumeCart", JSON.stringify(cartItems));
+        updateCartCount();
       }
-
-      window.modalFirstAdd = (id) => addToCart(id);
-      window.modalChangeQty = (id, delta) => {
-        const existing = cartItems.find((c) => c.name === id);
-        if (existing) {
-          existing.quantity += delta;
-          if (existing.quantity <= 0)
-            cartItems = cartItems.filter((c) => c.name !== id);
-          saveCart();
-          updateModalButtonState(id);
-        }
-      };
-
+      function loadCart() {
+        cartItems = JSON.parse(localStorage.getItem("perfumeCart") || "[]");
+        updateCartCount();
+      }
+      function updateCartCount() {
+        const count = cartItems.reduce((s, i) => s + i.quantity, 0);
+        document.getElementById("header-cart-count").textContent = count;
+        document.getElementById("float-cart-count").textContent = count;
+      }
       function showToast(msg) {
         const t = document.getElementById("toast");
         t.textContent = msg;
         t.classList.add("show");
         setTimeout(() => t.classList.remove("show"), 2000);
       }
-      function loadCart() {
-        cartItems = JSON.parse(localStorage.getItem("perfumeCart") || "[]");
-        updateCartCount();
-      }
-      function saveCart() {
-        localStorage.setItem("perfumeCart", JSON.stringify(cartItems));
-        updateCartCount();
-      }
 
-      function updateCartCount() {
-        const el = document.getElementById("header-cart-count");
-        if (el) {
-          el.textContent = cartItems.reduce((s, i) => s + i.quantity, 0);
+      // Modal 逻辑
+      window.openModalById = (id) => {
+        const p = window.perfumeDB.find((x) => x.id == id);
+        if (!p) return;
+        document.getElementById("modal-img").src = p.img;
+        document.getElementById("modal-title").textContent = p.name;
+        document.getElementById("modal-sub").textContent = `${
+          p.brand
+        } | Size: ${p.ml || "N/A"}ml`;
+        document.getElementById("modal-price").textContent = `$${p.price}`;
+        updateModalBtn(id);
+        document.getElementById("modal").classList.add("open");
+      };
+      window.closeModal = () =>
+        document.getElementById("modal").classList.remove("open");
+
+      function updateModalBtn(id) {
+        const item = cartItems.find((c) => c.name == id);
+        const area = document.getElementById("modal-action-area");
+        if (!item) {
+          area.innerHTML = `<button class="modal-add-btn" onclick="addToCart('${id}')">ADD TO CART</button>`;
+        } else {
+          area.innerHTML = `
+            <div class="qty-control-box">
+               <div class="qty-btn" onclick="modQty('${id}', -1)">-</div>
+               <div class="qty-val">${item.quantity}</div>
+               <div class="qty-btn" onclick="modQty('${id}', 1)">+</div>
+            </div>
+          `;
         }
       }
-
-      function setupModalBackdropClosing() {
-        document.querySelectorAll(".modal, .lightbox").forEach((o) =>
-          o.addEventListener("click", (e) => {
-            if (e.target === o) {
-              o.classList.remove("open");
-              currentModalProductId = null;
-            }
-          })
-        );
-      }
+      window.modQty = (id, d) => {
+        const i = cartItems.find((c) => c.name == id);
+        if (i) {
+          i.quantity += d;
+          if (i.quantity <= 0)
+            cartItems = cartItems.filter((c) => c.name != id);
+          saveCart();
+          updateModalBtn(id);
+        }
+      };
     </script>
   </body>
 </html>
