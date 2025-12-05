@@ -1445,7 +1445,7 @@
         }
       }
 
-      // --- 3. 弹窗逻辑 (Updated: Check Notes & Plain ID) ---
+      // --- 3. 弹窗逻辑 (Updated: Removed Labels) ---
       window.openModal = function (product) {
         currentModalProductId = product.id;
         document.getElementById("modal-img").src = product.img;
@@ -1455,8 +1455,7 @@
           "modal-title"
         ).textContent = `${product.id}-${product.name}`;
 
-        // Notes 显示逻辑 (增加兼容性检查)
-        // 尝试读取 Notes 或者 notes 字段
+        // Notes 显示逻辑
         const notesContent = product.Notes || product.notes;
 
         let notesHtml = "";
@@ -1467,12 +1466,9 @@
               <span class="modal-notes-text">${notesContent}</span>
             </div>
           `;
-        } else {
-          // 如果您希望确认数据是否读取到，可以打开下面这行注释查看控制台
-          // console.log("Product data:", product);
         }
 
-        // Gender 显示
+        // Gender & Notes 显示，但已移除 HOT/NEW/SALE 标签
         document.getElementById("modal-sub").innerHTML = `
             <div style="font-size:1.1rem; color:#333; margin-bottom:5px;">${
               product.brand
@@ -1483,21 +1479,6 @@
               }</strong> &nbsp;|&nbsp; Size: ${formatSize(product)}
             </div>
             ${notesHtml}
-            ${
-              product.top == 1
-                ? '<span style="color:red; font-weight:bold; font-size:0.8rem; margin-right:5px;">🔥 HOT</span>'
-                : ""
-            }
-            ${
-              product.new == 1
-                ? '<span style="color:blue; font-weight:bold; font-size:0.8rem; margin-right:5px;">🆕 NEW</span>'
-                : ""
-            }
-            ${
-              product.sale == 1
-                ? '<span style="color:green; font-weight:bold; font-size:0.8rem;">🏷️ SALE</span>'
-                : ""
-            }
         `;
         document.getElementById("modal-price").textContent =
           "$" + product.price;
