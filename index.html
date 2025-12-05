@@ -437,6 +437,7 @@
         text-transform: uppercase;
         line-height: 1.2;
         font-weight: 500;
+        /* 这里不再有特殊ID样式，确保整行文字一致 */
       }
       .scroll-card-price {
         font-size: 1rem;
@@ -770,14 +771,7 @@
         }
       }
 
-      /* ================= 新增样式 (Gender & Notes & ID) ================= */
-
-      /* 产品ID的样式：深灰色，加粗，与名称稍微区分 */
-      .product-id-tag {
-        color: #555;
-        font-weight: 800;
-        margin-right: 4px;
-      }
+      /* ================= 新增样式 (Gender & Notes) ================= */
 
       /* 弹窗中的香调(Notes)区域 */
       .modal-notes-box {
@@ -1038,20 +1032,18 @@
         "Yves Saint Laurent",
         "Louis Vuitton",
         "Gucci",
-        "Burberry",
-        "Versace",
         "Carolina Herrera",
-        "Giorgio Armani",
         "Valentino",
         "Maison Francis Kurkdjian",
         "Parfums de Marly",
         "Jean Paul Gaultier",
-        "Paco Rabanne",
-        "Bond No. 9",
         "Xerjoff",
+        "Bond No. 9",
         "Initio",
-        "Lattafa",
-        "Azzaro",
+        "Paco Rabanne",
+        "Giorgio Armani",
+        "Burberry",
+        "Versace",
       ];
 
       // ================= 状态变量 =================
@@ -1251,19 +1243,18 @@
           // 使用新的图片生成函数
           const imgHtml = generatePictureHTML(p.img, p.name);
 
-          // ID前置 & Gender
+          // Gender
           const genderHtml = p.gender
             ? `<span class="gender-tag">${p.gender}</span>`
             : "";
 
+          // ID-名称 (无特殊样式)
           card.innerHTML = `
             <div style="position:relative;">
                ${imgHtml}
                <div class="badges-container">${badgesHtml}</div>
             </div>
-            <div class="scroll-card-title">
-                <span class="product-id-tag">${p.id}</span>${p.name}
-            </div>
+            <div class="scroll-card-title">${p.id}-${p.name}</div>
             <div style="display:flex; align-items:center; margin-bottom:4px; flex-wrap:wrap;">
                 <span style="font-size:0.75rem; color:#666; font-weight:600;">${
                   p.brand
@@ -1330,7 +1321,7 @@
         return section;
       }
 
-      // --- 2. Grid 渲染 (Updated with Skeleton & WebP & ID/Gender) ---
+      // --- 2. Grid 渲染 (Updated) ---
       function switchToGrid(criteria) {
         viewMode = "grid";
         document.getElementById("home-view").style.display = "none";
@@ -1408,6 +1399,7 @@
           const webpSrc = p.img.replace(/\.(jpg|png|jpeg)$/i, ".webp");
           const genderText = p.gender ? ` · ${p.gender}` : "";
 
+          // ID-名称 (无特殊样式)
           div.innerHTML = `
               <div class="item-img-box skeleton-loader" onclick="openModalById('${
                 p.id
@@ -1426,7 +1418,7 @@
               </div>
               <div class="caption">
                  <div style="font-size:0.85rem; height:2.4em; overflow:hidden; margin-bottom:5px; line-height:1.2;">
-                    <span class="product-id-tag">${p.id}</span>${p.name}
+                    ${p.id}-${p.name}
                  </div>
                  <div style="font-size:0.8rem; color:#888; margin-bottom:5px;">
                     ${p.brand}${genderText} <br>
@@ -1453,26 +1445,31 @@
         }
       }
 
-      // --- 3. 弹窗逻辑 (Updated for Notes & ID) ---
+      // --- 3. 弹窗逻辑 (Updated: Check Notes & Plain ID) ---
       window.openModal = function (product) {
         currentModalProductId = product.id;
         document.getElementById("modal-img").src = product.img;
 
-        // ID 前置
-        document.getElementById("modal-title").innerHTML = `
-          <span class="product-id-tag" style="font-size:1rem; color:#666;">${product.id}</span>
-          ${product.name}
-        `;
+        // ID-名称 (无特殊样式)
+        document.getElementById(
+          "modal-title"
+        ).textContent = `${product.id}-${product.name}`;
 
-        // Notes 显示逻辑
+        // Notes 显示逻辑 (增加兼容性检查)
+        // 尝试读取 Notes 或者 notes 字段
+        const notesContent = product.Notes || product.notes;
+
         let notesHtml = "";
-        if (product.Notes && product.Notes.trim() !== "") {
+        if (notesContent && notesContent.trim() !== "") {
           notesHtml = `
             <div class="modal-notes-box">
               <span class="modal-notes-title">Fragrance Notes</span>
-              <span class="modal-notes-text">${product.Notes}</span>
+              <span class="modal-notes-text">${notesContent}</span>
             </div>
           `;
+        } else {
+          // 如果您希望确认数据是否读取到，可以打开下面这行注释查看控制台
+          // console.log("Product data:", product);
         }
 
         // Gender 显示
