@@ -261,7 +261,7 @@
         opacity: 1;
       }
 
-      /* ================= 5. 首页 (Home View) - 优化版 ================= */
+      /* ================= 5. 首页 (Home View) ================= */
       #home-view {
         padding-top: 10px;
         padding-bottom: 30px;
@@ -299,17 +299,17 @@
         padding: 5px;
       }
 
-      /* 滚动容器包装器，用于定位箭头 */
+      /* 滚动容器包装器 */
       .scroll-container-wrapper {
         position: relative;
-        padding: 0 5px; /* 防止阴影被切 */
+        padding: 0 5px;
       }
 
       .scroll-wrapper {
         display: flex;
         overflow-x: auto;
         gap: 12px;
-        padding: 5px 12px 15px 12px; /* 底部增加padding给滚动条 */
+        padding: 5px 12px 15px 12px;
         scrollbar-width: none;
         -webkit-overflow-scrolling: touch;
         scroll-snap-type: x mandatory;
@@ -322,7 +322,7 @@
       /* 左右箭头按钮 */
       .scroll-arrow-btn {
         position: absolute;
-        top: 38%; /* 大致居中于图片区域 */
+        top: 38%;
         transform: translateY(-50%);
         width: 36px;
         height: 36px;
@@ -334,7 +334,7 @@
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        opacity: 0; /* 默认隐藏，JS控制显示 */
+        opacity: 0;
         pointer-events: none;
         transition: opacity 0.3s, transform 0.2s;
         font-size: 1.2rem;
@@ -356,14 +356,14 @@
         right: 5px;
       }
 
-      /* 滚动指示器 (Progress Bar) */
+      /* 滚动指示器 */
       .scroll-progress-container {
         width: 60px;
         height: 4px;
         background: #eee;
         border-radius: 2px;
         margin: 0 auto;
-        margin-top: -5px; /* 紧贴卡片底部 */
+        margin-top: -5px;
         overflow: hidden;
       }
       .scroll-progress-bar {
@@ -530,7 +530,6 @@
         object-fit: cover;
         cursor: pointer;
       }
-
       .item .caption {
         padding: 10px 8px;
         text-align: center;
@@ -632,8 +631,8 @@
         overflow: hidden;
         position: relative;
         text-align: center;
-        /* [修改点] 底部留白减少 */
-        padding-bottom: 20px;
+        /* [修改点] 底部padding极限压缩 */
+        padding-bottom: 15px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
       }
       .modal-close {
@@ -651,26 +650,26 @@
       }
       .modal-img {
         width: 100%;
-        /* [修改点] 高度从300px减少到220px，使弹窗更短 */
-        height: 220px;
+        /* [修改点] 恢复图片高度为 300px */
+        height: 300px;
         object-fit: cover;
         background: #f8f8f8;
       }
       .modal-info {
-        /* [修改点] 内边距减少 */
-        padding: 10px 20px;
+        /* [修改点] 内边距压缩 */
+        padding: 8px 15px;
       }
       .modal-btn {
         background: #000;
         color: #fff;
-        padding: 15px 0;
+        padding: 12px 0;
         width: 100%;
-        font-size: 1.1rem;
+        font-size: 1rem;
         border-radius: 8px;
         cursor: pointer;
         font-weight: bold;
-        /* [修改点] 按钮顶部间距减少 */
-        margin-top: 12px;
+        /* [修改点] 间距压缩 */
+        margin-top: 8px;
         display: block;
       }
 
@@ -681,9 +680,9 @@
         background: #fff;
         border: 2px solid #000;
         border-radius: 8px;
-        /* [修改点] 间距减少 */
-        margin-top: 12px;
-        height: 52px;
+        /* [修改点] 间距压缩 */
+        margin-top: 8px;
+        height: 48px;
         overflow: hidden;
       }
       .qty-btn {
@@ -777,45 +776,63 @@
 
       /* ================= 新增样式 (Gender & Notes) ================= */
 
-      /* 弹窗中的香调(Notes)区域 */
+      /* 弹窗中的香调(Notes)区域 - [修改点] 极度压缩间距 */
       .modal-notes-box {
         background-color: #f7f7f7;
         border-radius: 8px;
-        /* [修改点] padding 和 margin 减少 */
-        padding: 10px 15px;
-        margin-bottom: 12px;
+        padding: 6px 10px;
+        margin-bottom: 6px;
         text-align: left;
         border: 1px solid #eee;
       }
-
       .modal-notes-title {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         font-weight: 700;
         color: #999;
         text-transform: uppercase;
         letter-spacing: 1px;
-        margin-bottom: 3px;
+        margin-bottom: 2px;
         display: block;
       }
-
       .modal-notes-text {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         color: #444;
-        line-height: 1.4;
+        line-height: 1.3;
         font-family: Georgia, serif;
         font-style: italic;
       }
 
-      /* 性别标签的小样式 */
+      /* ================= [修改点] 区分性别的颜色标签 ================= */
       .gender-tag {
         display: inline-block;
         font-size: 0.7rem;
-        color: #777;
-        background: #f0f0f0;
-        padding: 1px 5px;
-        border-radius: 3px;
+        padding: 1px 6px;
+        border-radius: 4px;
         margin-left: 5px;
         vertical-align: middle;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      /* Women: 柔和粉 */
+      .gender-tag.women {
+        color: #c2185b;
+        background: #fce4ec;
+        border: 1px solid #f8bbd0;
+      }
+
+      /* Men: 清爽蓝 */
+      .gender-tag.men {
+        color: #1565c0;
+        background: #e3f2fd;
+        border: 1px solid #bbdefb;
+      }
+
+      /* Unisex: 高级灰/中性色 */
+      .gender-tag.unisex {
+        color: #455a64;
+        background: #eceff1;
+        border: 1px solid #cfd8dc;
       }
     </style>
   </head>
@@ -981,19 +998,21 @@
         <div class="modal-info">
           <h3
             id="modal-title"
-            style="margin: 0 0 5px 0; font-size: 1.2rem"
+            style="margin: 5px 0 2px 0; font-size: 1.1rem; line-height: 1.2"
           ></h3>
+
           <div
             id="modal-sub"
-            style="color: #666; font-size: 0.9rem; margin-bottom: 10px"
+            style="color: #666; font-size: 0.85rem; margin-bottom: 8px"
           ></div>
+
           <div
             id="modal-price"
             style="
               font-weight: bold;
               color: var(--accent-color);
-              font-size: 1.4rem;
-              margin-bottom: 15px;
+              font-size: 1.3rem;
+              margin-bottom: 8px;
             "
           ></div>
           <div id="modal-action-area"></div>
@@ -1083,6 +1102,15 @@
         return `${ml}ml <span style="color:#999;font-weight:normal">(${flOz} oz)</span>`;
       }
 
+      // --- Helper: 获取性别样式类 ---
+      function getGenderClass(genderText) {
+        if (!genderText) return "unisex";
+        const g = genderText.toLowerCase();
+        if (g.includes("women") || g.includes("female")) return "women";
+        if (g.includes("men") || g.includes("male")) return "men";
+        return "unisex";
+      }
+
       function renderSidebarBrands() {
         const list = document.getElementById("brand-list-container");
         list.innerHTML = "";
@@ -1123,7 +1151,7 @@
         `;
       }
 
-      // --- 1. 首页渲染逻辑 (Enhanced) ---
+      // --- 1. 首页渲染逻辑 ---
       function renderHome() {
         const db = (window.perfumeDB || []).filter(
           (p) => parseInt(p.stock) !== 0
@@ -1211,18 +1239,18 @@
         `;
         section.appendChild(header);
 
-        // Scroll Container Wrapper (for arrows)
+        // Scroll Container Wrapper
         const wrapperContainer = document.createElement("div");
         wrapperContainer.className = "scroll-container-wrapper";
 
         // Arrows
         const leftBtn = document.createElement("div");
         leftBtn.className = "scroll-arrow-btn left";
-        leftBtn.innerHTML = "&#10094;"; // <
+        leftBtn.innerHTML = "&#10094;";
 
         const rightBtn = document.createElement("div");
         rightBtn.className = "scroll-arrow-btn right";
-        rightBtn.innerHTML = "&#10095;"; // >
+        rightBtn.innerHTML = "&#10095;";
 
         // Scroll Wrapper
         const wrapper = document.createElement("div");
@@ -1245,15 +1273,14 @@
           if (p.sale == 1)
             badgesHtml += '<div class="badge-tag badge-sale">SALE</div>';
 
-          // 使用新的图片生成函数
           const imgHtml = generatePictureHTML(p.img, p.name);
 
-          // Gender
+          // [修改点] Gender 带颜色类
+          const genderClass = getGenderClass(p.gender);
           const genderHtml = p.gender
-            ? `<span class="gender-tag">${p.gender}</span>`
+            ? `<span class="gender-tag ${genderClass}">${p.gender}</span>`
             : "";
 
-          // ID-名称 (无特殊样式)
           card.innerHTML = `
             <div style="position:relative;">
                ${imgHtml}
@@ -1293,22 +1320,20 @@
         section.appendChild(wrapperContainer);
         section.appendChild(progressContainer);
 
-        // --- Logic: Arrows & Progress ---
+        // Logic: Arrows & Progress
         const updateControls = () => {
           const maxScroll = wrapper.scrollWidth - wrapper.clientWidth;
           const scrollLeft = wrapper.scrollLeft;
 
-          // Arrows visibility
           if (scrollLeft > 10) leftBtn.classList.add("visible");
           else leftBtn.classList.remove("visible");
 
           if (scrollLeft < maxScroll - 10) rightBtn.classList.add("visible");
           else rightBtn.classList.remove("visible");
 
-          // Progress Bar width
           if (maxScroll > 0) {
             const percentage = (scrollLeft / maxScroll) * 100;
-            progressBar.style.width = Math.max(10, percentage) + "%"; // Min 10% width
+            progressBar.style.width = Math.max(10, percentage) + "%";
           } else {
             progressBar.style.width = "100%";
           }
@@ -1320,13 +1345,12 @@
           wrapper.scrollBy({ left: 200, behavior: "smooth" });
 
         wrapper.addEventListener("scroll", updateControls);
-        // Init state check after render
         setTimeout(updateControls, 100);
 
         return section;
       }
 
-      // --- 2. Grid 渲染 (Updated) ---
+      // --- 2. Grid 渲染 ---
       function switchToGrid(criteria) {
         viewMode = "grid";
         document.getElementById("home-view").style.display = "none";
@@ -1402,9 +1426,13 @@
             badgesHtml += '<div class="badge-tag badge-sale">SALE</div>';
 
           const webpSrc = p.img.replace(/\.(jpg|png|jpeg)$/i, ".webp");
-          const genderText = p.gender ? ` · ${p.gender}` : "";
 
-          // ID-名称 (无特殊样式)
+          // [修改点] Grid 里的 Gender 颜色
+          const genderClass = getGenderClass(p.gender);
+          const genderText = p.gender
+            ? ` · <span class="gender-tag ${genderClass}" style="margin-left:0">${p.gender}</span>`
+            : "";
+
           div.innerHTML = `
               <div class="item-img-box skeleton-loader" onclick="openModalById('${
                 p.id
@@ -1450,12 +1478,11 @@
         }
       }
 
-      // --- 3. 弹窗逻辑 (Updated: Compact & Removed Labels) ---
+      // --- 3. 弹窗逻辑 ---
       window.openModal = function (product) {
         currentModalProductId = product.id;
         document.getElementById("modal-img").src = product.img;
 
-        // ID-名称 (无特殊样式)
         document.getElementById(
           "modal-title"
         ).textContent = `${product.id}-${product.name}`;
@@ -1473,15 +1500,19 @@
           `;
         }
 
-        // [修改点] 间距 margin-bottom 已减少
+        // [修改点] 弹窗 Gender 带颜色
+        const genderClass = getGenderClass(product.gender);
+
         document.getElementById("modal-sub").innerHTML = `
             <div style="font-size:1.1rem; color:#333; margin-bottom:5px;">${
               product.brand
             }</div>
-            <div style="margin-bottom:10px; font-size:0.9rem; color:#555;">
-              Gender: <strong>${
-                product.gender || "Unisex"
-              }</strong> &nbsp;|&nbsp; Size: ${formatSize(product)}
+            <div style="margin-bottom:8px; font-size:0.85rem; color:#555; display:flex; align-items:center; justify-content:center;">
+              <span class="gender-tag ${genderClass}" style="font-size:0.8rem; margin:0 5px 0 0;">${
+          product.gender || "Unisex"
+        }</span>
+              <span style="color:#ccc">|</span> 
+              <span style="margin-left:5px">${formatSize(product)}</span>
             </div>
             ${notesHtml}
         `;
