@@ -437,7 +437,6 @@
         text-transform: uppercase;
         line-height: 1.2;
         font-weight: 500;
-        /* 这里不再有特殊ID样式，确保整行文字一致 */
       }
       .scroll-card-price {
         font-size: 1rem;
@@ -633,7 +632,8 @@
         overflow: hidden;
         position: relative;
         text-align: center;
-        padding-bottom: 25px;
+        /* [修改点] 底部留白减少 */
+        padding-bottom: 20px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
       }
       .modal-close {
@@ -651,12 +651,14 @@
       }
       .modal-img {
         width: 100%;
-        height: 300px;
+        /* [修改点] 高度从300px减少到220px，使弹窗更短 */
+        height: 220px;
         object-fit: cover;
         background: #f8f8f8;
       }
       .modal-info {
-        padding: 20px 15px;
+        /* [修改点] 内边距减少 */
+        padding: 10px 20px;
       }
       .modal-btn {
         background: #000;
@@ -667,7 +669,8 @@
         border-radius: 8px;
         cursor: pointer;
         font-weight: bold;
-        margin-top: 15px;
+        /* [修改点] 按钮顶部间距减少 */
+        margin-top: 12px;
         display: block;
       }
 
@@ -678,7 +681,8 @@
         background: #fff;
         border: 2px solid #000;
         border-radius: 8px;
-        margin-top: 15px;
+        /* [修改点] 间距减少 */
+        margin-top: 12px;
         height: 52px;
         overflow: hidden;
       }
@@ -777,8 +781,9 @@
       .modal-notes-box {
         background-color: #f7f7f7;
         border-radius: 8px;
-        padding: 12px 15px;
-        margin-bottom: 20px;
+        /* [修改点] padding 和 margin 减少 */
+        padding: 10px 15px;
+        margin-bottom: 12px;
         text-align: left;
         border: 1px solid #eee;
       }
@@ -789,15 +794,15 @@
         color: #999;
         text-transform: uppercase;
         letter-spacing: 1px;
-        margin-bottom: 5px;
+        margin-bottom: 3px;
         display: block;
       }
 
       .modal-notes-text {
         font-size: 0.9rem;
         color: #444;
-        line-height: 1.5;
-        font-family: Georgia, serif; /* 使用衬线体更有高级香水感 */
+        line-height: 1.4;
+        font-family: Georgia, serif;
         font-style: italic;
       }
 
@@ -980,7 +985,7 @@
           ></h3>
           <div
             id="modal-sub"
-            style="color: #666; font-size: 0.9rem; margin-bottom: 15px"
+            style="color: #666; font-size: 0.9rem; margin-bottom: 10px"
           ></div>
           <div
             id="modal-price"
@@ -988,7 +993,7 @@
               font-weight: bold;
               color: var(--accent-color);
               font-size: 1.4rem;
-              margin-bottom: 20px;
+              margin-bottom: 15px;
             "
           ></div>
           <div id="modal-action-area"></div>
@@ -1445,7 +1450,7 @@
         }
       }
 
-      // --- 3. 弹窗逻辑 (Updated: Removed Labels) ---
+      // --- 3. 弹窗逻辑 (Updated: Compact & Removed Labels) ---
       window.openModal = function (product) {
         currentModalProductId = product.id;
         document.getElementById("modal-img").src = product.img;
@@ -1468,12 +1473,12 @@
           `;
         }
 
-        // Gender & Notes 显示，但已移除 HOT/NEW/SALE 标签
+        // [修改点] 间距 margin-bottom 已减少
         document.getElementById("modal-sub").innerHTML = `
             <div style="font-size:1.1rem; color:#333; margin-bottom:5px;">${
               product.brand
             }</div>
-            <div style="margin-bottom:15px; font-size:0.9rem; color:#555;">
+            <div style="margin-bottom:10px; font-size:0.9rem; color:#555;">
               Gender: <strong>${
                 product.gender || "Unisex"
               }</strong> &nbsp;|&nbsp; Size: ${formatSize(product)}
