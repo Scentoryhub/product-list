@@ -231,88 +231,62 @@
         font-weight: bold;
       }
 
-      /* ================= 4. 购物指引 (HOW TO ORDER) ================= */
-      .process-guide-section {
-        background-color: #fff;
-        padding: 25px 15px 35px 15px; /* 上下留白 */
-        text-align: center;
-        border-bottom: 10px solid #f8f8f8; /* 与下方产品区的分隔条 */
+      /* ================= 4. 极简版购物指引 (Compact Guide) ================= */
+      .compact-guide {
+        background: #fff;
+        padding: 15px 10px;
+        border-bottom: 8px solid #f8f8f8; /* 浅灰色分隔条 */
         margin-bottom: 10px;
       }
 
-      .process-title {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: #000;
-        margin-bottom: 25px;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        position: relative;
-        display: inline-block;
-      }
-
-      /* 标题下的小金线 */
-      .process-title::after {
-        content: "";
-        display: block;
-        width: 40px;
-        height: 3px;
-        background: var(--accent-color);
-        margin: 8px auto 0;
-      }
-
-      .steps-wrapper {
+      .compact-steps {
         display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 20px;
-        max-width: 1000px;
+        justify-content: space-between; /* 两端对齐 */
+        align-items: flex-start;
+        max-width: 450px; /* 限制最大宽度 */
         margin: 0 auto;
       }
 
-      .step-card {
+      .compact-item {
         flex: 1;
-        min-width: 260px; /* 手机端一行一个 */
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        text-align: center;
+        position: relative;
+        padding: 0 2px;
       }
 
-      /* 圆形图标背景 */
-      .step-icon-circle {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: #f9f9f9;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 12px;
+      /* 步骤之间的灰色小箭头 › */
+      .compact-item:not(:last-child)::after {
+        content: "›";
+        position: absolute;
+        right: -6px;
+        top: 8px;
+        font-size: 1.6rem;
+        color: #e0e0e0;
+        line-height: 0;
+        font-weight: 300;
+      }
+
+      .compact-icon {
         font-size: 1.5rem;
-        color: #333;
-        border: 1px solid #eee;
-      }
-
-      /* 步骤标题 */
-      .step-heading {
-        font-size: 0.95rem;
-        font-weight: 700;
         margin-bottom: 6px;
-        color: #000;
+        display: block;
+        line-height: 1;
       }
 
-      /* 步骤描述 */
-      .step-desc {
-        font-size: 0.85rem;
-        color: #666;
-        line-height: 1.4;
-        max-width: 240px;
+      .compact-text {
+        font-size: 0.75rem; /* 12px */
+        line-height: 1.2;
+        color: #333;
+        font-weight: 700;
+        margin-bottom: 2px;
       }
 
-      /* 强调色文字 */
-      .highlight-text {
-        color: var(--accent-color);
-        font-weight: bold;
+      .compact-sub {
+        font-size: 0.65rem; /* 10px - 作为补充说明 */
+        color: #999;
+        display: block;
+        font-weight: 500;
+        transform: scale(0.95);
       }
 
       /* ================= 5. 骨架屏与图片加载动画 ================= */
@@ -347,7 +321,6 @@
 
       /* ================= 6. 首页 (Home View) ================= */
       #home-view {
-        /* padding-top: 10px; */ /* 去掉，让Banner紧贴 */
         padding-bottom: 30px;
         display: block;
       }
@@ -980,38 +953,24 @@
     </div>
 
     <div id="home-view">
-      <div class="process-guide-section">
-        <div class="process-title">How To Order</div>
-
-        <div class="steps-wrapper">
-          <div class="step-card">
-            <div class="step-icon-circle">🛍️</div>
-            <div class="step-heading">1. Add to Cart</div>
-            <div class="step-desc">
-              Browse and add your favorite perfumes. <br />
-              <span class="highlight-text">Volume discounts</span> are applied
-              automatically.
-            </div>
+      <div class="compact-guide">
+        <div class="compact-steps">
+          <div class="compact-item">
+            <span class="compact-icon">🛒</span>
+            <div class="compact-text">1. Add to Cart</div>
+            <span class="compact-sub">Auto Discount</span>
           </div>
 
-          <div class="step-card">
-            <div class="step-icon-circle" style="color: #25d366">💬</div>
-            <div class="step-heading">2. Send Order</div>
-            <div class="step-desc">
-              Go to Cart and click the green button. <br />
-              Your order list will be sent via
-              <span class="highlight-text">WhatsApp</span>.
-            </div>
+          <div class="compact-item">
+            <span class="compact-icon" style="color: #25d366">💬</span>
+            <div class="compact-text">2. Send List</div>
+            <span class="compact-sub">To WhatsApp</span>
           </div>
 
-          <div class="step-card">
-            <div class="step-icon-circle" style="color: #007bff">🧾</div>
-            <div class="step-heading">3. Confirm & Pay</div>
-            <div class="step-desc">
-              We check stock and send you an
-              <span class="highlight-text">Alibaba Invoice</span>. <br />
-              Secure payment & fast shipping.
-            </div>
+          <div class="compact-item">
+            <span class="compact-icon" style="color: #b28900">💳</span>
+            <div class="compact-text">3. Secure Pay</div>
+            <span class="compact-sub">Payment Link</span>
           </div>
         </div>
       </div>
