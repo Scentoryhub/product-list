@@ -1070,15 +1070,7 @@
             style="color: #666; font-size: 0.85rem; margin-bottom: 8px"
           ></div>
 
-          <div
-            id="modal-price"
-            style="
-              font-weight: bold;
-              color: var(--accent-color);
-              font-size: 1.3rem;
-              margin-bottom: 8px;
-            "
-          ></div>
+          <div id="modal-price" style="margin-bottom: 8px"></div>
           <div id="modal-action-area"></div>
         </div>
       </div>
@@ -1580,8 +1572,113 @@
             </div>
             ${notesHtml}
         `;
-        document.getElementById("modal-price").textContent =
-          "$" + product.price;
+
+        // --- 智能阶梯价目表 (Start) ---
+        const discountTiers = [
+          { min: 1, max: 1, percent: 0 },
+          { min: 2, max: 2, percent: 0.03 },
+          { min: 3, max: 4, percent: 0.05 },
+          { min: 5, max: 9, percent: 0.08 },
+          { min: 10, max: 19, percent: 0.14 },
+          { min: 20, max: 29, percent: 0.24 },
+          { min: 30, max: 49, percent: 0.26 },
+          { min: 50, max: 79, percent: 0.29 },
+          { min: 80, max: 100, percent: 0.32 },
+          { min: 101, max: Infinity, percent: 0.35 },
+        ];
+
+        let basePrice = Number(product.price);
+        let rowsHtml = discountTiers
+          .map((tier) => {
+            let discountedPrice = (basePrice * (1 - tier.percent)).toFixed(2);
+
+            let qtyLabel;
+            if (tier.min === tier.max) {
+              qtyLabel = `${tier.min} pc`;
+            } else if (tier.max === Infinity) {
+              qtyLabel = `${tier.min}+ pcs`;
+            } else {
+              qtyLabel = `${tier.min}-${tier.max} pcs`;
+            }
+
+            let offLabel =
+              tier.percent > 0
+                ? `<span style="color:#d9534f; font-weight:bold">-${Math.round(
+                    tier.percent * 100
+                  )}%</span>`
+                : "Std";
+
+            // Highlight the best deal
+            let rowClass = tier.percent >= 0.35 ? "tier-best" : "";
+
+            return `
+              <tr class="${rowClass}">
+                <td>${qtyLabel}</td>
+                <td>$${discountedPrice}</td>
+                <td>${offLabel}</td>
+              </tr>
+            `;
+          })
+          .join("");
+
+        let tierTableHtml = `
+          <style>
+            .tier-wrapper {
+              max-height: 180px; 
+              overflow-y: auto;
+              margin-top: 10px;
+              border: 1px solid #eee;
+              border-radius: 6px;
+            }
+            .tier-table {
+              width: 100%;
+              border-collapse: collapse;
+              font-size: 0.8rem;
+              text-align: center;
+            }
+            .tier-table th { 
+              background: #f1f1f1; 
+              position: sticky; 
+              top: 0; 
+              padding: 6px; 
+              font-weight:600; 
+              color:#555; 
+              z-index: 1;
+            }
+            .tier-table td { 
+              padding: 6px; 
+              border-bottom: 1px solid #f9f9f9; 
+              color:#333; 
+            }
+            .tier-table tr:nth-child(even) { background-color: #fafafa; }
+            .tier-table tr.tier-best { 
+              background-color: #fff8e1; 
+              border-left: 3px solid #b28900;
+            }
+          </style>
+          
+          <div class="tier-wrapper">
+            <table class="tier-table">
+              <thead>
+                <tr>
+                  <th>Quantity</th>
+                  <th>Price/ea</th>
+                  <th>Save</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsHtml}
+              </tbody>
+            </table>
+          </div>
+        `;
+
+        let priceEl = document.getElementById("modal-price");
+        priceEl.innerHTML =
+          `<div style="font-size:1.4rem; font-weight:bold; color:#b28900; margin-bottom:5px">$${product.price}</div>` +
+          tierTableHtml;
+        // --- 智能阶梯价目表 (End) ---
+
         updateModalButtonState(product.id);
         document.getElementById("modal").classList.add("open");
       };
