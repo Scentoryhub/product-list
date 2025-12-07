@@ -289,25 +289,31 @@
         transform: scale(0.95);
       }
 
-      /* ================= 批发横幅 (Wholesale Banner) - 动态版 ================= */
+      /* ================= 批发横幅 (Wholesale Banner) - 固定版 ================= */
       .ws-banner {
         background: #222;
         color: #fff;
-        padding: 12px 10px;
-        margin-bottom: 5px;
+        padding: 10px 5px;
         text-align: center;
         transition: background 0.3s;
+
+        /* 核心修改：固定在顶部 */
+        position: sticky;
+        top: var(--header-height); /* 紧贴 Header 下方 */
+        z-index: 990; /* 确保在产品列表之上，但在弹窗之下 */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); /* 加阴影，增加层次感 */
       }
+
       /* 当有折扣处于激活状态时，背景变金色 */
       .ws-banner.active-tier {
-        background: linear-gradient(135deg, #222 0%, #333 100%);
-        border-bottom: 2px solid #ffd700;
+        background: linear-gradient(135deg, #111 0%, #2a2a2a 100%);
+        border-bottom: 3px solid #ffd700;
       }
 
       .ws-banner-title {
         color: #ffd700;
         font-weight: 800;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         text-transform: uppercase;
         letter-spacing: 1px;
         margin-bottom: 6px;
@@ -317,12 +323,14 @@
       .ws-progress-box {
         background: rgba(255, 255, 255, 0.1);
         border-radius: 4px;
-        padding: 8px;
-        margin-top: 5px;
+        padding: 6px 10px;
+        margin: 0 auto;
+        max-width: 95%;
+        display: inline-block;
       }
       .ws-progress-text {
         font-size: 0.85rem;
-        margin-bottom: 4px;
+        margin-bottom: 2px;
         color: #fff;
       }
       .ws-highlight {
@@ -335,13 +343,13 @@
       .ws-pills {
         display: flex;
         justify-content: center;
-        gap: 8px;
+        gap: 6px;
         flex-wrap: wrap;
       }
       .ws-pill {
         background: rgba(255, 255, 255, 0.1);
         border: 1px solid #444;
-        padding: 4px 8px;
+        padding: 3px 8px;
         border-radius: 4px;
         font-size: 0.75rem;
       }
@@ -393,7 +401,7 @@
         padding: 20px 0;
         border-top: 1px solid #eee;
         border-bottom: 1px solid #eee;
-        scroll-margin-top: 70px;
+        scroll-margin-top: 130px; /* 调整：防止被固定Banner遮挡 */
         position: relative;
       }
 
@@ -1729,8 +1737,113 @@
             </div>
             ${notesHtml}
         `;
-        document.getElementById("modal-price").textContent =
-          "$" + product.price;
+
+        // --- 智能阶梯价目表 (Start) ---
+        const discountTiers = [
+          { min: 1, max: 1, percent: 0 },
+          { min: 2, max: 2, percent: 0.03 },
+          { min: 3, max: 4, percent: 0.05 },
+          { min: 5, max: 9, percent: 0.08 },
+          { min: 10, max: 19, percent: 0.14 },
+          { min: 20, max: 29, percent: 0.24 },
+          { min: 30, max: 49, percent: 0.26 },
+          { min: 50, max: 79, percent: 0.29 },
+          { min: 80, max: 100, percent: 0.32 },
+          { min: 101, max: Infinity, percent: 0.35 },
+        ];
+
+        let basePrice = Number(product.price);
+        let rowsHtml = discountTiers
+          .map((tier) => {
+            let discountedPrice = (basePrice * (1 - tier.percent)).toFixed(2);
+
+            let qtyLabel;
+            if (tier.min === tier.max) {
+              qtyLabel = `${tier.min} pc`;
+            } else if (tier.max === Infinity) {
+              qtyLabel = `${tier.min}+ pcs`;
+            } else {
+              qtyLabel = `${tier.min}-${tier.max} pcs`;
+            }
+
+            let offLabel =
+              tier.percent > 0
+                ? `<span style="color:#d9534f; font-weight:bold">-${Math.round(
+                    tier.percent * 100
+                  )}%</span>`
+                : "Std";
+
+            // Highlight the best deal
+            let rowClass = tier.percent >= 0.35 ? "tier-best" : "";
+
+            return `
+              <tr class="${rowClass}">
+                <td>${qtyLabel}</td>
+                <td>$${discountedPrice}</td>
+                <td>${offLabel}</td>
+              </tr>
+            `;
+          })
+          .join("");
+
+        let tierTableHtml = `
+          <style>
+            .tier-wrapper {
+              max-height: 180px; 
+              overflow-y: auto;
+              margin-top: 10px;
+              border: 1px solid #eee;
+              border-radius: 6px;
+            }
+            .tier-table {
+              width: 100%;
+              border-collapse: collapse;
+              font-size: 0.8rem;
+              text-align: center;
+            }
+            .tier-table th { 
+              background: #f1f1f1; 
+              position: sticky; 
+              top: 0; 
+              padding: 6px; 
+              font-weight:600; 
+              color:#555; 
+              z-index: 1;
+            }
+            .tier-table td { 
+              padding: 6px; 
+              border-bottom: 1px solid #f9f9f9; 
+              color:#333; 
+            }
+            .tier-table tr:nth-child(even) { background-color: #fafafa; }
+            .tier-table tr.tier-best { 
+              background-color: #fff8e1; 
+              border-left: 3px solid #b28900;
+            }
+          </style>
+          
+          <div class="tier-wrapper">
+            <table class="tier-table">
+              <thead>
+                <tr>
+                  <th>Quantity</th>
+                  <th>Price/ea</th>
+                  <th>Save</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsHtml}
+              </tbody>
+            </table>
+          </div>
+        `;
+
+        let priceEl = document.getElementById("modal-price");
+        priceEl.innerHTML =
+          `<div style="font-size:1.4rem; font-weight:bold; color:#b28900; margin-bottom:5px">$${product.price}</div>` +
+          tierTableHtml;
+        // --- 智能阶梯价目表 (End) ---
+
         updateModalButtonState(product.id);
         document.getElementById("modal").classList.add("open");
       };
