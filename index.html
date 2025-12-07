@@ -1241,6 +1241,12 @@
         }, 50);
       });
 
+      // ================= 核心修复代码：监听 pageshow =================
+      // 这可以确保当用户点击“后退”回到此页面时，购物车和横幅数据会立即刷新
+      window.addEventListener("pageshow", function (event) {
+        loadCart(); // 重新读取 localStorage 并更新 UI（包括横幅）
+      });
+
       // --- Helper: 获取购物车总数量 ---
       function getCartTotalQty() {
         return cartItems.reduce((s, i) => s + i.quantity, 0);
