@@ -289,6 +289,68 @@
         transform: scale(0.95);
       }
 
+      /* ================= 批发横幅 (Wholesale Banner) - 动态版 ================= */
+      .ws-banner {
+        background: #222;
+        color: #fff;
+        padding: 12px 10px;
+        margin-bottom: 5px;
+        text-align: center;
+        transition: background 0.3s;
+      }
+      /* 当有折扣处于激活状态时，背景变金色 */
+      .ws-banner.active-tier {
+        background: linear-gradient(135deg, #222 0%, #333 100%);
+        border-bottom: 2px solid #ffd700;
+      }
+
+      .ws-banner-title {
+        color: #ffd700;
+        font-weight: 800;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 6px;
+      }
+
+      /* 进度条容器 */
+      .ws-progress-box {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        padding: 8px;
+        margin-top: 5px;
+      }
+      .ws-progress-text {
+        font-size: 0.85rem;
+        margin-bottom: 4px;
+        color: #fff;
+      }
+      .ws-highlight {
+        color: #ffd700;
+        font-weight: bold;
+        font-size: 1rem;
+      }
+
+      /* 默认显示的 Pill */
+      .ws-pills {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .ws-pill {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid #444;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+      }
+      .ws-pill span {
+        color: #ffd700;
+        font-weight: bold;
+        margin-left: 3px;
+      }
+
       /* ================= 5. 骨架屏与图片加载动画 ================= */
       @keyframes skeleton-loading {
         0% {
@@ -953,6 +1015,15 @@
     </div>
 
     <div id="home-view">
+      <div id="wholesale-banner" class="ws-banner">
+        <div class="ws-banner-title">⚡ Wholesale Discounts</div>
+        <div id="ws-content" class="ws-pills">
+          <div class="ws-pill">5+ <span>-8%</span></div>
+          <div class="ws-pill">10+ <span>-14%</span></div>
+          <div class="ws-pill">20+ <span>-24%</span></div>
+          <div class="ws-pill">100+ <span>-35%</span></div>
+        </div>
+      </div>
       <div class="compact-guide">
         <div class="compact-steps">
           <div class="compact-item">
@@ -1070,7 +1141,15 @@
             style="color: #666; font-size: 0.85rem; margin-bottom: 8px"
           ></div>
 
-          <div id="modal-price" style="margin-bottom: 8px"></div>
+          <div
+            id="modal-price"
+            style="
+              font-weight: bold;
+              color: var(--accent-color);
+              font-size: 1.3rem;
+              margin-bottom: 8px;
+            "
+          ></div>
           <div id="modal-action-area"></div>
         </div>
       </div>
@@ -1126,6 +1205,20 @@
         "Versace",
       ];
 
+      // === 全局折扣规则 (Discount Tiers) ===
+      const discountTiers = [
+        { min: 1, max: 1, percent: 0 },
+        { min: 2, max: 2, percent: 0.03 },
+        { min: 3, max: 4, percent: 0.05 },
+        { min: 5, max: 9, percent: 0.08 },
+        { min: 10, max: 19, percent: 0.14 },
+        { min: 20, max: 29, percent: 0.24 },
+        { min: 30, max: 49, percent: 0.26 },
+        { min: 50, max: 79, percent: 0.29 },
+        { min: 80, max: 100, percent: 0.32 },
+        { min: 101, max: Infinity, percent: 0.35 },
+      ];
+
       // ================= 状态变量 =================
       let cartItems = [];
       let currentPage = 1;
@@ -1149,6 +1242,70 @@
           }
         }, 50);
       });
+
+      // --- Helper: 获取购物车总数量 ---
+      function getCartTotalQty() {
+        return cartItems.reduce((s, i) => s + i.quantity, 0);
+      }
+
+      // --- Helper: 核心！更新首页批发横幅 ---
+      function updateWholesaleBanner() {
+        const qty = getCartTotalQty();
+        const banner = document.getElementById("wholesale-banner");
+        const content = document.getElementById("ws-content");
+
+        if (!banner || !content) return;
+
+        // 1. 如果购物车为空，显示默认吸引人的档位
+        if (qty === 0) {
+          banner.className = "ws-banner"; // 移除 active 类
+          content.innerHTML = `
+              <div class="ws-pill">5+ <span>-8%</span></div>
+              <div class="ws-pill">10+ <span>-14%</span></div>
+              <div class="ws-pill">20+ <span>-24%</span></div>
+              <div class="ws-pill">100+ <span>-35%</span></div>
+            `;
+          return;
+        }
+
+        // 2. 查找当前所处的档位
+        let currentTier = discountTiers.find(
+          (t) => qty >= t.min && qty <= t.max
+        );
+        if (!currentTier) currentTier = discountTiers[0]; // 兜底
+
+        // 3. 查找下一级目标
+        let nextTierIndex = discountTiers.indexOf(currentTier) + 1;
+        let nextTier = null;
+        if (nextTierIndex < discountTiers.length) {
+          nextTier = discountTiers[nextTierIndex];
+        }
+
+        // 4. 构建动态 HTML
+        let html = `<div class="ws-progress-box">`;
+
+        // 显示当前状态
+        let currentOff = Math.round(currentTier.percent * 100);
+        html += `<div class="ws-progress-text">Cart: <strong>${qty}</strong> items • Current: <span class="ws-highlight">-${currentOff}% OFF</span></div>`;
+
+        // 显示冲刺目标
+        if (nextTier) {
+          let needMore = nextTier.min - qty;
+          let nextOff = Math.round(nextTier.percent * 100);
+          html += `<div style="font-size:0.75rem; color:#ccc;">
+                🔥 Add <strong>${needMore}</strong> more to get <span style="color:#fff;font-weight:bold">-${nextOff}% OFF</span>!
+            </div>`;
+        } else {
+          // 已经是最高等级
+          html += `<div style="font-size:0.75rem; color:#ffd700;">👑 Maximum Discount Unlocked!</div>`;
+        }
+
+        html += `</div>`;
+
+        // 更新内容并激活样式
+        content.innerHTML = html;
+        banner.classList.add("active-tier");
+      }
 
       function formatSize(item) {
         if (!item.ml) return "";
@@ -1572,113 +1729,8 @@
             </div>
             ${notesHtml}
         `;
-
-        // --- 智能阶梯价目表 (Start) ---
-        const discountTiers = [
-          { min: 1, max: 1, percent: 0 },
-          { min: 2, max: 2, percent: 0.03 },
-          { min: 3, max: 4, percent: 0.05 },
-          { min: 5, max: 9, percent: 0.08 },
-          { min: 10, max: 19, percent: 0.14 },
-          { min: 20, max: 29, percent: 0.24 },
-          { min: 30, max: 49, percent: 0.26 },
-          { min: 50, max: 79, percent: 0.29 },
-          { min: 80, max: 100, percent: 0.32 },
-          { min: 101, max: Infinity, percent: 0.35 },
-        ];
-
-        let basePrice = Number(product.price);
-        let rowsHtml = discountTiers
-          .map((tier) => {
-            let discountedPrice = (basePrice * (1 - tier.percent)).toFixed(2);
-
-            let qtyLabel;
-            if (tier.min === tier.max) {
-              qtyLabel = `${tier.min} pc`;
-            } else if (tier.max === Infinity) {
-              qtyLabel = `${tier.min}+ pcs`;
-            } else {
-              qtyLabel = `${tier.min}-${tier.max} pcs`;
-            }
-
-            let offLabel =
-              tier.percent > 0
-                ? `<span style="color:#d9534f; font-weight:bold">-${Math.round(
-                    tier.percent * 100
-                  )}%</span>`
-                : "Std";
-
-            // Highlight the best deal
-            let rowClass = tier.percent >= 0.35 ? "tier-best" : "";
-
-            return `
-              <tr class="${rowClass}">
-                <td>${qtyLabel}</td>
-                <td>$${discountedPrice}</td>
-                <td>${offLabel}</td>
-              </tr>
-            `;
-          })
-          .join("");
-
-        let tierTableHtml = `
-          <style>
-            .tier-wrapper {
-              max-height: 180px; 
-              overflow-y: auto;
-              margin-top: 10px;
-              border: 1px solid #eee;
-              border-radius: 6px;
-            }
-            .tier-table {
-              width: 100%;
-              border-collapse: collapse;
-              font-size: 0.8rem;
-              text-align: center;
-            }
-            .tier-table th { 
-              background: #f1f1f1; 
-              position: sticky; 
-              top: 0; 
-              padding: 6px; 
-              font-weight:600; 
-              color:#555; 
-              z-index: 1;
-            }
-            .tier-table td { 
-              padding: 6px; 
-              border-bottom: 1px solid #f9f9f9; 
-              color:#333; 
-            }
-            .tier-table tr:nth-child(even) { background-color: #fafafa; }
-            .tier-table tr.tier-best { 
-              background-color: #fff8e1; 
-              border-left: 3px solid #b28900;
-            }
-          </style>
-          
-          <div class="tier-wrapper">
-            <table class="tier-table">
-              <thead>
-                <tr>
-                  <th>Quantity</th>
-                  <th>Price/ea</th>
-                  <th>Save</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${rowsHtml}
-              </tbody>
-            </table>
-          </div>
-        `;
-
-        let priceEl = document.getElementById("modal-price");
-        priceEl.innerHTML =
-          `<div style="font-size:1.4rem; font-weight:bold; color:#b28900; margin-bottom:5px">$${product.price}</div>` +
-          tierTableHtml;
-        // --- 智能阶梯价目表 (End) ---
-
+        document.getElementById("modal-price").textContent =
+          "$" + product.price;
         updateModalButtonState(product.id);
         document.getElementById("modal").classList.add("open");
       };
@@ -1781,6 +1833,10 @@
         }
         saveCart();
         showToast("Added to Cart! 🛒");
+
+        // 关键：加购后立即更新折扣横幅
+        updateWholesaleBanner();
+
         if (currentModalProductId === id) updateModalButtonState(id);
       };
 
@@ -1807,6 +1863,10 @@
           if (existing.quantity <= 0)
             cartItems = cartItems.filter((c) => c.name !== id);
           saveCart();
+
+          // 关键：修改数量后立即更新折扣横幅
+          updateWholesaleBanner();
+
           updateModalButtonState(id);
         }
       };
@@ -1820,6 +1880,9 @@
       function loadCart() {
         cartItems = JSON.parse(localStorage.getItem("perfumeCart") || "[]");
         updateCartCount();
+
+        // 页面加载时初始化横幅状态
+        updateWholesaleBanner();
       }
       function saveCart() {
         localStorage.setItem("perfumeCart", JSON.stringify(cartItems));
