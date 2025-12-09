@@ -984,6 +984,26 @@
         <nav>
           <a class="menu-link" onclick="handleMenuClick('Home')">Home</a>
           <a class="menu-link" onclick="handleMenuClick('All')">Shop All</a>
+
+          <a
+            class="menu-link"
+            onclick="handleMenuClick('Gender:Women')"
+            style="color: #c2185b"
+            >For Her 👩</a
+          >
+          <a
+            class="menu-link"
+            onclick="handleMenuClick('Gender:Men')"
+            style="color: #1565c0"
+            >For Him 👨</a
+          >
+          <a
+            class="menu-link"
+            onclick="handleMenuClick('Gender:Unisex')"
+            style="color: #455a64"
+            >Unisex ⚤</a
+          >
+
           <a class="menu-link" onclick="handleMenuClick('BestSellers')"
             >Best Sellers 🔥</a
           >
@@ -1567,7 +1587,7 @@
         return section;
       }
 
-      // --- 2. Grid 渲染 ---
+      // --- 2. Grid 渲染 (已更新性别筛选) ---
       function switchToGrid(criteria) {
         viewMode = "grid";
         document.getElementById("home-view").style.display = "none";
@@ -1592,6 +1612,24 @@
         } else if (criteria === "Sale") {
           filtered = db.filter((p) => p.sale == 1);
           title = "On Sale";
+
+          // ================= 新增逻辑开始 =================
+        } else if (criteria.startsWith("Gender:")) {
+          const targetGender = criteria.split(":")[1]; // 获取 'Women', 'Men', 'Unisex'
+
+          filtered = db.filter((p) => {
+            if (!p.gender) return false;
+            // 使用您现有的 getGenderClass 逻辑来判断归属
+            // 这样可以确保 "Women" 不会因为包含 "men" 字符串而被归类到男士
+            const gClass = getGenderClass(p.gender);
+            return gClass === targetGender.toLowerCase();
+          });
+
+          // 设置标题
+          if (targetGender === "Women") title = "For Her (Women)";
+          else if (targetGender === "Men") title = "For Him (Men)";
+          else title = "Unisex Collection";
+          // ================= 新增逻辑结束 =================
         } else if (criteria.startsWith("Search:")) {
           const term = criteria.replace("Search:", "").toLowerCase();
           filtered = db.filter(
