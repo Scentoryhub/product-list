@@ -1028,6 +1028,7 @@
           <a class="menu-link" onclick="handleMenuClick('New')"
             >New Arrivals 🆕</a
           >
+          <a class="menu-link" onclick="handleMenuClick('Sale')">On Sale 🏷️</a>
           <a class="menu-link" href="cart.html">My Cart</a>
           <a class="menu-link" href="https://wa.me/16232027321" target="_blank"
             >Contact Us</a
@@ -1738,8 +1739,8 @@
         });
       }
 
-      /* ================= New Pagination Logic ================= */
-      function renderPagination(totalPages, currentPage) {
+      /* ================= New Pagination Logic (FIXED) ================= */
+      function renderPagination(totalPages, activePage) {
         const container = document.getElementById("pagination-controls");
         if (!container) return;
         container.innerHTML = ""; // Clear existing
@@ -1764,7 +1765,8 @@
             btn.disabled = true;
           } else {
             btn.onclick = () => {
-              window.currentPage = page;
+              // 关键修复：直接修改全局变量 currentPage，不加 window
+              currentPage = page;
               renderGridPage();
               window.scrollTo({ top: 0, behavior: "smooth" });
             };
@@ -1774,7 +1776,7 @@
 
         // 1. Prev Button
         container.appendChild(
-          createBtn("Prev", currentPage - 1, false, currentPage === 1)
+          createBtn("Prev", activePage - 1, false, activePage === 1)
         );
 
         // 2. Numeric Buttons (Smart Logic)
@@ -1788,20 +1790,20 @@
           pages.push(1);
 
           // 如果当前页离1比较远，加省略号
-          if (currentPage > 3) pages.push("...");
+          if (activePage > 3) pages.push("...");
 
           // 计算中间显示的范围
-          let s = Math.max(2, currentPage - 1);
-          let e = Math.min(totalPages - 1, currentPage + 1);
+          let s = Math.max(2, activePage - 1);
+          let e = Math.min(totalPages - 1, activePage + 1);
 
           // 边界修正
-          if (currentPage === 1) e = 3;
-          if (currentPage === totalPages) s = totalPages - 2;
+          if (activePage === 1) e = 3;
+          if (activePage === totalPages) s = totalPages - 2;
 
           for (let i = s; i <= e; i++) pages.push(i);
 
           // 如果当前页离最后一页远，加省略号
-          if (currentPage < totalPages - 2) pages.push("...");
+          if (activePage < totalPages - 2) pages.push("...");
 
           // Always show last page
           pages.push(totalPages);
@@ -1815,13 +1817,13 @@
             span.style.color = "#999";
             container.appendChild(span);
           } else {
-            container.appendChild(createBtn(p, p, p === currentPage));
+            container.appendChild(createBtn(p, p, p === activePage));
           }
         });
 
         // 3. Next Button
         container.appendChild(
-          createBtn("Next", currentPage + 1, false, currentPage === totalPages)
+          createBtn("Next", activePage + 1, false, activePage === totalPages)
         );
       }
       /* ========================================================= */
