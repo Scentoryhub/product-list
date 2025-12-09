@@ -670,25 +670,43 @@
         font-weight: bold;
       }
 
+      /* ===== Updated Pagination CSS ===== */
       .pagination-container {
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 15px;
+        gap: 8px;
         margin: 30px 0;
+        flex-wrap: wrap;
       }
       .page-btn {
-        padding: 10px 20px;
+        padding: 8px 14px; /* 调整大小 */
         background-color: #222;
         color: #fff;
-        border-radius: 25px;
+        border-radius: 4px; /* 方形圆角 */
         cursor: pointer;
         font-size: 0.9rem;
+        min-width: 36px;
+        text-align: center;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+      }
+      .page-btn:hover {
+        background-color: #444;
       }
       .page-btn:disabled {
         background-color: #eee;
         color: #aaa;
+        cursor: not-allowed;
       }
+      .page-btn.active {
+        background-color: var(--accent-color); /* 选中高亮 */
+        color: #000;
+        font-weight: bold;
+        border: 1px solid #997a00;
+        transform: scale(1.05);
+      }
+      /* ================================== */
 
       /* ================= 8. Trust Section & Modal ================= */
       .trust-section {
@@ -1010,6 +1028,7 @@
           <a class="menu-link" onclick="handleMenuClick('New')"
             >New Arrivals 🆕</a
           >
+          <a class="menu-link" onclick="handleMenuClick('Sale')">On Sale 🏷️</a>
           <a class="menu-link" href="cart.html">My Cart</a>
           <a class="menu-link" href="https://wa.me/16232027321" target="_blank"
             >Contact Us</a
@@ -1078,11 +1097,8 @@
         </div>
       </div>
       <div class="gallery" id="gallery"></div>
-      <div id="pagination-controls" class="pagination-container">
-        <button id="prev-page" class="page-btn">Prev</button>
-        <span id="page-info" style="font-weight: bold">1</span>
-        <button id="next-page" class="page-btn">Next</button>
-      </div>
+
+      <div id="pagination-controls" class="pagination-container"></div>
     </div>
 
     <div class="trust-section">
@@ -1248,7 +1264,7 @@
         loadCart();
         setupMenu();
         renderSidebarBrands();
-        setupEventListeners();
+        // setupEventListeners(); // 移除：分页监听器现在完全动态生成
         setupModalBackdropClosing();
         setupSearch();
 
@@ -1655,12 +1671,14 @@
       function renderGridPage() {
         const gallery = document.getElementById("gallery");
         gallery.innerHTML = "";
-        const controls = document.getElementById("pagination-controls");
+
+        // 分页逻辑更新：直接调用 renderPagination
+        const totalPages = Math.ceil(currentGridData.length / itemsPerPage);
+        renderPagination(totalPages, currentPage);
 
         if (currentGridData.length === 0) {
           gallery.innerHTML =
             "<div style='grid-column:1/-1;text-align:center;padding:50px;color:#999;'>No items found.</div>";
-          controls.style.display = "none";
           return;
         }
 
@@ -1719,18 +1737,95 @@
            `;
           gallery.appendChild(div);
         });
-
-        const totalPages = Math.ceil(currentGridData.length / itemsPerPage);
-        controls.style.display = totalPages > 1 ? "flex" : "none";
-        if (totalPages > 1) {
-          document.getElementById(
-            "page-info"
-          ).textContent = `${currentPage} / ${totalPages}`;
-          document.getElementById("prev-page").disabled = currentPage === 1;
-          document.getElementById("next-page").disabled =
-            currentPage === totalPages;
-        }
       }
+
+      /* ================= New Pagination Logic ================= */
+      function renderPagination(totalPages, currentPage) {
+        const container = document.getElementById("pagination-controls");
+        if (!container) return;
+        container.innerHTML = ""; // Clear existing
+
+        if (totalPages <= 1) {
+          container.style.display = "none";
+          return;
+        }
+        container.style.display = "flex";
+
+        // Helper to create button
+        const createBtn = (
+          text,
+          page,
+          isActive = false,
+          isDisabled = false
+        ) => {
+          const btn = document.createElement("button");
+          btn.className = `page-btn ${isActive ? "active" : ""}`;
+          btn.textContent = text;
+          if (isDisabled) {
+            btn.disabled = true;
+          } else {
+            btn.onclick = () => {
+              window.currentPage = page;
+              renderGridPage();
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            };
+          }
+          return btn;
+        };
+
+        // 1. Prev Button
+        container.appendChild(
+          createBtn("Prev", currentPage - 1, false, currentPage === 1)
+        );
+
+        // 2. Numeric Buttons (Smart Logic)
+        const pages = [];
+        if (totalPages <= 7) {
+          // 如果少于7页，直接全显示 [1] [2] [3]...
+          for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else {
+          // 如果页数很多，显示头尾和当前页周围
+          // Always show 1
+          pages.push(1);
+
+          // 如果当前页离1比较远，加省略号
+          if (currentPage > 3) pages.push("...");
+
+          // 计算中间显示的范围
+          let s = Math.max(2, currentPage - 1);
+          let e = Math.min(totalPages - 1, currentPage + 1);
+
+          // 边界修正
+          if (currentPage === 1) e = 3;
+          if (currentPage === totalPages) s = totalPages - 2;
+
+          for (let i = s; i <= e; i++) pages.push(i);
+
+          // 如果当前页离最后一页远，加省略号
+          if (currentPage < totalPages - 2) pages.push("...");
+
+          // Always show last page
+          pages.push(totalPages);
+        }
+
+        pages.forEach((p) => {
+          if (p === "...") {
+            const span = document.createElement("span");
+            span.textContent = "...";
+            span.style.padding = "0 5px";
+            span.style.color = "#999";
+            container.appendChild(span);
+          } else {
+            container.appendChild(createBtn(p, p, p === currentPage));
+          }
+        });
+
+        // 3. Next Button
+        container.appendChild(
+          createBtn("Next", currentPage + 1, false, currentPage === totalPages)
+        );
+      }
+      /* ========================================================= */
 
       // --- 3. 弹窗逻辑 ---
       window.openModal = function (product) {
@@ -1831,19 +1926,6 @@
           }
         }, 50);
       };
-
-      function setupEventListeners() {
-        document.getElementById("prev-page").onclick = () => {
-          currentPage--;
-          renderGridPage();
-          window.scrollTo(0, 0);
-        };
-        document.getElementById("next-page").onclick = () => {
-          currentPage++;
-          renderGridPage();
-          window.scrollTo(0, 0);
-        };
-      }
 
       function setupMenu() {
         const trigger = document.getElementById("menu-trigger");
