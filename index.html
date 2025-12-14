@@ -1602,7 +1602,45 @@
         return section;
       }
 
-      // --- 2. Grid 渲染 (已更新性别筛选) ---
+      // ================= 重点优化区域：新增搜索词标准化函数 =================
+      /**
+       * 标准化和扩展搜索词：处理缩写和常见的错别字。
+       * @param {string} term 原始搜索词
+       * @returns {string[]} 包含原始词、标准化词和扩展词的数组
+       */
+      function normalizeSearchTerm(term) {
+        if (!term) return [];
+        const normalized = term.toLowerCase().trim();
+        const terms = [normalized];
+
+        // 常用品牌缩写映射
+        const abbreviations = {
+          lv: "louis vuitton",
+          ysl: "yves saint laurent",
+          mkf: "maison francis kurkdjian",
+          pdm: "parfums de marly",
+          tf: "tom ford",
+          "giorgio armeni": "giorgio armani", // 修正csv中的错别字
+          armani: "giorgio armani",
+          chanel: "chanel no", // 帮助搜索 Chanel N°5 等
+        };
+
+        // 检查并添加缩写展开后的全称
+        if (abbreviations[normalized]) {
+          terms.push(abbreviations[normalized]);
+        }
+
+        // 检查并添加品牌全称的缩写（例如：如果搜 'louis' 也加入 'lv' 进行匹配）
+        for (const [abbr, full] of Object.entries(abbreviations)) {
+          if (full.includes(normalized)) {
+            terms.push(abbr);
+          }
+        }
+
+        return Array.from(new Set(terms)); // 去重后返回
+      }
+
+      // --- 2. Grid 渲染 (已更新性别筛选及优化后的搜索逻辑) ---
       function switchToGrid(criteria) {
         viewMode = "grid";
         document.getElementById("home-view").style.display = "none";
@@ -1627,38 +1665,56 @@
         } else if (criteria === "Sale") {
           filtered = db.filter((p) => p.sale == 1);
           title = "On Sale";
-
-          // ================= 新增逻辑开始 =================
         } else if (criteria.startsWith("Gender:")) {
-          const targetGender = criteria.split(":")[1]; // 获取 'Women', 'Men', 'Unisex'
-
+          const targetGender = criteria.split(":")[1];
           filtered = db.filter((p) => {
             if (!p.gender) return false;
-            // 使用您现有的 getGenderClass 逻辑来判断归属
-            // 这样可以确保 "Women" 不会因为包含 "men" 字符串而被归类到男士
             const gClass = getGenderClass(p.gender);
             return gClass === targetGender.toLowerCase();
           });
-
-          // 设置标题
           if (targetGender === "Women") title = "For Her (Women)";
           else if (targetGender === "Men") title = "For Him (Men)";
           else title = "Unisex Collection";
-          // ================= 新增逻辑结束 =================
+
+          // ================= 重点优化区域：Search 逻辑 =================
         } else if (criteria.startsWith("Search:")) {
-          const term = criteria.replace("Search:", "").toLowerCase();
-          filtered = db.filter(
-            (p) =>
-              p.name.toLowerCase().includes(term) ||
-              p.brand.toLowerCase().includes(term) ||
-              (p.id && p.id.toString().includes(term))
-          );
-          title = `Results: "${term}"`;
+          const rawTerm = criteria.replace("Search:", "").trim();
+          const searchTerms = normalizeSearchTerm(rawTerm);
+
+          filtered = db.filter((p) => {
+            const pName = p.name ? p.name.toLowerCase() : "";
+            const pBrand = p.brand ? p.brand.toLowerCase() : "";
+            const pId = p.id ? p.id.toString().toLowerCase() : "";
+
+            // 检查每个标准化后的搜索词是否匹配 (模糊搜索)
+            return searchTerms.some((term) => {
+              if (term.length < 2) return false; // 忽略单个字母的模糊搜索
+
+              // 1. ID 精确匹配
+              if (pId.includes(term)) return true;
+
+              // 2. 品牌名称模糊匹配
+              if (pBrand.includes(term)) return true;
+
+              // 3. 产品名称模糊匹配
+              if (pName.includes(term)) return true;
+
+              return false;
+            });
+          });
+
+          title = `Results: "${rawTerm}"`;
+          // ================= 重点优化区域结束 =================
         } else if (criteria === "Other") {
           filtered = db;
           title = "More Brands";
         } else {
-          filtered = db.filter((p) => p.brand.includes(criteria));
+          // 优化：确保品牌点击筛选也包含错别字/缩写处理
+          const normalizedCriteria = normalizeSearchTerm(criteria);
+          filtered = db.filter((p) => {
+            const pBrand = p.brand ? p.brand.toLowerCase() : "";
+            return normalizedCriteria.some((term) => pBrand.includes(term));
+          });
           title = criteria;
         }
 
