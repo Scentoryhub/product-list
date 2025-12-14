@@ -1237,6 +1237,7 @@
         "Burberry",
         "Versace",
       ];
+      const FEATURED_BRANDS_LOWER = FEATURED_BRANDS.map((b) => b.toLowerCase());
 
       // === 全局折扣规则 (Discount Tiers) ===
       const discountTiers = [
@@ -1264,7 +1265,6 @@
         loadCart();
         setupMenu();
         renderSidebarBrands();
-        // setupEventListeners(); // 移除：分页监听器现在完全动态生成
         setupModalBackdropClosing();
         setupSearch();
 
@@ -1277,9 +1277,8 @@
       });
 
       // ================= 核心修复代码：监听 pageshow =================
-      // 这可以确保当用户点击“后退”回到此页面时，购物车和横幅数据会立即刷新
       window.addEventListener("pageshow", function (event) {
-        loadCart(); // 重新读取 localStorage 并更新 UI（包括横幅）
+        loadCart();
       });
 
       // --- Helper: 获取购物车总数量 ---
@@ -1287,7 +1286,7 @@
         return cartItems.reduce((s, i) => s + i.quantity, 0);
       }
 
-      // --- Helper: 核心！更新首页批发横幅 ---
+      // --- Helper: 更新首页批发横幅 ---
       function updateWholesaleBanner() {
         const qty = getCartTotalQty();
         const banner = document.getElementById("wholesale-banner");
@@ -1295,9 +1294,8 @@
 
         if (!banner || !content) return;
 
-        // 1. 如果购物车为空，显示默认吸引人的档位
         if (qty === 0) {
-          banner.className = "ws-banner"; // 移除 active 类
+          banner.className = "ws-banner";
           content.innerHTML = `
               <div class="ws-pill">5+ <span>-8%</span></div>
               <div class="ws-pill">10+ <span>-14%</span></div>
@@ -1307,27 +1305,21 @@
           return;
         }
 
-        // 2. 查找当前所处的档位
         let currentTier = discountTiers.find(
           (t) => qty >= t.min && qty <= t.max
         );
-        if (!currentTier) currentTier = discountTiers[0]; // 兜底
+        if (!currentTier) currentTier = discountTiers[0];
 
-        // 3. 查找下一级目标
         let nextTierIndex = discountTiers.indexOf(currentTier) + 1;
         let nextTier = null;
         if (nextTierIndex < discountTiers.length) {
           nextTier = discountTiers[nextTierIndex];
         }
 
-        // 4. 构建动态 HTML
         let html = `<div class="ws-progress-box">`;
-
-        // 显示当前状态
         let currentOff = Math.round(currentTier.percent * 100);
         html += `<div class="ws-progress-text">Cart: <strong>${qty}</strong> items • Current: <span class="ws-highlight">-${currentOff}% OFF</span></div>`;
 
-        // 显示冲刺目标
         if (nextTier) {
           let needMore = nextTier.min - qty;
           let nextOff = Math.round(nextTier.percent * 100);
@@ -1335,13 +1327,10 @@
                 🔥 Add <strong>${needMore}</strong> more to get <span style="color:#fff;font-weight:bold">-${nextOff}% OFF</span>!
             </div>`;
         } else {
-          // 已经是最高等级
           html += `<div style="font-size:0.75rem; color:#ffd700;">👑 Maximum Discount Unlocked!</div>`;
         }
 
         html += `</div>`;
-
-        // 更新内容并激活样式
         content.innerHTML = html;
         banner.classList.add("active-tier");
       }
@@ -1354,7 +1343,6 @@
         return `${ml}ml <span style="color:#999;font-weight:normal">(${flOz} oz)</span>`;
       }
 
-      // --- Helper: 获取性别样式类 ---
       function getGenderClass(genderText) {
         if (!genderText) return "unisex";
         const g = genderText.toLowerCase();
@@ -1383,7 +1371,6 @@
         list.appendChild(otherDiv);
       }
 
-      // --- Helper: 生成 WebP Picture 标签字符串 ---
       function generatePictureHTML(src, alt) {
         const webpSrc = src.replace(/\.(jpg|png|jpeg)$/i, ".webp");
         return `
@@ -1413,7 +1400,6 @@
 
         container.innerHTML = "";
 
-        // Helper to render sections
         const renderSection = (title, items, filterKey) => {
           const section = createBrandSection(title, items, filterKey);
           if (
@@ -1480,7 +1466,6 @@
         const section = document.createElement("div");
         section.className = "brand-section";
 
-        // Header
         const header = document.createElement("div");
         header.className = "brand-header";
         const cleanFilterKey =
@@ -1491,11 +1476,9 @@
         `;
         section.appendChild(header);
 
-        // Scroll Container Wrapper
         const wrapperContainer = document.createElement("div");
         wrapperContainer.className = "scroll-container-wrapper";
 
-        // Arrows
         const leftBtn = document.createElement("div");
         leftBtn.className = "scroll-arrow-btn left";
         leftBtn.innerHTML = "&#10094;";
@@ -1504,11 +1487,9 @@
         rightBtn.className = "scroll-arrow-btn right";
         rightBtn.innerHTML = "&#10095;";
 
-        // Scroll Wrapper
         const wrapper = document.createElement("div");
         wrapper.className = "scroll-wrapper";
 
-        // Generate Cards
         products.slice(0, 15).forEach((p) => {
           const card = document.createElement("div");
           card.className = "scroll-card";
@@ -1526,8 +1507,6 @@
             badgesHtml += '<div class="badge-tag badge-sale">SALE</div>';
 
           const imgHtml = generatePictureHTML(p.img, p.name);
-
-          // [修改点] Gender 带颜色类
           const genderClass = getGenderClass(p.gender);
           const genderHtml = p.gender
             ? `<span class="gender-tag ${genderClass}">${p.gender}</span>`
@@ -1558,21 +1537,18 @@
           wrapper.appendChild(card);
         });
 
-        // Progress Bar
         const progressContainer = document.createElement("div");
         progressContainer.className = "scroll-progress-container";
         const progressBar = document.createElement("div");
         progressBar.className = "scroll-progress-bar";
         progressContainer.appendChild(progressBar);
 
-        // Append everything
         wrapperContainer.appendChild(leftBtn);
         wrapperContainer.appendChild(wrapper);
         wrapperContainer.appendChild(rightBtn);
         section.appendChild(wrapperContainer);
         section.appendChild(progressContainer);
 
-        // Logic: Arrows & Progress
         const updateControls = () => {
           const maxScroll = wrapper.scrollWidth - wrapper.clientWidth;
           const scrollLeft = wrapper.scrollLeft;
@@ -1602,45 +1578,80 @@
         return section;
       }
 
-      // ================= 重点优化区域：新增搜索词标准化函数 =================
+      // ================= 核心逻辑升级：品牌锁定搜索 (Search Logic) =================
+
+      const BRAND_ALIASES = {
+        lv: "Louis Vuitton",
+        "louis vuitton": "Louis Vuitton",
+        louis: "Louis Vuitton",
+        ysl: "Yves Saint Laurent",
+        yves: "Yves Saint Laurent",
+        saint: "Yves Saint Laurent",
+        tf: "Tom Ford",
+        tom: "Tom Ford",
+        ford: "Tom Ford",
+        creed: "Creed",
+        dior: "Dior",
+        chanel: "Chanel",
+        gucci: "Gucci",
+        pdm: "Parfums de Marly",
+        marly: "Parfums de Marly",
+        mfk: "Maison Francis Kurkdjian",
+        kurkdjian: "Maison Francis Kurkdjian",
+        valentino: "Valentino",
+        versace: "Versace",
+        armani: "Giorgio Armani",
+        burberry: "Burberry",
+        lattafa: "Lattafa",
+        kayali: "Kayali",
+        bond: "Bond No. 9",
+        "bond no 9": "Bond No. 9",
+      };
+
       /**
-       * 标准化和扩展搜索词：处理缩写和常见的错别字。
-       * @param {string} term 原始搜索词
-       * @returns {string[]} 包含原始词、标准化词和扩展词的数组
+       * 辅助函数：尝试从搜索词中提取“目标品牌”
        */
-      function normalizeSearchTerm(term) {
-        if (!term) return [];
-        const normalized = term.toLowerCase().trim();
-        const terms = [normalized];
+      function detectBrandIntent(rawTerm) {
+        const lowerTerm = rawTerm.toLowerCase().trim();
+        const tokens = lowerTerm.split(/\s+/);
 
-        // 常用品牌缩写映射
-        const abbreviations = {
-          lv: "louis vuitton",
-          ysl: "yves saint laurent",
-          mkf: "maison francis kurkdjian",
-          pdm: "parfums de marly",
-          tf: "tom ford",
-          "giorgio armeni": "giorgio armani", // 修正csv中的错别字
-          armani: "giorgio armani",
-          chanel: "chanel no", // 帮助搜索 Chanel N°5 等
-        };
-
-        // 检查并添加缩写展开后的全称
-        if (abbreviations[normalized]) {
-          terms.push(abbreviations[normalized]);
+        // 1. 检查完整短语匹配
+        for (const [key, brandName] of Object.entries(BRAND_ALIASES)) {
+          if (lowerTerm.includes(key)) return brandName;
         }
 
-        // 检查并添加品牌全称的缩写（例如：如果搜 'louis' 也加入 'lv' 进行匹配）
-        for (const [abbr, full] of Object.entries(abbreviations)) {
-          if (full.includes(normalized)) {
-            terms.push(abbr);
-          }
+        // 2. 检查单词匹配
+        for (const token of tokens) {
+          if (BRAND_ALIASES[token]) return BRAND_ALIASES[token];
         }
 
-        return Array.from(new Set(terms)); // 去重后返回
+        return null;
       }
 
-      // --- 2. Grid 渲染 (已更新性别筛选及优化后的搜索逻辑) ---
+      function normalizeAndTokenize(rawTerm) {
+        return rawTerm
+          .toLowerCase()
+          .trim()
+          .split(/\s+/)
+          .filter((t) => t.length > 0);
+      }
+
+      function calculateRelevanceScore(product, searchTokens) {
+        let score = 0;
+        const pStr = JSON.stringify(product).toLowerCase();
+        const pName = (product.name || "").toLowerCase();
+        const pNotes = (product.Notes || "").toLowerCase();
+
+        searchTokens.forEach((token) => {
+          if (token.length < 2) return;
+          if (pName.includes(token)) score += 50;
+          else if (pNotes.includes(token)) score += 5;
+          else if (pStr.includes(token)) score += 1;
+        });
+        return score;
+      }
+
+      // --- 2. Grid 渲染 (已更新逻辑) ---
       function switchToGrid(criteria) {
         viewMode = "grid";
         document.getElementById("home-view").style.display = "none";
@@ -1675,46 +1686,59 @@
           if (targetGender === "Women") title = "For Her (Women)";
           else if (targetGender === "Men") title = "For Him (Men)";
           else title = "Unisex Collection";
-
-          // ================= 重点优化区域：Search 逻辑 =================
         } else if (criteria.startsWith("Search:")) {
           const rawTerm = criteria.replace("Search:", "").trim();
-          const searchTerms = normalizeSearchTerm(rawTerm);
+          const targetBrand = detectBrandIntent(rawTerm);
+          const searchTokens = normalizeAndTokenize(rawTerm);
 
-          filtered = db.filter((p) => {
-            const pName = p.name ? p.name.toLowerCase() : "";
-            const pBrand = p.brand ? p.brand.toLowerCase() : "";
-            const pId = p.id ? p.id.toString().toLowerCase() : "";
+          if (targetBrand) {
+            // 【品牌锁定逻辑】
+            let brandProducts = db.filter(
+              (p) => p.brand.toLowerCase() === targetBrand.toLowerCase()
+            );
 
-            // 检查每个标准化后的搜索词是否匹配 (模糊搜索)
-            return searchTerms.some((term) => {
-              if (term.length < 2) return false; // 忽略单个字母的模糊搜索
+            const brandKeywords = Object.keys(BRAND_ALIASES).filter(
+              (k) => BRAND_ALIASES[k] === targetBrand
+            );
+            let remainingTokens = searchTokens.filter(
+              (t) =>
+                !brandKeywords.some((bk) => bk.includes(t) || t.includes(bk))
+            );
 
-              // 1. ID 精确匹配
-              if (pId.includes(term)) return true;
-
-              // 2. 品牌名称模糊匹配
-              if (pBrand.includes(term)) return true;
-
-              // 3. 产品名称模糊匹配
-              if (pName.includes(term)) return true;
-
-              return false;
-            });
-          });
-
-          title = `Results: "${rawTerm}"`;
-          // ================= 重点优化区域结束 =================
+            if (remainingTokens.length > 0) {
+              let scored = brandProducts
+                .map((p) => ({
+                  product: p,
+                  score: calculateRelevanceScore(p, remainingTokens),
+                }))
+                .filter((item) => item.score > 0);
+              scored.sort((a, b) => b.score - a.score);
+              filtered = scored.map((item) => item.product);
+            } else {
+              filtered = brandProducts;
+            }
+            title = `Brand Results: "${targetBrand}"`;
+          } else {
+            // 【普通搜索逻辑】
+            let scoredProducts = db
+              .map((p) => ({
+                product: p,
+                score: calculateRelevanceScore(p, searchTokens),
+              }))
+              .filter((item) => item.score > 0);
+            scoredProducts.sort((a, b) => b.score - a.score);
+            filtered = scoredProducts.map((item) => item.product);
+            title = `Results: "${rawTerm}"`;
+          }
         } else if (criteria === "Other") {
-          filtered = db;
+          filtered = db.filter((p) => {
+            const pBrandLower = p.brand ? p.brand.toLowerCase() : "";
+            return pBrandLower && !FEATURED_BRANDS_LOWER.includes(pBrandLower);
+          });
           title = "More Brands";
         } else {
-          // 优化：确保品牌点击筛选也包含错别字/缩写处理
-          const normalizedCriteria = normalizeSearchTerm(criteria);
-          filtered = db.filter((p) => {
-            const pBrand = p.brand ? p.brand.toLowerCase() : "";
-            return normalizedCriteria.some((term) => pBrand.includes(term));
-          });
+          // 侧边栏品牌点击 (精准匹配)
+          filtered = db.filter((p) => p.brand === criteria);
           title = criteria;
         }
 
@@ -1728,7 +1752,6 @@
         const gallery = document.getElementById("gallery");
         gallery.innerHTML = "";
 
-        // 分页逻辑更新：直接调用 renderPagination
         const totalPages = Math.ceil(currentGridData.length / itemsPerPage);
         renderPagination(totalPages, currentPage);
 
@@ -1754,8 +1777,6 @@
             badgesHtml += '<div class="badge-tag badge-sale">SALE</div>';
 
           const webpSrc = p.img.replace(/\.(jpg|png|jpeg)$/i, ".webp");
-
-          // [修改点] Grid 里的 Gender 颜色
           const genderClass = getGenderClass(p.gender);
           const genderText = p.gender
             ? ` · <span class="gender-tag ${genderClass}" style="margin-left:0">${p.gender}</span>`
@@ -1795,11 +1816,10 @@
         });
       }
 
-      /* ================= New Pagination Logic (FIXED) ================= */
       function renderPagination(totalPages, activePage) {
         const container = document.getElementById("pagination-controls");
         if (!container) return;
-        container.innerHTML = ""; // Clear existing
+        container.innerHTML = "";
 
         if (totalPages <= 1) {
           container.style.display = "none";
@@ -1807,7 +1827,6 @@
         }
         container.style.display = "flex";
 
-        // Helper to create button
         const createBtn = (
           text,
           page,
@@ -1821,7 +1840,6 @@
             btn.disabled = true;
           } else {
             btn.onclick = () => {
-              // 关键修复：直接修改全局变量 currentPage，不加 window
               currentPage = page;
               renderGridPage();
               window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1830,38 +1848,22 @@
           return btn;
         };
 
-        // 1. Prev Button
         container.appendChild(
           createBtn("Prev", activePage - 1, false, activePage === 1)
         );
 
-        // 2. Numeric Buttons (Smart Logic)
         const pages = [];
         if (totalPages <= 7) {
-          // 如果少于7页，直接全显示 [1] [2] [3]...
           for (let i = 1; i <= totalPages; i++) pages.push(i);
         } else {
-          // 如果页数很多，显示头尾和当前页周围
-          // Always show 1
           pages.push(1);
-
-          // 如果当前页离1比较远，加省略号
           if (activePage > 3) pages.push("...");
-
-          // 计算中间显示的范围
           let s = Math.max(2, activePage - 1);
           let e = Math.min(totalPages - 1, activePage + 1);
-
-          // 边界修正
           if (activePage === 1) e = 3;
           if (activePage === totalPages) s = totalPages - 2;
-
           for (let i = s; i <= e; i++) pages.push(i);
-
-          // 如果当前页离最后一页远，加省略号
           if (activePage < totalPages - 2) pages.push("...");
-
-          // Always show last page
           pages.push(totalPages);
         }
 
@@ -1877,25 +1879,20 @@
           }
         });
 
-        // 3. Next Button
         container.appendChild(
           createBtn("Next", activePage + 1, false, activePage === totalPages)
         );
       }
-      /* ========================================================= */
 
       // --- 3. 弹窗逻辑 ---
       window.openModal = function (product) {
         currentModalProductId = product.id;
         document.getElementById("modal-img").src = product.img;
-
         document.getElementById(
           "modal-title"
         ).textContent = `${product.id}-${product.name}`;
 
-        // Notes 显示逻辑
         const notesContent = product.Notes || product.notes;
-
         let notesHtml = "";
         if (notesContent && notesContent.trim() !== "") {
           notesHtml = `
@@ -1906,9 +1903,7 @@
           `;
         }
 
-        // [修改点] 弹窗 Gender 带颜色
         const genderClass = getGenderClass(product.gender);
-
         document.getElementById("modal-sub").innerHTML = `
             <div style="font-size:1.1rem; color:#333; margin-bottom:5px;">${
               product.brand
@@ -1922,11 +1917,8 @@
             </div>
             ${notesHtml}
         `;
-
-        // 恢复简单的价格显示，移除之前的表格逻辑
         document.getElementById("modal-price").textContent =
           "$" + product.price;
-
         updateModalButtonState(product.id);
         document.getElementById("modal").classList.add("open");
       };
@@ -2016,10 +2008,7 @@
         }
         saveCart();
         showToast("Added to Cart! 🛒");
-
-        // 关键：加购后立即更新折扣横幅
         updateWholesaleBanner();
-
         if (currentModalProductId === id) updateModalButtonState(id);
       };
 
@@ -2046,10 +2035,7 @@
           if (existing.quantity <= 0)
             cartItems = cartItems.filter((c) => c.name !== id);
           saveCart();
-
-          // 关键：修改数量后立即更新折扣横幅
           updateWholesaleBanner();
-
           updateModalButtonState(id);
         }
       };
@@ -2063,8 +2049,6 @@
       function loadCart() {
         cartItems = JSON.parse(localStorage.getItem("perfumeCart") || "[]");
         updateCartCount();
-
-        // 页面加载时初始化横幅状态
         updateWholesaleBanner();
       }
       function saveCart() {
