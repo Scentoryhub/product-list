@@ -296,12 +296,10 @@
         padding: 10px 5px;
         text-align: center;
         transition: background 0.3s;
-
-        /* 核心修改：固定在顶部 */
         position: sticky;
-        top: var(--header-height); /* 紧贴 Header 下方 */
-        z-index: 990; /* 确保在产品列表之上，但在弹窗之下 */
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); /* 加阴影，增加层次感 */
+        top: var(--header-height);
+        z-index: 990;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
       }
 
       /* 当有折扣处于激活状态时，背景变金色 */
@@ -392,7 +390,7 @@
         padding: 20px 0;
         border-top: 1px solid #eee;
         border-bottom: 1px solid #eee;
-        scroll-margin-top: 130px; /* 调整：防止被固定Banner遮挡 */
+        scroll-margin-top: 130px;
         position: relative;
       }
 
@@ -680,10 +678,10 @@
         flex-wrap: wrap;
       }
       .page-btn {
-        padding: 8px 14px; /* 调整大小 */
+        padding: 8px 14px;
         background-color: #222;
         color: #fff;
-        border-radius: 4px; /* 方形圆角 */
+        border-radius: 4px;
         cursor: pointer;
         font-size: 0.9rem;
         min-width: 36px;
@@ -700,13 +698,12 @@
         cursor: not-allowed;
       }
       .page-btn.active {
-        background-color: var(--accent-color); /* 选中高亮 */
+        background-color: var(--accent-color);
         color: #000;
         font-weight: bold;
         border: 1px solid #997a00;
         transform: scale(1.05);
       }
-      /* ================================== */
 
       /* ================= 8. Trust Section & Modal ================= */
       .trust-section {
@@ -1601,6 +1598,7 @@
         valentino: "Valentino",
         versace: "Versace",
         armani: "Giorgio Armani",
+        "giorgio armani": "Giorgio Armani",
         burberry: "Burberry",
         lattafa: "Lattafa",
         kayali: "Kayali",
@@ -1638,15 +1636,18 @@
 
       function calculateRelevanceScore(product, searchTokens) {
         let score = 0;
-        const pStr = JSON.stringify(product).toLowerCase();
+        // FIX: 不再使用 JSON.stringify 全局搜索
+        // FIX: 不再搜索 Notes
+        const pId = (product.id || "").toString().toLowerCase();
         const pName = (product.name || "").toLowerCase();
-        const pNotes = (product.Notes || "").toLowerCase();
+        const pBrand = (product.brand || "").toLowerCase();
 
         searchTokens.forEach((token) => {
-          if (token.length < 2) return;
-          if (pName.includes(token)) score += 50;
-          else if (pNotes.includes(token)) score += 5;
-          else if (pStr.includes(token)) score += 1;
+          if (token.length < 1) return;
+
+          if (pId === token) score += 100; // 编号精准匹配 (A14)
+          if (pBrand.includes(token)) score += 60; // 品牌匹配
+          if (pName.includes(token)) score += 50; // 名称匹配
         });
         return score;
       }
@@ -1779,7 +1780,7 @@
           const webpSrc = p.img.replace(/\.(jpg|png|jpeg)$/i, ".webp");
           const genderClass = getGenderClass(p.gender);
           const genderText = p.gender
-            ? ` · <span class="gender-tag ${genderClass}" style="margin-left:0">${p.gender}</span>`
+            ? ` · <span class="gender-tag ${genderClass}">${p.gender}</span>`
             : "";
 
           div.innerHTML = `
