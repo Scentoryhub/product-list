@@ -1645,7 +1645,9 @@
         searchTokens.forEach((token) => {
           if (token.length < 1) return;
 
-          if (pId === token) score += 100; // 编号精准匹配 (A14)
+          // FIX: 改为包含匹配，解决 "100" 搜不到 "a100" 的问题
+          if (pId.includes(token)) score += 100; // 编号匹配
+
           if (pBrand.includes(token)) score += 60; // 品牌匹配
           if (pName.includes(token)) score += 50; // 名称匹配
         });
