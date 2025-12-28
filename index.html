@@ -14,8 +14,8 @@
       /* ================= 1. 全局配置 & 布局变量 ================= */
       :root {
         --header-height: 60px;
-        --trust-bar-height: 45px; /* 信任条高度 */
-        --total-top-spacing: 105px; /* 60 + 45 = 105px */
+        --trust-bar-height: 30px; /* 【修改】高度改小为 30px */
+        --total-top-spacing: 90px; /* 【修改】60 + 30 = 90px */
 
         --sidebar-width: 300px;
         --accent-color: #b28900;
@@ -69,12 +69,13 @@
         color: #ffffff;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           Helvetica, Arial, sans-serif;
-        font-size: 13px;
+        font-size: 12px; /* 【修改】字体稍微调小以适应窄条 */
         font-weight: 600;
         text-align: center;
-        line-height: var(--trust-bar-height);
+        line-height: var(--trust-bar-height); /* 垂直居中 */
         z-index: 1001;
         box-shadow: 0 1px 0 rgba(255, 255, 255, 0.15);
+        letter-spacing: 0.5px;
       }
 
       /* 文字容器淡入淡出动画 */
@@ -85,12 +86,6 @@
       }
       .fade-out {
         opacity: 0 !important;
-      }
-
-      @media (max-width: 600px) {
-        #trust-badge-bar {
-          font-size: 12px;
-        }
       }
 
       /* ================= 2. 头部 (Header) ================= */
@@ -1000,8 +995,6 @@
         background: #eceff1;
         border: 1px solid #cfd8dc;
       }
-
-      /* (删除了 .sales-popup 的所有相关样式) */
     </style>
   </head>
   <body>
@@ -1068,8 +1061,8 @@
               if (!salesDate) salesDate = "Recently"; // 默认日期
               slide2 = `🔥 Total Sold: ${salesNum} (Updated: ${salesDate})`;
 
-              // 成功获取数据后，开始轮播
-              setInterval(toggleSlides, 3000);
+              // 【修改】间隔改为 5000 毫秒 (5秒)
+              setInterval(toggleSlides, 5000);
             } else {
               console.log("未在表格中找到有效数字，保持默认显示");
             }
@@ -1406,7 +1399,6 @@
         renderSidebarBrands();
         setupModalBackdropClosing();
         setupSearch();
-        // (删除了 initSalesPopup 的调用)
 
         const checkDataInterval = setInterval(() => {
           if (window.perfumeDB && window.perfumeDB.length > 0) {
@@ -2219,8 +2211,6 @@
           })
         );
       }
-
-      // (initSalesPopup 函数和 CSS 已删除，世界清净了)
     </script>
   </body>
 </html>
