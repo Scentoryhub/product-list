@@ -16,10 +16,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function initProductData() {
-  // ⚡️ [重要修改] 更新版本号 V3 -> V4
-  // 这会强制浏览器忽略旧缓存，下载包含 Gender 和 Notes 的新数据
-  const cacheKey = "perfumeDB_Data_V4";
-  const timeKey = "perfumeDB_Time_V4";
+  // ⚡️ [重要修改] 更新版本号 V4 -> V5
+  // 这会强制浏览器忽略旧缓存，确保加载包含 Inventory 的新数据
+  const cacheKey = "perfumeDB_Data_V5";
+  const timeKey = "perfumeDB_Time_V5";
 
   const now = new Date().getTime();
   const cachedTime = localStorage.getItem(timeKey);
@@ -72,7 +72,7 @@ function parseCSV(csvText) {
   if (lines.length < 2) return [];
 
   // 🔹 注意：这里会将所有表头转为小写 (toLowerCase)
-  // 所以表格里的 "Notes" 会变成代码里的 "notes"，"Gender" 变成 "gender"
+  // 所以表格里的 "Notes" -> "notes", "Inventory" -> "inventory"
   const headers = lines[0]
     .trim()
     .split(",")
@@ -103,8 +103,17 @@ function parseCSV(csvText) {
 
       headers.forEach((header, index) => {
         let val = values[index] ? values[index].replace(/^"|"$/g, "") : "";
-        // 数字类型转换
-        if (header === "price" || header === "stock") val = Number(val);
+
+        // 🔴 [关键修改] 这里把 inventory 也强制转为数字类型
+        // 这样在 index.html 里才能进行数学比较 (inventory < 50)
+        if (
+          header === "price" ||
+          header === "stock" ||
+          header === "inventory"
+        ) {
+          val = Number(val);
+        }
+
         obj[header] = val;
       });
       return obj;
