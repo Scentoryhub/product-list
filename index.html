@@ -14,8 +14,8 @@
       /* ================= 1. 全局配置 & 布局变量 ================= */
       :root {
         --header-height: 60px;
-        --trust-bar-height: 30px; /* 【修改】高度改小为 30px */
-        --total-top-spacing: 90px; /* 【修改】60 + 30 = 90px */
+        --trust-bar-height: 30px; /* 顶部条高度 */
+        --total-top-spacing: 90px; /* 60 + 30 = 90px */
 
         --sidebar-width: 300px;
         --accent-color: #b28900;
@@ -58,7 +58,7 @@
         padding: 0;
       }
 
-      /* ================= 顶部信任条 (Trust Badge Bar) ================= */
+      /* ================= 【新】滑动式顶部信任条 (Slide Animation) ================= */
       #trust-badge-bar {
         position: fixed;
         top: 0;
@@ -69,23 +69,44 @@
         color: #ffffff;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           Helvetica, Arial, sans-serif;
-        font-size: 12px; /* 【修改】字体稍微调小以适应窄条 */
+        font-size: 12px;
         font-weight: 600;
-        text-align: center;
-        line-height: var(--trust-bar-height); /* 垂直居中 */
         z-index: 1001;
         box-shadow: 0 1px 0 rgba(255, 255, 255, 0.15);
         letter-spacing: 0.5px;
+
+        /* 关键：隐藏溢出内容，只显示一行 */
+        overflow: hidden;
       }
 
-      /* 文字容器淡入淡出动画 */
-      #trust-text {
-        display: inline-block;
-        transition: opacity 0.5s ease-in-out;
-        opacity: 1;
+      /* 滑动容器：包含两个子元素，垂直排列 */
+      #trust-slider {
+        width: 100%;
+        height: 100%; /* 这里的 100% 其实是两倍高度，因为里面有两个30px的元素 */
+        display: flex;
+        flex-direction: column; /* 垂直排列 */
+        transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); /* 顺滑的贝塞尔曲线 */
       }
-      .fade-out {
-        opacity: 0 !important;
+
+      /* 单个滑块样式 */
+      .trust-slide-item {
+        width: 100%;
+        height: var(--trust-bar-height); /* 固定 30px */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0; /* 防止被压缩 */
+      }
+
+      /* 激活状态：向上移动 30px */
+      .slide-up-active {
+        transform: translateY(-30px);
+      }
+
+      @media (max-width: 600px) {
+        #trust-badge-bar {
+          font-size: 12px;
+        }
       }
 
       /* ================= 2. 头部 (Header) ================= */
@@ -999,7 +1020,12 @@
   </head>
   <body>
     <div id="trust-badge-bar">
-      <span id="trust-text">🎉 Free Shipping on All Orders</span>
+      <div id="trust-slider">
+        <div class="trust-slide-item">🎉 Free Shipping on All Orders</div>
+        <div class="trust-slide-item" id="dynamic-sales-text">
+          Loading Updates...
+        </div>
+      </div>
     </div>
 
     <script>
@@ -1007,10 +1033,8 @@
         const csvUrl =
           "https://docs.google.com/spreadsheets/d/e/2PACX-1vTwZ_BgnXtX_ZdO87jkvLU_IMUByJwFKZoyzVVI0Sghwe-2_Qq676JsqsrO0AnGubJGuCxonKizijyj/pub?gid=280068085&single=true&output=csv";
 
-        const slide1 = "🎉 Free Shipping";
-        let slide2 = "";
-        const textElement = document.getElementById("trust-text");
-        let isShowingSlide1 = true;
+        const slider = document.getElementById("trust-slider");
+        const dynamicText = document.getElementById("dynamic-sales-text");
 
         async function fetchSalesData() {
           try {
@@ -1018,22 +1042,15 @@
             if (!response.ok) throw new Error("Network response was not ok");
             const data = await response.text();
 
-            // 升级版解析逻辑：按逗号或换行符分割，扫描整个表格
             const parts = data.split(/[, \n]+/);
-
             let salesNum = "";
             let salesDate = "";
 
-            // 遍历所有数据块
             for (let i = 0; i < parts.length; i++) {
               let cell = parts[i].replace(/['"]+/g, "").trim();
-
-              // 找数字：必须是纯数字，且长度>2 (避免读到序号或空格)
               if (!salesNum && !isNaN(cell) && cell.length > 2) {
                 salesNum = cell;
               }
-
-              // 找日期：包含 "Dec" 或 "Jan" 或 "202" 等日期特征
               if (
                 !salesDate &&
                 (cell.includes("Dec") ||
@@ -1050,7 +1067,6 @@
                   cell.includes("Nov"))
               ) {
                 salesDate = cell;
-                // 尝试补全日期格式，比如 "Dec 28" 可能会被切开
                 if (parts[i + 1] && !isNaN(parts[i + 1])) {
                   salesDate += " " + parts[i + 1];
                 }
@@ -1058,34 +1074,25 @@
             }
 
             if (salesNum && salesNum.length > 0) {
-              if (!salesDate) salesDate = "Recently"; // 默认日期
-              slide2 = `🔥 Total Sold: ${salesNum} (Updated: ${salesDate})`;
+              if (!salesDate) salesDate = "Recently";
+              // 更新第二块滑块的内容
+              dynamicText.innerHTML = `🔥 Total Sold: ${salesNum} (Updated: ${salesDate})`;
 
-              // 【修改】间隔改为 5000 毫秒 (5秒)
-              setInterval(toggleSlides, 5000);
+              // 5秒切换一次 Slide 类
+              setInterval(() => {
+                slider.classList.toggle("slide-up-active");
+              }, 5000);
             } else {
-              console.log("未在表格中找到有效数字，保持默认显示");
+              // 如果没有数据，隐藏第二个滑块，只显示第一句话
+              dynamicText.style.display = "none";
             }
           } catch (error) {
-            console.log("无法读取销量数据 (请检查表格是否已发布)", error);
+            console.log("无法读取销量数据", error);
+            // 失败时也只显示第一句话
+            dynamicText.style.display = "none";
           }
         }
 
-        function toggleSlides() {
-          textElement.classList.add("fade-out");
-          setTimeout(() => {
-            if (isShowingSlide1) {
-              textElement.innerText = slide2;
-              isShowingSlide1 = false;
-            } else {
-              textElement.innerText = slide1;
-              isShowingSlide1 = true;
-            }
-            textElement.classList.remove("fade-out");
-          }, 500);
-        }
-
-        // 启动获取数据
         fetchSalesData();
       })();
     </script>
