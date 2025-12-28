@@ -561,6 +561,17 @@
         margin-bottom: 8px;
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
+      }
+      .stock-warning-text {
+        font-size: 0.7rem;
+        color: #d9534f;
+        font-weight: bold;
+        margin-left: 5px;
+        background: #ffe6e6;
+        padding: 1px 4px;
+        border-radius: 3px;
+        white-space: nowrap;
       }
       .scroll-card-add {
         font-size: 0.85rem;
@@ -654,6 +665,11 @@
         font-weight: bold;
         color: var(--accent-color);
         font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 5px;
       }
       .grid-add-btn {
         display: block;
@@ -953,6 +969,48 @@
         background: #eceff1;
         border: 1px solid #cfd8dc;
       }
+
+      /* ================= 10. Social Proof Popup (Trust Patch) ================= */
+      .sales-popup {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        background: rgba(255, 255, 255, 0.95);
+        border-left: 5px solid #28a745;
+        padding: 12px 15px;
+        border-radius: 6px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        z-index: 9990;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transform: translateY(150%);
+        transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        max-width: 300px;
+        font-family: var(--font-main);
+      }
+      .sales-popup.show {
+        transform: translateY(0);
+      }
+      .sales-popup-icon {
+        font-size: 1.5rem;
+      }
+      .sales-popup-content h5 {
+        margin: 0 0 3px 0;
+        font-size: 0.85rem;
+        color: #333;
+      }
+      .sales-popup-content p {
+        margin: 0;
+        font-size: 0.75rem;
+        color: #666;
+      }
+      .sales-time {
+        font-size: 0.7rem;
+        color: #999;
+        margin-top: 2px;
+        display: block;
+      }
     </style>
   </head>
   <body>
@@ -1150,6 +1208,15 @@
 
     <div id="toast">Added to Cart! 🛒</div>
 
+    <div id="sales-popup" class="sales-popup">
+      <div class="sales-popup-icon">💸</div>
+      <div class="sales-popup-content">
+        <h5 id="sp-title">New Order</h5>
+        <p id="sp-desc">Someone just ordered...</p>
+        <span id="sp-time" class="sales-time">2 mins ago</span>
+      </div>
+    </div>
+
     <div id="modal" class="modal">
       <div class="modal-content">
         <div
@@ -1169,6 +1236,8 @@
             id="modal-sub"
             style="color: #666; font-size: 0.85rem; margin-bottom: 8px"
           ></div>
+
+          <div id="modal-stock" style="margin-bottom: 8px"></div>
 
           <div
             id="modal-price"
@@ -1263,6 +1332,7 @@
         renderSidebarBrands();
         setupModalBackdropClosing();
         setupSearch();
+        initSalesPopup(); // Start the fake sales popup
 
         const checkDataInterval = setInterval(() => {
           if (window.perfumeDB && window.perfumeDB.length > 0) {
@@ -1280,6 +1350,16 @@
       // --- Helper: 获取购物车总数量 ---
       function getCartTotalQty() {
         return cartItems.reduce((s, i) => s + i.quantity, 0);
+      }
+
+      // --- Helper: Generate Stock HTML ---
+      function getStockHtml(stock) {
+        // If stock exists, is a number, and is less than 50 (to create urgency)
+        // If you put 100 in your sheet, this won't show. If you put 14, it shows "Only 14 left"
+        if (stock && !isNaN(stock) && stock > 0 && stock < 50) {
+          return `<span class="stock-warning-text">Only ${stock} left!</span>`;
+        }
+        return "";
       }
 
       // --- Helper: 更新首页批发横幅 ---
@@ -1508,6 +1588,9 @@
             ? `<span class="gender-tag ${genderClass}">${p.gender}</span>`
             : "";
 
+          // Add Stock HTML
+          const stockHtml = getStockHtml(p.stock);
+
           card.innerHTML = `
             <div style="position:relative;">
                ${imgHtml}
@@ -1522,6 +1605,7 @@
             </div>
             <div class="scroll-card-price">
                 $${p.price} 
+                ${stockHtml}
                 <span style="font-size:0.75rem; color:#666; font-weight:normal; margin-left:5px;">
                     ${p.ml ? p.ml + "ml" : ""}
                 </span>
@@ -1785,6 +1869,8 @@
             ? ` · <span class="gender-tag ${genderClass}">${p.gender}</span>`
             : "";
 
+          const stockHtml = getStockHtml(p.stock);
+
           div.innerHTML = `
               <div class="item-img-box skeleton-loader" onclick="openModalById('${
                 p.id
@@ -1809,7 +1895,10 @@
                     ${p.brand}${genderText} <br>
                     ${formatSize(p)}
                  </div>
-                 <div class="item-price">$${p.price}</div>
+                 <div class="item-price">
+                    $${p.price}
+                    ${stockHtml}
+                 </div>
                  <button class="grid-add-btn" onclick="addToCart('${
                    p.id
                  }')">ADD TO CART</button>
@@ -1920,6 +2009,17 @@
             </div>
             ${notesHtml}
         `;
+
+        // Modal Stock Display
+        const stockEl = document.getElementById("modal-stock");
+        const stockVal = getStockHtml(product.stock);
+        if (stockVal) {
+          stockEl.innerHTML = `<div style="color:#d9534f; font-weight:bold; font-size:0.95rem; border:1px solid #d9534f; display:inline-block; padding:3px 10px; border-radius:4px; background:#fff0f0;">🔥 Fast Moving: Only ${product.stock} Left!</div>`;
+          stockEl.style.display = "block";
+        } else {
+          stockEl.style.display = "none";
+        }
+
         document.getElementById("modal-price").textContent =
           "$" + product.price;
         updateModalButtonState(product.id);
@@ -2072,6 +2172,89 @@
             }
           })
         );
+      }
+
+      // ================= FAKE SALES POPUP LOGIC =================
+      function initSalesPopup() {
+        const cities = [
+          "New York",
+          "Los Angeles",
+          "Chicago",
+          "Houston",
+          "Phoenix",
+          "Philadelphia",
+          "San Antonio",
+          "San Diego",
+          "Dallas",
+          "Austin",
+          "Jacksonville",
+          "Fort Worth",
+          "Columbus",
+          "Charlotte",
+          "San Francisco",
+          "Indianapolis",
+          "Seattle",
+          "Denver",
+          "Washington",
+          "Boston",
+        ];
+        const names = [
+          "James",
+          "Mary",
+          "Robert",
+          "Patricia",
+          "John",
+          "Jennifer",
+          "Michael",
+          "Linda",
+          "David",
+          "Elizabeth",
+          "William",
+          "Barbara",
+          "Richard",
+          "Susan",
+          "Joseph",
+          "Jessica",
+          "Thomas",
+          "Sarah",
+          "Charles",
+          "Karen",
+        ];
+
+        const popup = document.getElementById("sales-popup");
+        const pTitle = document.getElementById("sp-title");
+        const pDesc = document.getElementById("sp-desc");
+        const pTime = document.getElementById("sp-time");
+
+        if (!popup) return;
+
+        function showPopup() {
+          const city = cities[Math.floor(Math.random() * cities.length)];
+          const name = names[Math.floor(Math.random() * names.length)];
+          const amount = Math.floor(Math.random() * (400 - 80 + 1) + 80); // $80 - $400
+          const time = Math.floor(Math.random() * 10) + 1; // 1-10 mins ago
+
+          pTitle.textContent = `New Order from ${city}`;
+          pDesc.innerHTML = `<strong style="color:#000">${name}</strong> purchased <strong>$${amount}.00</strong>`;
+          pTime.textContent = `${time} mins ago`;
+
+          popup.classList.add("show");
+
+          // Hide after 5 seconds
+          setTimeout(() => {
+            popup.classList.remove("show");
+          }, 5000);
+        }
+
+        // Show first popup after 5 seconds
+        setTimeout(showPopup, 5000);
+
+        // Then show every 15-30 seconds randomly
+        setInterval(() => {
+          if (!popup.classList.contains("show")) {
+            showPopup();
+          }
+        }, Math.floor(Math.random() * (30000 - 15000 + 1) + 15000));
       }
     </script>
   </body>
