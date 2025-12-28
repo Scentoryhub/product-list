@@ -14,8 +14,8 @@
       /* ================= 1. 全局配置 & 布局变量 ================= */
       :root {
         --header-height: 60px;
-        --trust-bar-height: 45px; /* 新增：信任条高度 */
-        --total-top-spacing: 105px; /* 60 + 45 = 105px，用于定位 */
+        --trust-bar-height: 45px; /* 信任条高度 */
+        --total-top-spacing: 105px; /* 60 + 45 = 105px */
 
         --sidebar-width: 300px;
         --accent-color: #b28900;
@@ -36,7 +36,6 @@
       body {
         margin: 0;
         padding: 0;
-        /* 关键修改：调整顶部内边距，防止被 Header 和 Trust Bar 遮挡 */
         padding-top: var(--total-top-spacing);
         padding-bottom: 60px;
         font-family: var(--font-main);
@@ -59,9 +58,9 @@
         padding: 0;
       }
 
-      /* ================= 新增：顶部信任条 (Trust Badge Bar) ================= */
+      /* ================= 顶部信任条 (Trust Badge Bar) ================= */
       #trust-badge-bar {
-        position: fixed; /* 固定定位 */
+        position: fixed;
         top: 0;
         left: 0;
         width: 100%;
@@ -73,9 +72,9 @@
         font-size: 13px;
         font-weight: 600;
         text-align: center;
-        line-height: var(--trust-bar-height); /* 垂直居中 */
-        z-index: 1001; /* 层级高于 Header (1000) */
-        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.15); /* 底部微弱分割线 */
+        line-height: var(--trust-bar-height);
+        z-index: 1001;
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.15);
       }
 
       /* 文字容器淡入淡出动画 */
@@ -97,7 +96,6 @@
       /* ================= 2. 头部 (Header) ================= */
       .site-header {
         position: fixed;
-        /* 关键修改：Top 不再是 0，而是信任条的高度 45px */
         top: var(--trust-bar-height);
         left: 0;
         width: 100%;
@@ -189,7 +187,7 @@
         width: 100%;
         height: 100%;
         background: rgba(0, 0, 0, 0.6);
-        z-index: 2000; /* 提高层级，覆盖 Trust Bar */
+        z-index: 2000;
         opacity: 0;
         visibility: hidden;
         transition: all 0.3s;
@@ -207,7 +205,7 @@
         width: 85%;
         max-width: var(--sidebar-width);
         background: #fff;
-        z-index: 2001; /* 提高层级，覆盖 Trust Bar */
+        z-index: 2001;
         transform: translateX(-100%);
         transition: transform 0.3s ease-in-out;
         display: flex;
@@ -271,19 +269,19 @@
         font-weight: bold;
       }
 
-      /* ================= 4. 极简版购物指引 (Compact Guide) ================= */
+      /* ================= 4. 极简版购物指引 ================= */
       .compact-guide {
         background: #fff;
         padding: 15px 10px;
-        border-bottom: 8px solid #f8f8f8; /* 浅灰色分隔条 */
+        border-bottom: 8px solid #f8f8f8;
         margin-bottom: 10px;
       }
 
       .compact-steps {
         display: flex;
-        justify-content: space-between; /* 两端对齐 */
+        justify-content: space-between;
         align-items: flex-start;
-        max-width: 450px; /* 限制最大宽度 */
+        max-width: 450px;
         margin: 0 auto;
       }
 
@@ -294,7 +292,6 @@
         padding: 0 2px;
       }
 
-      /* 步骤之间的灰色小箭头 › */
       .compact-item:not(:last-child)::after {
         content: "›";
         position: absolute;
@@ -314,7 +311,7 @@
       }
 
       .compact-text {
-        font-size: 0.75rem; /* 12px */
+        font-size: 0.75rem;
         line-height: 1.2;
         color: #333;
         font-weight: 700;
@@ -322,14 +319,14 @@
       }
 
       .compact-sub {
-        font-size: 0.65rem; /* 10px - 作为补充说明 */
+        font-size: 0.65rem;
         color: #999;
         display: block;
         font-weight: 500;
         transform: scale(0.95);
       }
 
-      /* ================= 批发横幅 (Wholesale Banner) - 固定版 ================= */
+      /* ================= 批发横幅 (Wholesale Banner) ================= */
       .ws-banner {
         background: #222;
         color: #fff;
@@ -337,19 +334,16 @@
         text-align: center;
         transition: background 0.3s;
         position: sticky;
-        /* 关键修改：调整 Sticky 的吸附位置 = 105px */
         top: var(--total-top-spacing);
         z-index: 990;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
       }
 
-      /* 当有折扣处于激活状态时，背景变金色 */
       .ws-banner.active-tier {
         background: linear-gradient(135deg, #111 0%, #2a2a2a 100%);
         border-bottom: 3px solid #ffd700;
       }
 
-      /* 进度条容器 */
       .ws-progress-box {
         background: rgba(255, 255, 255, 0.1);
         border-radius: 4px;
@@ -369,7 +363,6 @@
         font-size: 1rem;
       }
 
-      /* 默认显示的 Pill */
       .ws-pills {
         display: flex;
         justify-content: center;
@@ -431,7 +424,6 @@
         padding: 20px 0;
         border-top: 1px solid #eee;
         border-bottom: 1px solid #eee;
-        /* 关键修改：调整锚点滚动的偏移量 */
         scroll-margin-top: 170px;
         position: relative;
       }
@@ -457,7 +449,6 @@
         padding: 5px;
       }
 
-      /* 滚动容器包装器 */
       .scroll-container-wrapper {
         position: relative;
         padding: 0 5px;
@@ -477,7 +468,6 @@
         display: none;
       }
 
-      /* 左右箭头按钮 */
       .scroll-arrow-btn {
         position: absolute;
         top: 38%;
@@ -514,7 +504,6 @@
         right: 5px;
       }
 
-      /* 滚动指示器 */
       .scroll-progress-container {
         width: 60px;
         height: 4px;
@@ -726,7 +715,7 @@
         font-weight: bold;
       }
 
-      /* ===== Updated Pagination CSS ===== */
+      /* ===== Pagination CSS ===== */
       .pagination-container {
         display: flex;
         justify-content: center;
@@ -1012,47 +1001,7 @@
         border: 1px solid #cfd8dc;
       }
 
-      /* ================= 10. Social Proof Popup (Trust Patch) ================= */
-      .sales-popup {
-        position: fixed;
-        bottom: 20px;
-        left: 20px;
-        background: rgba(255, 255, 255, 0.95);
-        border-left: 5px solid #28a745;
-        padding: 12px 15px;
-        border-radius: 6px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-        z-index: 9990;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        transform: translateY(150%);
-        transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        max-width: 300px;
-        font-family: var(--font-main);
-      }
-      .sales-popup.show {
-        transform: translateY(0);
-      }
-      .sales-popup-icon {
-        font-size: 1.5rem;
-      }
-      .sales-popup-content h5 {
-        margin: 0 0 3px 0;
-        font-size: 0.85rem;
-        color: #333;
-      }
-      .sales-popup-content p {
-        margin: 0;
-        font-size: 0.75rem;
-        color: #666;
-      }
-      .sales-time {
-        font-size: 0.7rem;
-        color: #999;
-        margin-top: 2px;
-        display: block;
-      }
+      /* (删除了 .sales-popup 的所有相关样式) */
     </style>
   </head>
   <body>
@@ -1062,7 +1011,6 @@
 
     <script>
       (function () {
-        // 你的谷歌表格 CSV 链接
         const csvUrl =
           "https://docs.google.com/spreadsheets/d/e/2PACX-1vTwZ_BgnXtX_ZdO87jkvLU_IMUByJwFKZoyzVVI0Sghwe-2_Qq676JsqsrO0AnGubJGuCxonKizijyj/pub?gid=280068085&single=true&output=csv";
 
@@ -1077,19 +1025,56 @@
             if (!response.ok) throw new Error("Network response was not ok");
             const data = await response.text();
 
-            // 解析 CSV
-            const parts = data.split(",");
-            if (parts.length >= 2) {
-              const salesNum = parts[0].replace(/['"]+/g, "").trim();
-              const salesDate = parts[1].replace(/['"]+/g, "").trim();
+            // 升级版解析逻辑：按逗号或换行符分割，扫描整个表格
+            const parts = data.split(/[, \n]+/);
 
-              if (salesNum && salesNum.length > 0) {
-                slide2 = `🔥 Total Sold: ${salesNum} (Updated: ${salesDate})`;
-                setInterval(toggleSlides, 3000);
+            let salesNum = "";
+            let salesDate = "";
+
+            // 遍历所有数据块
+            for (let i = 0; i < parts.length; i++) {
+              let cell = parts[i].replace(/['"]+/g, "").trim();
+
+              // 找数字：必须是纯数字，且长度>2 (避免读到序号或空格)
+              if (!salesNum && !isNaN(cell) && cell.length > 2) {
+                salesNum = cell;
+              }
+
+              // 找日期：包含 "Dec" 或 "Jan" 或 "202" 等日期特征
+              if (
+                !salesDate &&
+                (cell.includes("Dec") ||
+                  cell.includes("Jan") ||
+                  cell.includes("Feb") ||
+                  cell.includes("Mar") ||
+                  cell.includes("Apr") ||
+                  cell.includes("May") ||
+                  cell.includes("Jun") ||
+                  cell.includes("Jul") ||
+                  cell.includes("Aug") ||
+                  cell.includes("Sep") ||
+                  cell.includes("Oct") ||
+                  cell.includes("Nov"))
+              ) {
+                salesDate = cell;
+                // 尝试补全日期格式，比如 "Dec 28" 可能会被切开
+                if (parts[i + 1] && !isNaN(parts[i + 1])) {
+                  salesDate += " " + parts[i + 1];
+                }
               }
             }
+
+            if (salesNum && salesNum.length > 0) {
+              if (!salesDate) salesDate = "Recently"; // 默认日期
+              slide2 = `🔥 Total Sold: ${salesNum} (Updated: ${salesDate})`;
+
+              // 成功获取数据后，开始轮播
+              setInterval(toggleSlides, 3000);
+            } else {
+              console.log("未在表格中找到有效数字，保持默认显示");
+            }
           } catch (error) {
-            console.log("无法读取销量数据，保持默认显示。", error);
+            console.log("无法读取销量数据 (请检查表格是否已发布)", error);
           }
         }
 
@@ -1106,6 +1091,8 @@
             textElement.classList.remove("fade-out");
           }, 500);
         }
+
+        // 启动获取数据
         fetchSalesData();
       })();
     </script>
@@ -1304,15 +1291,6 @@
 
     <div id="toast">Added to Cart! 🛒</div>
 
-    <div id="sales-popup" class="sales-popup">
-      <div class="sales-popup-icon">💸</div>
-      <div class="sales-popup-content">
-        <h5 id="sp-title">New Order</h5>
-        <p id="sp-desc">Someone just ordered...</p>
-        <span id="sp-time" class="sales-time">2 mins ago</span>
-      </div>
-    </div>
-
     <div id="modal" class="modal">
       <div class="modal-content">
         <div
@@ -1428,7 +1406,7 @@
         renderSidebarBrands();
         setupModalBackdropClosing();
         setupSearch();
-        initSalesPopup(); // Start the fake sales popup
+        // (删除了 initSalesPopup 的调用)
 
         const checkDataInterval = setInterval(() => {
           if (window.perfumeDB && window.perfumeDB.length > 0) {
@@ -1438,27 +1416,21 @@
         }, 50);
       });
 
-      // ================= 核心修复代码：监听 pageshow =================
       window.addEventListener("pageshow", function (event) {
         loadCart();
       });
 
-      // --- Helper: 获取购物车总数量 ---
       function getCartTotalQty() {
         return cartItems.reduce((s, i) => s + i.quantity, 0);
       }
 
-      // --- Helper: Generate Stock HTML (Using 'inventory' column) ---
       function getStockHtml(inventory) {
-        // Check inventory (not stock) column
-        // If inventory exists, is a number, and is less than 50 (to create urgency)
         if (inventory && !isNaN(inventory) && inventory > 0 && inventory < 50) {
           return `<span class="stock-warning-text">Only ${inventory} left!</span>`;
         }
         return "";
       }
 
-      // --- Helper: 更新首页批发横幅 ---
       function updateWholesaleBanner() {
         const qty = getCartTotalQty();
         const banner = document.getElementById("wholesale-banner");
@@ -1564,7 +1536,6 @@
 
       // --- 1. 首页渲染逻辑 ---
       function renderHome() {
-        // NOTE: Keeping the logic to filter out items with stock=0
         const db = (window.perfumeDB || []).filter(
           (p) => parseInt(p.stock) !== 0
         );
@@ -1685,7 +1656,6 @@
             ? `<span class="gender-tag ${genderClass}">${p.gender}</span>`
             : "";
 
-          // Add Inventory HTML (not stock)
           const stockHtml = getStockHtml(p.inventory);
 
           card.innerHTML = `
@@ -1755,8 +1725,6 @@
         return section;
       }
 
-      // ================= 核心逻辑升级：品牌锁定搜索 (Search Logic) =================
-
       const BRAND_ALIASES = {
         lv: "Louis Vuitton",
         "louis vuitton": "Louis Vuitton",
@@ -1787,23 +1755,15 @@
         jpg: "JEAN PAUL GAULTIER",
       };
 
-      /**
-       * 辅助函数：尝试从搜索词中提取“目标品牌”
-       */
       function detectBrandIntent(rawTerm) {
         const lowerTerm = rawTerm.toLowerCase().trim();
         const tokens = lowerTerm.split(/\s+/);
-
-        // 1. 检查完整短语匹配
         for (const [key, brandName] of Object.entries(BRAND_ALIASES)) {
           if (lowerTerm.includes(key)) return brandName;
         }
-
-        // 2. 检查单词匹配
         for (const token of tokens) {
           if (BRAND_ALIASES[token]) return BRAND_ALIASES[token];
         }
-
         return null;
       }
 
@@ -1817,25 +1777,20 @@
 
       function calculateRelevanceScore(product, searchTokens) {
         let score = 0;
-        // FIX: 不再使用 JSON.stringify 全局搜索
-        // FIX: 不再搜索 Notes
         const pId = (product.id || "").toString().toLowerCase();
         const pName = (product.name || "").toLowerCase();
         const pBrand = (product.brand || "").toLowerCase();
 
         searchTokens.forEach((token) => {
           if (token.length < 1) return;
-
-          // FIX: 改为包含匹配，解决 "100" 搜不到 "a100" 的问题
-          if (pId.includes(token)) score += 100; // 编号匹配
-
-          if (pBrand.includes(token)) score += 60; // 品牌匹配
-          if (pName.includes(token)) score += 50; // 名称匹配
+          if (pId.includes(token)) score += 100;
+          if (pBrand.includes(token)) score += 60;
+          if (pName.includes(token)) score += 50;
         });
         return score;
       }
 
-      // --- 2. Grid 渲染 (已更新逻辑) ---
+      // --- 2. Grid 渲染 ---
       function switchToGrid(criteria) {
         viewMode = "grid";
         document.getElementById("home-view").style.display = "none";
@@ -1876,7 +1831,6 @@
           const searchTokens = normalizeAndTokenize(rawTerm);
 
           if (targetBrand) {
-            // 【品牌锁定逻辑】
             let brandProducts = db.filter(
               (p) => p.brand.toLowerCase() === targetBrand.toLowerCase()
             );
@@ -1903,7 +1857,6 @@
             }
             title = `Brand Results: "${targetBrand}"`;
           } else {
-            // 【普通搜索逻辑】
             let scoredProducts = db
               .map((p) => ({
                 product: p,
@@ -1921,7 +1874,6 @@
           });
           title = "More Brands";
         } else {
-          // 侧边栏品牌点击 (精准匹配)
           filtered = db.filter((p) => p.brand === criteria);
           title = criteria;
         }
@@ -1966,7 +1918,6 @@
             ? ` · <span class="gender-tag ${genderClass}">${p.gender}</span>`
             : "";
 
-          // Use INVENTORY instead of STOCK here
           const stockHtml = getStockHtml(p.inventory);
 
           div.innerHTML = `
@@ -2074,7 +2025,6 @@
         );
       }
 
-      // --- 3. 弹窗逻辑 ---
       window.openModal = function (product) {
         currentModalProductId = product.id;
         document.getElementById("modal-img").src = product.img;
@@ -2108,9 +2058,8 @@
             ${notesHtml}
         `;
 
-        // Modal Inventory Display (updated to use inventory)
         const stockEl = document.getElementById("modal-stock");
-        const stockVal = getStockHtml(product.inventory); // <--- Changed from stock to inventory
+        const stockVal = getStockHtml(product.inventory);
         if (stockVal) {
           stockEl.innerHTML = `<div style="color:#d9534f; font-weight:bold; font-size:0.95rem; border:1px solid #d9534f; display:inline-block; padding:3px 10px; border-radius:4px; background:#fff0f0;">🔥 Fast Moving: Only ${product.inventory} Left!</div>`;
           stockEl.style.display = "block";
@@ -2129,7 +2078,6 @@
         if (p) openModal(p);
       };
 
-      // --- 4. 搜索与通用功能 ---
       function setupSearch() {
         const globalSearch = document.getElementById("global-search-input");
         globalSearch.addEventListener("change", (e) => {
@@ -2272,88 +2220,7 @@
         );
       }
 
-      // ================= FAKE SALES POPUP LOGIC =================
-      function initSalesPopup() {
-        const cities = [
-          "New York",
-          "Los Angeles",
-          "Chicago",
-          "Houston",
-          "Phoenix",
-          "Philadelphia",
-          "San Antonio",
-          "San Diego",
-          "Dallas",
-          "Austin",
-          "Jacksonville",
-          "Fort Worth",
-          "Columbus",
-          "Charlotte",
-          "San Francisco",
-          "Indianapolis",
-          "Seattle",
-          "Denver",
-          "Washington",
-          "Boston",
-        ];
-        const names = [
-          "James",
-          "Mary",
-          "Robert",
-          "Patricia",
-          "John",
-          "Jennifer",
-          "Michael",
-          "Linda",
-          "David",
-          "Elizabeth",
-          "William",
-          "Barbara",
-          "Richard",
-          "Susan",
-          "Joseph",
-          "Jessica",
-          "Thomas",
-          "Sarah",
-          "Charles",
-          "Karen",
-        ];
-
-        const popup = document.getElementById("sales-popup");
-        const pTitle = document.getElementById("sp-title");
-        const pDesc = document.getElementById("sp-desc");
-        const pTime = document.getElementById("sp-time");
-
-        if (!popup) return;
-
-        function showPopup() {
-          const city = cities[Math.floor(Math.random() * cities.length)];
-          const name = names[Math.floor(Math.random() * names.length)];
-          const amount = Math.floor(Math.random() * (400 - 80 + 1) + 80); // $80 - $400
-          const time = Math.floor(Math.random() * 10) + 1; // 1-10 mins ago
-
-          pTitle.textContent = `New Order from ${city}`;
-          pDesc.innerHTML = `<strong style="color:#000">${name}</strong> purchased <strong>$${amount}.00</strong>`;
-          pTime.textContent = `${time} mins ago`;
-
-          popup.classList.add("show");
-
-          // Hide after 5 seconds
-          setTimeout(() => {
-            popup.classList.remove("show");
-          }, 5000);
-        }
-
-        // Show first popup after 5 seconds
-        setTimeout(showPopup, 5000);
-
-        // Then show every 15-30 seconds randomly
-        setInterval(() => {
-          if (!popup.classList.contains("show")) {
-            showPopup();
-          }
-        }, Math.floor(Math.random() * (30000 - 15000 + 1) + 15000));
-      }
+      // (initSalesPopup 函数和 CSS 已删除，世界清净了)
     </script>
   </body>
 </html>
