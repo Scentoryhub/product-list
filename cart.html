@@ -443,7 +443,7 @@
       <nav>
         <a class="menu-link" href="index.html">Home</a>
         <a class="menu-link" href="index.html">Shop All</a>
-        <a class="menu-link" href="https://wa.me/16232027321" target="_blank"
+        <a class="menu-link" href="https://wa.me/17253041220" target="_blank"
           >Contact Us</a
         >
       </nav>
@@ -727,7 +727,7 @@
         }
       };
 
-      // Send Order Logic
+      // ================= FIXED SEND ORDER LOGIC =================
       sendOrderBtn.onclick = () => {
         const cart = loadCart();
         if (cart.length === 0) return alert("Cart is empty");
@@ -746,23 +746,33 @@
           }
         });
 
-        let msg = `*New Order Request* 📦%0A`;
-        msg += `----------------------------%0A`;
+        // 1. 使用 \n 来代替 %0A，让 JS 字符串自然换行
+        let msg = `*New Order Request* 📦\n`;
+        msg += `----------------------------\n`;
 
         cart.forEach((item) => {
-          msg += `${item.caption} x *${item.quantity}*%0A%0A`;
+          // 这里不需要手动处理 &，因为最后会统一 encode
+          msg += `${item.caption} x *${item.quantity}*\n\n`;
         });
 
-        msg += `----------------------------%0A`;
-        msg += `LV Quantity: ${lvCount}%0A`;
-        msg += `Other Quantity: ${otherCount}%0A`;
-        msg += `*Total Quantity: ${totalQty} pcs*%0A`;
+        msg += `----------------------------\n`;
+        msg += `LV Quantity: ${lvCount}\n`;
+        msg += `Other Quantity: ${otherCount}\n`;
+        msg += `*Total Quantity: ${totalQty} pcs*\n`;
 
-        msg += `----------------------------%0A`;
+        msg += `----------------------------\n`;
         msg += `*Total Amount:* ${summaryEls.total.textContent}`;
 
-        window.open(`https://wa.me/${whatsappNumber}?text=${msg}`, "_blank");
+        // 2. 关键步骤：使用 encodeURIComponent 对整个消息进行编码
+        // 这样 & 会被转换为 %26，换行符 \n 会被转换为 %0A，避免链接截断
+        const encodedMsg = encodeURIComponent(msg);
+
+        window.open(
+          `https://wa.me/${whatsappNumber}?text=${encodedMsg}`,
+          "_blank"
+        );
       };
+
       // Init
       document.addEventListener("DOMContentLoaded", renderCart);
     </script>
