@@ -1822,7 +1822,7 @@
         window.scrollTo({ top: 0, behavior: "smooth" });
 
         const db = (window.perfumeDB || []).filter(
-          (p) => parseInt(p.stock) !== 0,
+          (p) => parseInt(p.stock) > 0, // 只有大于0才显示
         );
         let filtered = [];
         let title = "";
