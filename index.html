@@ -1554,7 +1554,7 @@
       // --- 1. 首页渲染逻辑 ---
       function renderHome() {
         const db = (window.perfumeDB || []).filter(
-          (p) => parseInt(p.stock) !== 0,
+          (p) => parseInt(p.stock) > 0, // 只有大于0才显示
         );
         const container = document.getElementById("home-content");
         if (!container) return;
