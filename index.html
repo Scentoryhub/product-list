@@ -1159,6 +1159,12 @@
             style="color: #455a64"
             >Unisex ⚤</a
           >
+          <a
+            class="menu-link"
+            onclick="handleMenuClick('Set')"
+            style="color: #6a1b9a"
+            >Gift Sets 🎁</a
+          >
 
           <a class="menu-link" onclick="handleMenuClick('BestSellers')"
             >Best Sellers 🔥</a
@@ -1549,7 +1555,8 @@
             filterKey &&
             filterKey !== "BestSellers" &&
             filterKey !== "New" &&
-            filterKey !== "Sale"
+            filterKey !== "Sale" &&
+            filterKey !== "Set"
           ) {
             section.id = "brand-" + filterKey.replace(/\s+/g, "");
           }
@@ -1598,6 +1605,12 @@
         const saleItems = db.filter((p) => p.sale == 1);
         if (saleItems.length > 0)
           renderSection("🏷️ On Sale", saleItems, "Sale");
+
+        // NEW: Sets Section added at the tail of categories
+        const setItems = db.filter((p) => p.name.toUpperCase().includes("SET"));
+        if (setItems.length > 0) {
+          renderSection("🎁 Gift Sets", setItems, "Set");
+        }
 
         const shopAllContainer = document.createElement("div");
         shopAllContainer.className = "shop-all-section";
@@ -1814,6 +1827,10 @@
         } else if (criteria === "Sale") {
           filtered = db.filter((p) => p.sale == 1);
           title = "On Sale";
+        } else if (criteria === "Set") {
+          // NEW: Filter for sets in grid view
+          filtered = db.filter((p) => p.name.toUpperCase().includes("SET"));
+          title = "Gift Sets Collection";
         } else if (criteria.startsWith("Gender:")) {
           const targetGender = criteria.split(":")[1];
           filtered = db.filter((p) => {
