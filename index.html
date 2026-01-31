@@ -1161,7 +1161,7 @@
           >
           <a
             class="menu-link"
-            onclick="handleMenuClick('Set')"
+            onclick="scrollToBrand('Set')"
             style="color: #6a1b9a"
             >Gift Sets 🎁</a
           >
@@ -1551,12 +1551,12 @@
 
         const renderSection = (title, items, filterKey) => {
           const section = createBrandSection(title, items, filterKey);
+          // Modified logic: Allow 'Set' to have an ID generated so scrollToBrand works
           if (
             filterKey &&
             filterKey !== "BestSellers" &&
             filterKey !== "New" &&
-            filterKey !== "Sale" &&
-            filterKey !== "Set"
+            filterKey !== "Sale"
           ) {
             section.id = "brand-" + filterKey.replace(/\s+/g, "");
           }
