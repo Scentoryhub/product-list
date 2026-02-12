@@ -11,18 +11,17 @@
     <link rel="apple-touch-icon" href="icon/180.png" />
 
     <style>
-      /* ================= 1. 全局配置 & 布局变量 ================= */
+      /* ================= 1. Global Config & Layout ================= */
       :root {
         --header-height: 60px;
-        --trust-bar-height: 30px; /* 顶部条高度 */
-        --total-top-spacing: 90px; /* 60 + 30 = 90px */
+        --total-top-spacing: 60px;
 
         --sidebar-width: 300px;
         --accent-color: #b28900;
         --bg-color: #f8f8f8;
         --font-main: "Helvetica Neue", Helvetica, Arial, sans-serif;
 
-        /* 标签颜色配置 */
+        /* Tag Colors */
         --tag-hot: #d9534f;
         --tag-new: #007bff;
         --tag-sale: #28a745;
@@ -37,7 +36,8 @@
         margin: 0;
         padding: 0;
         padding-top: var(--total-top-spacing);
-        padding-bottom: 60px;
+        /* 底部留出更多空间，防止内容被悬浮胶囊遮挡 */
+        padding-bottom: 110px;
         font-family: var(--font-main);
         background: var(--bg-color);
         color: #333;
@@ -52,68 +52,16 @@
       }
       button {
         outline: none;
-        font-family: inherit;
+        font-family: inherit; /* 关键：强制继承父级字体 */
         border: none;
         background: none;
         padding: 0;
       }
 
-      /* ================= 【新】滑动式顶部信任条 (Slide Animation) ================= */
-      #trust-badge-bar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: var(--trust-bar-height);
-        background-color: #000000;
-        color: #ffffff;
-        font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-          Arial, sans-serif;
-        font-size: 12px;
-        font-weight: 600;
-        z-index: 1001;
-        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.15);
-        letter-spacing: 0.5px;
-
-        /* 关键：隐藏溢出内容，只显示一行 */
-        overflow: hidden;
-      }
-
-      /* 滑动容器：包含两个子元素，垂直排列 */
-      #trust-slider {
-        width: 100%;
-        height: 100%; /* 这里的 100% 其实是两倍高度，因为里面有两个30px的元素 */
-        display: flex;
-        flex-direction: column; /* 垂直排列 */
-        transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); /* 顺滑的贝塞尔曲线 */
-      }
-
-      /* 单个滑块样式 */
-      .trust-slide-item {
-        width: 100%;
-        height: var(--trust-bar-height); /* 固定 30px */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0; /* 防止被压缩 */
-      }
-
-      /* 激活状态：向上移动 30px */
-      .slide-up-active {
-        transform: translateY(-30px);
-      }
-
-      @media (max-width: 600px) {
-        #trust-badge-bar {
-          font-size: 12px;
-        }
-      }
-
-      /* ================= 2. 头部 (Header) ================= */
+      /* ================= 2. Header ================= */
       .site-header {
         position: fixed;
-        top: var(--trust-bar-height);
+        top: 0;
         left: 0;
         width: 100%;
         height: var(--header-height);
@@ -178,25 +126,17 @@
         align-items: center;
         flex-shrink: 0;
         padding-right: 5px;
+        gap: 6px;
       }
-      .header-cart-badge {
-        position: absolute;
-        top: -5px;
-        right: -5px;
-        background-color: #d9534f;
-        color: white;
-        font-size: 0.7rem;
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        border: 2px solid #000;
+      .track-text {
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        color: #fff;
       }
 
-      /* ================= 3. 侧边栏 (Sidebar) ================= */
+      /* ================= 3. Sidebar ================= */
       .sidebar-overlay {
         position: fixed;
         top: 0;
@@ -286,72 +226,16 @@
         font-weight: bold;
       }
 
-      /* ================= 4. 极简版购物指引 ================= */
-      .compact-guide {
-        background: #fff;
-        padding: 15px 10px;
-        border-bottom: 8px solid #f8f8f8;
-        margin-bottom: 10px;
-      }
-
-      .compact-steps {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        max-width: 450px;
-        margin: 0 auto;
-      }
-
-      .compact-item {
-        flex: 1;
-        text-align: center;
-        position: relative;
-        padding: 0 2px;
-      }
-
-      .compact-item:not(:last-child)::after {
-        content: "›";
-        position: absolute;
-        right: -6px;
-        top: 8px;
-        font-size: 1.6rem;
-        color: #e0e0e0;
-        line-height: 0;
-        font-weight: 300;
-      }
-
-      .compact-icon {
-        font-size: 1.5rem;
-        margin-bottom: 6px;
-        display: block;
-        line-height: 1;
-      }
-
-      .compact-text {
-        font-size: 0.75rem;
-        line-height: 1.2;
-        color: #333;
-        font-weight: 700;
-        margin-bottom: 2px;
-      }
-
-      .compact-sub {
-        font-size: 0.65rem;
-        color: #999;
-        display: block;
-        font-weight: 500;
-        transform: scale(0.95);
-      }
-
-      /* ================= 批发横幅 (Wholesale Banner) ================= */
+      /* ================= Wholesale Banner (Top Sticky) ================= */
       .ws-banner {
         background: #222;
         color: #fff;
         padding: 10px 5px;
         text-align: center;
         transition: background 0.3s;
+
         position: sticky;
-        top: var(--total-top-spacing);
+        top: var(--header-height);
         z-index: 990;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
       }
@@ -399,7 +283,188 @@
         margin-left: 3px;
       }
 
-      /* ================= 5. 骨架屏与图片加载动画 ================= */
+      /* ================= NEW Floating Capsule Bottom Bar (Split Pill Design) ================= */
+      .bottom-nav-bar {
+        position: fixed;
+        bottom: 25px; /* 悬浮 */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 92%;
+        max-width: 500px;
+        height: 70px;
+        background: #ffffff;
+        z-index: 3000;
+        display: flex;
+        align-items: stretch; /* 撑满高度 */
+        justify-content: space-between;
+        padding: 0;
+        border-radius: 50px; /* 胶囊外形 */
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(0, 0, 0, 0.03);
+        overflow: hidden; /* 裁切内部 */
+      }
+
+      /* Left Side: Asset Area (45%) */
+      .nav-left {
+        width: 45%;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        padding-left: 15px; /* 左侧留白 */
+        gap: 8px; /* 减少间距 */
+        background: #fff;
+      }
+
+      .nav-icon-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+      }
+
+      .nav-cart-icon {
+        width: 28px;
+        height: 28px;
+        stroke: #333;
+        fill: none;
+        stroke-width: 2;
+      }
+
+      /* 角标 */
+      .nav-badge {
+        position: absolute;
+        top: -8px;
+        right: -10px;
+        background-color: #d9534f;
+        color: #fff;
+        font-size: 0.75rem;
+        font-weight: 700;
+        min-width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        z-index: 10;
+      }
+
+      .nav-info-col {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      .price-info-row {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        line-height: 1;
+        white-space: nowrap;
+      }
+
+      .nav-price {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: #000;
+        letter-spacing: -0.5px;
+      }
+
+      .nav-original-price {
+        font-size: 0.9rem;
+        color: #555;
+        text-decoration: line-through;
+        font-weight: 600;
+        opacity: 0.7;
+      }
+
+      /* Right Side: Action Button (55%) */
+      .nav-right {
+        width: 55%;
+        height: 100%;
+      }
+
+      .checkout-pill-btn {
+        width: 100%;
+        height: 100%;
+        background-color: #25d366; /* WhatsApp Green */
+        color: #fff;
+        border: none;
+        border-radius: 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        font-family: inherit;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px; /* 图标文字间距加大 */
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: background 0.2s;
+      }
+      .checkout-pill-btn:active {
+        background-color: #1ebc57;
+      }
+
+      /* ================= BUTTON STYLES (Cards) ================= */
+      .action-btn-black {
+        background: #000;
+        color: #fff;
+        padding: 10px 0;
+        width: 100%;
+        font-size: 0.95rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 700;
+        font-family: inherit;
+        display: block;
+        border: none;
+        text-transform: uppercase;
+      }
+
+      .action-qty-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #fff;
+        border: 2px solid #000;
+        border-radius: 6px;
+        height: 42px;
+        overflow: hidden;
+        width: 100%;
+      }
+      .qty-btn-rect {
+        width: 45px;
+        height: 100%;
+        font-size: 1.4rem;
+        font-weight: bold;
+        background: #000;
+        color: #fff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+      }
+      .qty-val-rect {
+        flex: 1;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #000;
+        text-align: center;
+        font-family: inherit;
+      }
+
+      .btn-qty-wrapper {
+        width: 100%;
+        margin-top: 8px;
+        min-height: 42px;
+      }
+
+      /* ================= Skeleton & Lazy Load ================= */
       @keyframes skeleton-loading {
         0% {
           background-position: 200% 0;
@@ -408,7 +473,6 @@
           background-position: -200% 0;
         }
       }
-
       .skeleton-loader {
         background: #f0f0f0;
         background-image: linear-gradient(
@@ -420,7 +484,6 @@
         background-size: 200% 100%;
         animation: skeleton-loading 1.5s infinite;
       }
-
       img.lazy-img {
         opacity: 0;
         transition: opacity 0.4s ease-in;
@@ -429,27 +492,25 @@
         opacity: 1;
       }
 
-      /* ================= 6. 首页 (Home View) ================= */
+      /* ================= Home View ================= */
       #home-view {
-        padding-bottom: 30px;
+        padding-bottom: 20px;
         display: block;
       }
-
       .brand-section {
-        margin-bottom: 20px;
+        margin-bottom: 15px;
         background: #fff;
-        padding: 20px 0;
+        padding: 15px 0 20px 0;
         border-top: 1px solid #eee;
         border-bottom: 1px solid #eee;
         scroll-margin-top: 170px;
         position: relative;
       }
-
       .brand-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0 15px 15px 15px;
+        padding: 0 15px 10px 15px;
       }
       .brand-title {
         font-size: 1.1rem;
@@ -465,12 +526,10 @@
         cursor: pointer;
         padding: 5px;
       }
-
       .scroll-container-wrapper {
         position: relative;
         padding: 0 5px;
       }
-
       .scroll-wrapper {
         display: flex;
         overflow-x: auto;
@@ -484,13 +543,12 @@
       .scroll-wrapper::-webkit-scrollbar {
         display: none;
       }
-
       .scroll-arrow-btn {
         position: absolute;
-        top: 38%;
+        top: 35%;
         transform: translateY(-50%);
-        width: 36px;
-        height: 36px;
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
         background: rgba(255, 255, 255, 0.95);
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
@@ -504,7 +562,7 @@
         transition:
           opacity 0.3s,
           transform 0.2s;
-        font-size: 1.2rem;
+        font-size: 1rem;
         color: #333;
         border: 1px solid #eee;
       }
@@ -512,17 +570,12 @@
         opacity: 1;
         pointer-events: auto;
       }
-      .scroll-arrow-btn.active {
-        transform: translateY(-50%) scale(0.9);
-        background: #eee;
-      }
       .scroll-arrow-btn.left {
-        left: 5px;
+        left: 2px;
       }
       .scroll-arrow-btn.right {
-        right: 5px;
+        right: 2px;
       }
-
       .scroll-progress-container {
         width: 60px;
         height: 4px;
@@ -539,9 +592,8 @@
         border-radius: 2px;
         transition: width 0.1s linear;
       }
-
       .scroll-card {
-        flex: 0 0 150px;
+        flex: 0 0 160px;
         display: flex;
         flex-direction: column;
         background: #fff;
@@ -549,10 +601,9 @@
         position: relative;
         scroll-snap-align: start;
       }
-
       .img-wrapper {
         width: 100%;
-        height: 150px;
+        height: 160px;
         border-radius: 6px;
         overflow: hidden;
         margin-bottom: 8px;
@@ -564,7 +615,6 @@
         object-fit: cover;
         display: block;
       }
-
       .badges-container {
         position: absolute;
         top: 0;
@@ -593,7 +643,6 @@
       .badge-sale {
         background: var(--tag-sale);
       }
-
       .scroll-card-title {
         font-size: 0.85rem;
         color: #333;
@@ -605,10 +654,9 @@
         font-weight: 500;
       }
       .scroll-card-price {
-        font-size: 1rem;
+        font-size: 1.05rem;
         color: var(--accent-color);
         font-weight: 700;
-        margin-bottom: 8px;
         display: flex;
         align-items: center;
         flex-wrap: wrap;
@@ -623,15 +671,6 @@
         border-radius: 3px;
         white-space: nowrap;
       }
-      .scroll-card-add {
-        font-size: 0.85rem;
-        color: #000;
-        font-weight: 700;
-        text-decoration: underline;
-        margin-top: auto;
-        padding: 5px 0;
-      }
-
       .shop-all-section {
         padding: 30px 20px;
         text-align: center;
@@ -650,9 +689,10 @@
         cursor: pointer;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         transition: transform 0.2s;
+        font-family: inherit;
       }
 
-      /* ================= 7. 网格视图 (Grid View) ================= */
+      /* ================= Grid View ================= */
       #grid-view {
         display: none;
         max-width: 1200px;
@@ -676,7 +716,6 @@
         color: #666;
         padding: 5px;
       }
-
       .gallery {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -688,7 +727,6 @@
           gap: 30px;
         }
       }
-
       .item {
         background: #fff;
         border-radius: 8px;
@@ -709,7 +747,7 @@
       }
       .item .caption {
         padding: 10px 8px;
-        text-align: center;
+        text-align: left;
       }
       .item-price {
         font-weight: bold;
@@ -717,24 +755,9 @@
         font-size: 1rem;
         display: flex;
         align-items: center;
-        justify-content: center;
         flex-wrap: wrap;
         gap: 5px;
       }
-      .grid-add-btn {
-        display: block;
-        width: 100%;
-        margin-top: 10px;
-        background: #000;
-        color: #fff;
-        text-align: center;
-        padding: 10px 0;
-        border-radius: 4px;
-        cursor: pointer;
-        font-weight: bold;
-      }
-
-      /* ===== Pagination CSS ===== */
       .pagination-container {
         display: flex;
         justify-content: center;
@@ -754,24 +777,19 @@
         text-align: center;
         transition: all 0.2s;
         border: 1px solid transparent;
+        font-family: inherit;
       }
       .page-btn:hover {
         background-color: #444;
-      }
-      .page-btn:disabled {
-        background-color: #eee;
-        color: #aaa;
-        cursor: not-allowed;
       }
       .page-btn.active {
         background-color: var(--accent-color);
         color: #000;
         font-weight: bold;
         border: 1px solid #997a00;
-        transform: scale(1.05);
       }
 
-      /* ================= 8. Trust Section & Modal ================= */
+      /* ================= Trust Section & Modal ================= */
       .trust-section {
         background: #fff;
         margin-top: 20px;
@@ -808,7 +826,6 @@
         margin: 0;
         line-height: 1.4;
       }
-
       .modal {
         display: none;
         position: fixed;
@@ -855,120 +872,6 @@
       .modal-info {
         padding: 8px 15px;
       }
-      .modal-btn {
-        background: #000;
-        color: #fff;
-        padding: 12px 0;
-        width: 100%;
-        font-size: 1rem;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: bold;
-        margin-top: 8px;
-        display: block;
-      }
-
-      .qty-control-box {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: #fff;
-        border: 2px solid #000;
-        border-radius: 8px;
-        margin-top: 8px;
-        height: 48px;
-        overflow: hidden;
-      }
-      .qty-btn {
-        width: 60px;
-        height: 100%;
-        font-size: 1.5rem;
-        font-weight: bold;
-        background: #000;
-        color: #fff;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .qty-val {
-        flex: 1;
-        font-size: 1.2rem;
-        font-weight: bold;
-        color: #000;
-      }
-
-      #toast {
-        visibility: hidden;
-        min-width: 200px;
-        background-color: rgba(0, 0, 0, 0.9);
-        color: #fff;
-        text-align: center;
-        border-radius: 30px;
-        padding: 12px 20px;
-        position: fixed;
-        z-index: 9999;
-        left: 50%;
-        bottom: 80px;
-        transform: translateX(-50%);
-        font-size: 0.95rem;
-        font-weight: 500;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        opacity: 0;
-        transition: all 0.3s;
-      }
-      #toast.show {
-        visibility: visible;
-        opacity: 1;
-        bottom: 90px;
-      }
-
-      /* Loading Spinner */
-      .loading-container {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        height: 300px;
-        width: 100%;
-      }
-      .spinner {
-        width: 40px;
-        height: 40px;
-        border: 3px solid #eee;
-        border-top: 3px solid var(--accent-color);
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-        margin-bottom: 15px;
-      }
-      .loading-text {
-        font-size: 0.9rem;
-        color: #999;
-        font-weight: 500;
-        letter-spacing: 1px;
-        animation: pulse 1.5s ease-in-out infinite;
-      }
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-      @keyframes pulse {
-        0% {
-          opacity: 0.6;
-        }
-        50% {
-          opacity: 1;
-        }
-        100% {
-          opacity: 0.6;
-        }
-      }
-
-      /* ================= 9. Gender Tags & Notes ================= */
       .modal-notes-box {
         background-color: #f7f7f7;
         border-radius: 8px;
@@ -993,7 +896,6 @@
         font-family: Georgia, serif;
         font-style: italic;
       }
-
       .gender-tag {
         display: inline-block;
         font-size: 0.7rem;
@@ -1019,87 +921,33 @@
         background: #eceff1;
         border: 1px solid #cfd8dc;
       }
+      #toast {
+        visibility: hidden;
+        min-width: 200px;
+        background-color: rgba(0, 0, 0, 0.9);
+        color: #fff;
+        text-align: center;
+        border-radius: 30px;
+        padding: 12px 20px;
+        position: fixed;
+        z-index: 9999;
+        left: 50%;
+        bottom: 120px;
+        transform: translateX(-50%);
+        font-size: 0.95rem;
+        font-weight: 500;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        transition: all 0.3s;
+      }
+      #toast.show {
+        visibility: visible;
+        opacity: 1;
+        bottom: 130px;
+      }
     </style>
   </head>
   <body>
-    <div id="trust-badge-bar">
-      <div id="trust-slider">
-        <div class="trust-slide-item">🎉 Free Shipping on All Orders</div>
-        <div class="trust-slide-item" id="dynamic-sales-text">
-          Loading Updates...
-        </div>
-      </div>
-    </div>
-
-    <script>
-      (function () {
-        const csvUrl =
-          "https://docs.google.com/spreadsheets/d/e/2PACX-1vTwZ_BgnXtX_ZdO87jkvLU_IMUByJwFKZoyzVVI0Sghwe-2_Qq676JsqsrO0AnGubJGuCxonKizijyj/pub?gid=280068085&single=true&output=csv";
-
-        const slider = document.getElementById("trust-slider");
-        const dynamicText = document.getElementById("dynamic-sales-text");
-
-        async function fetchSalesData() {
-          try {
-            const response = await fetch(csvUrl);
-            if (!response.ok) throw new Error("Network response was not ok");
-            const data = await response.text();
-
-            const parts = data.split(/[, \n]+/);
-            let salesNum = "";
-            let salesDate = "";
-
-            for (let i = 0; i < parts.length; i++) {
-              let cell = parts[i].replace(/['"]+/g, "").trim();
-              if (!salesNum && !isNaN(cell) && cell.length > 2) {
-                salesNum = cell;
-              }
-              if (
-                !salesDate &&
-                (cell.includes("Dec") ||
-                  cell.includes("Jan") ||
-                  cell.includes("Feb") ||
-                  cell.includes("Mar") ||
-                  cell.includes("Apr") ||
-                  cell.includes("May") ||
-                  cell.includes("Jun") ||
-                  cell.includes("Jul") ||
-                  cell.includes("Aug") ||
-                  cell.includes("Sep") ||
-                  cell.includes("Oct") ||
-                  cell.includes("Nov"))
-              ) {
-                salesDate = cell;
-                if (parts[i + 1] && !isNaN(parts[i + 1])) {
-                  salesDate += " " + parts[i + 1];
-                }
-              }
-            }
-
-            if (salesNum && salesNum.length > 0) {
-              if (!salesDate) salesDate = "Recently";
-              // 更新第二块滑块的内容
-              dynamicText.innerHTML = `🔥 Total Sold: ${salesNum} (Updated: ${salesDate})`;
-
-              // 5秒切换一次 Slide 类
-              setInterval(() => {
-                slider.classList.toggle("slide-up-active");
-              }, 5000);
-            } else {
-              // 如果没有数据，隐藏第二个滑块，只显示第一句话
-              dynamicText.style.display = "none";
-            }
-          } catch (error) {
-            console.log("无法读取销量数据", error);
-            // 失败时也只显示第一句话
-            dynamicText.style.display = "none";
-          }
-        }
-
-        fetchSalesData();
-      })();
-    </script>
-
     <header class="site-header">
       <div class="header-left" id="menu-trigger">
         <span class="hamburger-icon">☰</span>
@@ -1113,24 +961,24 @@
           placeholder="Search..."
         />
       </div>
-      <div class="header-right" onclick="window.location.href = 'cart.html'">
+      <div class="header-right" onclick="openTrackingModal()">
         <svg
+          xmlns="http://www.w3.org/2000/svg"
           width="24"
           height="24"
-          viewBox="0 0 24 24"
           fill="none"
+          viewBox="0 0 24 24"
           stroke="white"
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
         >
-          <circle cx="9" cy="21" r="1"></circle>
-          <circle cx="20" cy="21" r="1"></circle>
-          <path
-            d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"
-          ></path>
+          <rect x="1" y="3" width="15" height="13"></rect>
+          <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+          <circle cx="5.5" cy="18.5" r="2.5"></circle>
+          <circle cx="18.5" cy="18.5" r="2.5"></circle>
         </svg>
-        <span id="header-cart-count" class="header-cart-badge">0</span>
+        <span class="track-text">TRACK</span>
       </div>
     </header>
 
@@ -1143,7 +991,6 @@
         <nav>
           <a class="menu-link" onclick="handleMenuClick('Home')">Home</a>
           <a class="menu-link" onclick="handleMenuClick('All')">Shop All</a>
-
           <a
             class="menu-link"
             onclick="handleMenuClick('Gender:Women')"
@@ -1168,7 +1015,6 @@
             style="color: #6a1b9a"
             >Gift Sets 🎁</a
           >
-
           <a class="menu-link" onclick="handleMenuClick('BestSellers')"
             >Best Sellers 🔥</a
           >
@@ -1176,6 +1022,17 @@
             >New Arrivals 🆕</a
           >
           <a class="menu-link" href="cart.html">My Cart</a>
+          <a
+            class="menu-link"
+            onclick="openTrackingModal()"
+            style="
+              color: #000;
+              border-top: 1px solid #eee;
+              margin-top: 10px;
+              padding-top: 20px;
+            "
+            >🚚 Track My Order</a
+          >
           <a class="menu-link" href="https://wa.me/16232027321" target="_blank"
             >Contact Us</a
           >
@@ -1199,34 +1056,9 @@
 
     <div id="home-view">
       <div id="wholesale-banner" class="ws-banner">
-        <div id="ws-content" class="ws-pills">
-          <div class="ws-pill">5+ <span>-8%</span></div>
-          <div class="ws-pill">10+ <span>-14%</span></div>
-          <div class="ws-pill">20+ <span>-24%</span></div>
-          <div class="ws-pill">100+ <span>-35%</span></div>
-        </div>
+        <div id="ws-content" class="ws-pills"></div>
       </div>
-      <div class="compact-guide">
-        <div class="compact-steps">
-          <div class="compact-item">
-            <span class="compact-icon">🛒</span>
-            <div class="compact-text">1. Add to Cart</div>
-            <span class="compact-sub">Auto Discount</span>
-          </div>
 
-          <div class="compact-item">
-            <span class="compact-icon" style="color: #25d366">💬</span>
-            <div class="compact-text">2. Send List</div>
-            <span class="compact-sub">To WhatsApp</span>
-          </div>
-
-          <div class="compact-item">
-            <span class="compact-icon" style="color: #b28900">🧾</span>
-            <div class="compact-text">3. Make Order</div>
-            <span class="compact-sub">Payment Link</span>
-          </div>
-        </div>
-      </div>
       <div id="home-content">
         <div class="loading-container">
           <div class="spinner"></div>
@@ -1243,7 +1075,6 @@
         </div>
       </div>
       <div class="gallery" id="gallery"></div>
-
       <div id="pagination-controls" class="pagination-container"></div>
     </div>
 
@@ -1300,74 +1131,205 @@
       </div>
     </div>
 
-    <div id="toast">Added to Cart! 🛒</div>
-
-    <div id="modal" class="modal">
-      <div class="modal-content">
-        <div
-          class="modal-close"
-          onclick="document.getElementById('modal').classList.remove('open')"
-        >
-          &times;
+    <div class="bottom-nav-bar">
+      <div class="nav-left" onclick="window.location.href = 'cart.html'">
+        <div class="nav-icon-wrap">
+          <svg
+            class="nav-cart-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#333"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path
+              d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"
+            ></path>
+          </svg>
+          <div id="bottom-bar-badge" class="nav-badge" style="display: none">
+            0
+          </div>
         </div>
-        <img id="modal-img" class="modal-img" src="" />
-        <div class="modal-info">
-          <h3
-            id="modal-title"
-            style="margin: 5px 0 2px 0; font-size: 1.1rem; line-height: 1.2"
-          ></h3>
 
-          <div
-            id="modal-sub"
-            style="color: #666; font-size: 0.85rem; margin-bottom: 8px"
-          ></div>
-
-          <div id="modal-stock" style="margin-bottom: 8px"></div>
-
-          <div
-            id="modal-price"
-            style="
-              font-weight: bold;
-              color: var(--accent-color);
-              font-size: 1.3rem;
-              margin-bottom: 8px;
-            "
-          ></div>
-          <div id="modal-action-area"></div>
+        <div class="nav-info-col">
+          <div class="price-info-row">
+            <span id="bottom-bar-price" class="nav-price">$0</span>
+            <span
+              id="bottom-bar-original"
+              class="nav-original-price"
+              style="display: none"
+            ></span>
+          </div>
         </div>
+      </div>
+
+      <div class="nav-right">
+        <button class="checkout-pill-btn" onclick="checkoutViaWhatsapp()">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="currentColor"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.06 3.973L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"
+            />
+          </svg>
+          CHECKOUT
+        </button>
       </div>
     </div>
 
-    <div class="modal" id="policy-modal">
+    <div id="tracking-modal" class="modal">
       <div
         class="modal-content"
-        style="padding: 25px; text-align: left; max-width: 90%"
+        style="max-width: 360px; text-align: center; padding: 25px"
       >
-        <div
-          class="modal-close"
-          onclick="
-            document.getElementById('policy-modal').classList.remove('open')
-          "
-        >
-          &times;
-        </div>
-        <h3 style="text-align: center; margin-top: 0">Reshipment Policy</h3>
-        <p>If items arrive broken or leaked:</p>
-        <ul style="padding-left: 20px; color: #555">
-          <li style="margin-bottom: 10px">
-            Take a photo of the <strong>Shipping Label</strong>.
-          </li>
-          <li>Take a photo of the <strong>Damaged Item</strong>.</li>
-        </ul>
-        <p style="text-align: center; font-weight: bold; margin-top: 20px">
-          Send to WhatsApp for free reshipment.
+        <div class="modal-close" onclick="closeTrackingModal()">&times;</div>
+
+        <h3 style="margin: 0 0 10px 0; font-size: 1.2rem">TRACK YOUR ORDER</h3>
+        <p style="font-size: 0.9rem; color: #666; margin-bottom: 20px">
+          Enter your <b>Phone Number</b> or <b>Name</b> to retrieve your
+          tracking info.
         </p>
+
+        <input
+          type="text"
+          id="track-input"
+          class="header-search-input"
+          style="
+            background: #fff;
+            border: 1px solid #ccc;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+          "
+          placeholder="e.g. 9546731114 or Jackson"
+        />
+
+        <button
+          id="track-btn"
+          class="action-btn-black"
+          onclick="performTracking()"
+        >
+          CHECK NOW
+        </button>
+
+        <div
+          id="track-result"
+          style="
+            margin-top: 20px;
+            display: none;
+            text-align: left;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+          "
+        ></div>
       </div>
     </div>
 
     <script src="db.js"></script>
     <script>
-      // ================= 配置区 =================
+      // ================= Tracking & Checkout Logic =================
+      const GOOGLE_SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbyTu1LHtseu7j_v40r9Sp2ZbqLZ3ZrlWexqVUjjQhouK6zZPxnBLwaCL9LAbawLIFI/exec";
+
+      function openTrackingModal() {
+        document.getElementById("sidebar").classList.remove("active");
+        document.getElementById("sidebar-overlay").classList.remove("active");
+        document.getElementById("tracking-modal").classList.add("open");
+      }
+
+      function closeTrackingModal() {
+        document.getElementById("tracking-modal").classList.remove("open");
+        document.getElementById("track-result").style.display = "none";
+        document.getElementById("track-input").value = "";
+      }
+
+      function performTracking() {
+        const input = document.getElementById("track-input").value.trim();
+        const btn = document.getElementById("track-btn");
+        const resultDiv = document.getElementById("track-result");
+
+        if (!input) return alert("Please enter a name or phone number.");
+
+        // UI Loading State
+        btn.textContent = "SEARCHING...";
+        btn.disabled = true;
+        resultDiv.style.display = "none";
+
+        // 发起请求
+        fetch(`${GOOGLE_SCRIPT_URL}?q=${encodeURIComponent(input)}`)
+          .then((response) => response.json())
+          .then((data) => {
+            btn.textContent = "CHECK NOW";
+            btn.disabled = false;
+            resultDiv.style.display = "block";
+
+            if (data.status === "success") {
+              // 处理多单号：按换行符或空格分割
+              let rawTracks = String(data.tracking).split(/[\n\s]+/);
+              // 生成每一个单号的 HTML (每行一个，带复制按钮)
+              let trackHtml = rawTracks
+                .map((num) => {
+                  if (num.length < 5) return ""; // 过滤无效短字符
+                  return `
+                    <div style="background:#fff; border:1px dashed #ccc; border-radius:4px; padding:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-family:monospace; font-weight:bold; font-size:0.95rem; word-break:break-all;">${num}</span>
+                        <span onclick="navigator.clipboard.writeText('${num}').then(()=>alert('Copied!'))" style="cursor:pointer; font-size:1.2rem;" title="Copy">📋</span>
+                    </div>
+                  `;
+                })
+                .join("");
+
+              // 渲染结果
+              resultDiv.innerHTML = `
+                <div style="color:#28a745; font-weight:bold; margin-bottom:5px; font-size:1.1rem;">✅ Order Found!</div>
+                
+                <div style="background:#eee; height:1px; margin:10px 0;"></div>
+                
+                <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:#555; margin-bottom:10px;">
+                    <span>📅 Date: <b>${data.order_date || "N/A"}</b></span>
+                    <span>👤 <b>${data.customer_name}</b></span>
+                </div>
+
+                <div style="font-size:0.9rem; color:#333; margin-bottom:8px;">
+                    Carrier: <b>${data.carrier}</b>
+                </div>
+
+                <div style="text-align:left;">
+                    ${trackHtml}
+                </div>
+                
+                <div style="font-size:0.75rem; color:#999; margin-top:5px; text-align:center;">
+                    *Click icon to copy number
+                </div>
+              `;
+            } else {
+              // 没找到
+              resultDiv.innerHTML = `
+                <div style="color:#d9534f; font-weight:bold;">❌ Order Not Found</div>
+                <p style="font-size:0.85rem; color:#666; margin-top:5px;">
+                  We couldn't find an order with that info. Please try your <b>Phone Number (digits only)</b> or check if the order has been shipped yet.
+                </p>
+              `;
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            btn.textContent = "CHECK NOW";
+            btn.disabled = false;
+            alert("System Error. Please try again later.");
+          });
+      }
+
+      // ... (Rest of existing JS functions: loadCart, saveCart, updateWholesaleBanner, etc.)
       const FEATURED_BRANDS = [
         "Creed",
         "Dior",
@@ -1390,8 +1352,6 @@
         "Versace",
       ];
       const FEATURED_BRANDS_LOWER = FEATURED_BRANDS.map((b) => b.toLowerCase());
-
-      // === 全局折扣规则 (Discount Tiers) ===
       const discountTiers = [
         { min: 1, max: 1, percent: 0 },
         { min: 2, max: 2, percent: 0.03 },
@@ -1405,7 +1365,6 @@
         { min: 101, max: Infinity, percent: 0.35 },
       ];
 
-      // ================= 状态变量 =================
       let cartItems = [];
       let currentPage = 1;
       const itemsPerPage = 20;
@@ -1430,6 +1389,8 @@
 
       window.addEventListener("pageshow", function (event) {
         loadCart();
+        if (viewMode === "home") renderHome();
+        else renderGridPage();
       });
 
       function getCartTotalQty() {
@@ -1448,57 +1409,90 @@
         const banner = document.getElementById("wholesale-banner");
         const content = document.getElementById("ws-content");
 
-        if (!banner || !content) return;
+        // 1. Update Top Banner
+        if (banner && content) {
+          if (qty === 0) {
+            banner.className = "ws-banner";
+            content.innerHTML = `<div class="ws-pill">5+ <span>-8%</span></div><div class="ws-pill">10+ <span>-14%</span></div><div class="ws-pill">20+ <span>-24%</span></div><div class="ws-pill">100+ <span>-35%</span></div>`;
+          } else {
+            let currentTier =
+              discountTiers.find((t) => qty >= t.min && qty <= t.max) ||
+              discountTiers[0];
+            let nextTierIndex = discountTiers.indexOf(currentTier) + 1;
+            let nextTier =
+              nextTierIndex < discountTiers.length
+                ? discountTiers[nextTierIndex]
+                : null;
 
-        if (qty === 0) {
-          banner.className = "ws-banner";
-          content.innerHTML = `
-              <div class="ws-pill">5+ <span>-8%</span></div>
-              <div class="ws-pill">10+ <span>-14%</span></div>
-              <div class="ws-pill">20+ <span>-24%</span></div>
-              <div class="ws-pill">100+ <span>-35%</span></div>
-            `;
-          return;
+            let html = `<div class="ws-progress-box">`;
+            let currentOff = Math.round(currentTier.percent * 100);
+            // "Free Shipping" removed from top
+
+            html += `<div class="ws-progress-text">Cart: <strong>${qty}</strong> items • Current: <span class="ws-highlight">-${currentOff}% OFF</span></div>`;
+            if (nextTier) {
+              let needMore = nextTier.min - qty;
+              let nextOff = Math.round(nextTier.percent * 100);
+              html += `<div style="font-size:0.75rem; color:#ccc;">🔥 Add <strong>${needMore}</strong> more to get <span style="color:#fff;font-weight:bold">-${nextOff}% OFF</span>!</div>`;
+            } else {
+              html += `<div style="font-size:0.75rem; color:#ffd700;">👑 Maximum Discount Unlocked!</div>`;
+            }
+            html += `</div>`;
+            content.innerHTML = html;
+            banner.classList.add("active-tier");
+          }
         }
 
-        let currentTier = discountTiers.find(
-          (t) => qty >= t.min && qty <= t.max,
-        );
-        if (!currentTier) currentTier = discountTiers[0];
-
-        let nextTierIndex = discountTiers.indexOf(currentTier) + 1;
-        let nextTier = null;
-        if (nextTierIndex < discountTiers.length) {
-          nextTier = discountTiers[nextTierIndex];
-        }
-
-        let html = `<div class="ws-progress-box">`;
-        let currentOff = Math.round(currentTier.percent * 100);
-        html += `<div class="ws-progress-text">Cart: <strong>${qty}</strong> items • Current: <span class="ws-highlight">-${currentOff}% OFF</span></div>`;
-
-        if (nextTier) {
-          let needMore = nextTier.min - qty;
-          let nextOff = Math.round(nextTier.percent * 100);
-          html += `<div style="font-size:0.75rem; color:#ccc;">
-                🔥 Add <strong>${needMore}</strong> more to get <span style="color:#fff;font-weight:bold">-${nextOff}% OFF</span>!
-            </div>`;
-        } else {
-          html += `<div style="font-size:0.75rem; color:#ffd700;">👑 Maximum Discount Unlocked!</div>`;
-        }
-
-        html += `</div>`;
-        content.innerHTML = html;
-        banner.classList.add("active-tier");
+        // 2. Update Bottom Bar Data
+        updateBottomBarData(qty);
       }
 
-      // 【修改处 1】 formatSize 函数，支持非数字文本
+      function updateBottomBarData(totalQty) {
+        // Update Badge
+        const badgeEl = document.getElementById("bottom-bar-badge");
+        if (totalQty > 0) {
+          badgeEl.textContent = totalQty;
+          badgeEl.style.display = "flex";
+        } else {
+          badgeEl.style.display = "none";
+        }
+
+        // Calculate Total Price with Discount
+        let subtotal = 0;
+        cartItems.forEach((item) => {
+          subtotal += item.price * item.quantity;
+        });
+
+        const tier = discountTiers.find(
+          (t) => totalQty >= t.min && totalQty <= t.max,
+        );
+        const discountPercent = tier ? tier.percent : 0;
+        const finalTotal = subtotal - subtotal * discountPercent;
+
+        // Update Price Text & Strikethrough
+        const priceEl = document.getElementById("bottom-bar-price");
+        const originalEl = document.getElementById("bottom-bar-original");
+
+        if (totalQty === 0) {
+          priceEl.textContent = "$0";
+          priceEl.style.color = "#999";
+          originalEl.style.display = "none";
+        } else {
+          priceEl.textContent = "$" + Math.round(finalTotal);
+          priceEl.style.color = "#000"; // Big Black Price
+
+          // Show Strikethrough if discount > 0
+          if (discountPercent > 0) {
+            originalEl.textContent = "~~$" + subtotal.toFixed(0) + "~~";
+            originalEl.style.display = "inline-block";
+          } else {
+            originalEl.style.display = "none";
+          }
+        }
+      }
+
       function formatSize(item) {
         if (!item.ml) return "";
-        // 如果包含非数字字符（如 "30ml x 3"），直接显示原文，不计算
-        if (isNaN(Number(item.ml))) {
-          return item.ml;
-        }
-        // 如果是纯数字，才自动加 ml 和 oz
+        if (isNaN(Number(item.ml))) return item.ml;
         const ml = parseInt(item.ml);
         const flOz = (ml / 29.57).toFixed(1);
         return `${ml}ml <span style="color:#999;font-weight:normal">(${flOz} oz)</span>`;
@@ -1534,41 +1528,47 @@
 
       function generatePictureHTML(src, alt) {
         const webpSrc = src.replace(/\.(jpg|png|jpeg)$/i, ".webp");
-        return `
-          <div class="img-wrapper skeleton-loader">
-             <picture>
-                <source srcset="${webpSrc}" type="image/webp">
-                <img 
-                    src="${src}" 
-                    alt="${alt}" 
-                    loading="lazy" 
-                    class="lazy-img"
-                    onload="this.classList.add('loaded'); this.parentElement.parentElement.classList.remove('skeleton-loader');"
-                    onerror="this.parentElement.parentElement.classList.remove('skeleton-loader');"
-                >
-             </picture>
-          </div>
-        `;
+        return `<div class="img-wrapper skeleton-loader"><picture><source srcset="${webpSrc}" type="image/webp"><img src="${src}" alt="${alt}" loading="lazy" class="lazy-img" onload="this.classList.add('loaded'); this.parentElement.parentElement.classList.remove('skeleton-loader');" onerror="this.parentElement.parentElement.classList.remove('skeleton-loader');"></picture></div>`;
       }
 
-      // --- 1. 首页渲染逻辑 ---
+      // --- 4. Logic for "Modal Style" Add-to-Cart Buttons on Cards ---
+      // This is the updated function you requested to move outside
+      function getCartQty(id) {
+        const item = cartItems.find((c) => c.name === id);
+        return item ? item.quantity : 0;
+      }
+
+      // Updated: Returns Large Black Button or Rectangular Control Box
+      function getAddButtonHtml(id) {
+        const qty = getCartQty(id);
+        if (qty === 0) {
+          // State 0: Large Black Button
+          return `<button class="action-btn-black" onclick="updateItemQty('${id}', 1); event.stopPropagation();">ADD TO CART</button>`;
+        } else {
+          // State >0: Rectangular Control Box
+          return `
+                <div class="action-qty-box">
+                    <div class="qty-btn-rect" onclick="updateItemQty('${id}', -1); event.stopPropagation();">-</div>
+                    <div class="qty-val-rect">${qty}</div>
+                    <div class="qty-btn-rect" onclick="updateItemQty('${id}', 1); event.stopPropagation();">+</div>
+                </div>`;
+        }
+      }
+
+      // --- Home Render Logic ---
       function renderHome() {
         const db = (window.perfumeDB || []).filter(
-          (p) => parseInt(p.stock) > 0, // 只有大于0才显示
+          (p) => parseInt(p.stock) > 0,
         );
         const container = document.getElementById("home-content");
         if (!container) return;
-
         container.innerHTML = "";
 
         const renderSection = (title, items, filterKey) => {
           const section = createBrandSection(title, items, filterKey);
-          // Modified logic: Allow 'Set' to have an ID generated so scrollToBrand works
           if (
             filterKey &&
-            filterKey !== "BestSellers" &&
-            filterKey !== "New" &&
-            filterKey !== "Sale"
+            !["BestSellers", "New", "Sale"].includes(filterKey)
           ) {
             section.id = "brand-" + filterKey.replace(/\s+/g, "");
           }
@@ -1618,11 +1618,8 @@
         if (saleItems.length > 0)
           renderSection("🏷️ On Sale", saleItems, "Sale");
 
-        // NEW: Sets Section added at the tail of categories
         const setItems = db.filter((p) => p.name.toUpperCase().includes("SET"));
-        if (setItems.length > 0) {
-          renderSection("🎁 Gift Sets", setItems, "Set");
-        }
+        if (setItems.length > 0) renderSection("🎁 Gift Sets", setItems, "Set");
 
         const shopAllContainer = document.createElement("div");
         shopAllContainer.className = "shop-all-section";
@@ -1633,28 +1630,22 @@
       function createBrandSection(title, products, filterKey) {
         const section = document.createElement("div");
         section.className = "brand-section";
+        const cleanFilterKey =
+          filterKey || (title.includes("Best") ? "BestSellers" : "All");
 
         const header = document.createElement("div");
         header.className = "brand-header";
-        const cleanFilterKey =
-          filterKey || (title.includes("Best") ? "BestSellers" : "All");
-        header.innerHTML = `
-            <h2 class="brand-title">${title}</h2>
-            <div class="brand-see-all" onclick="switchToGrid('${cleanFilterKey}')">See All ></div>
-        `;
+        header.innerHTML = `<h2 class="brand-title">${title}</h2><div class="brand-see-all" onclick="switchToGrid('${cleanFilterKey}')">See All ></div>`;
         section.appendChild(header);
 
         const wrapperContainer = document.createElement("div");
         wrapperContainer.className = "scroll-container-wrapper";
-
         const leftBtn = document.createElement("div");
         leftBtn.className = "scroll-arrow-btn left";
         leftBtn.innerHTML = "&#10094;";
-
         const rightBtn = document.createElement("div");
         rightBtn.className = "scroll-arrow-btn right";
         rightBtn.innerHTML = "&#10095;";
-
         const wrapper = document.createElement("div");
         wrapper.className = "scroll-wrapper";
 
@@ -1662,7 +1653,11 @@
           const card = document.createElement("div");
           card.className = "scroll-card";
           card.onclick = (e) => {
-            if (e.target.classList.contains("scroll-card-add")) return;
+            if (
+              e.target.closest(".action-btn-black") ||
+              e.target.closest(".action-qty-box")
+            )
+              return;
             openModal(p);
           };
 
@@ -1679,31 +1674,25 @@
           const genderHtml = p.gender
             ? `<span class="gender-tag ${genderClass}">${p.gender}</span>`
             : "";
-
           const stockHtml = getStockHtml(p.inventory);
 
+          // Use NEW button logic
+          const buttonHtml = getAddButtonHtml(p.id);
+
           card.innerHTML = `
-            <div style="position:relative;">
-               ${imgHtml}
-               <div class="badges-container">${badgesHtml}</div>
+            <div style="position:relative;">${imgHtml}<div class="badges-container">${badgesHtml}</div></div>
+            <div style="padding: 0 5px 5px 5px; display:flex; flex-direction:column; flex:1;">
+                <div class="scroll-card-title">${p.id}-${p.name}</div>
+                <div style="display:flex; align-items:center; margin-bottom:4px; flex-wrap:wrap;">
+                    <span style="font-size:0.75rem; color:#666; font-weight:600;">${p.brand}</span>
+                    ${genderHtml}
+                </div>
+                <div class="scroll-card-price">
+                    $${p.price} ${stockHtml}
+                    <span style="font-size:0.75rem; color:#666; font-weight:normal; margin-left:5px;">${p.ml ? formatSize(p) : ""}</span>
+                </div>
+                <div class="btn-qty-wrapper" id="btn-wrap-${p.id}">${buttonHtml}</div>
             </div>
-            <div class="scroll-card-title">${p.id}-${p.name}</div>
-            <div style="display:flex; align-items:center; margin-bottom:4px; flex-wrap:wrap;">
-                <span style="font-size:0.75rem; color:#666; font-weight:600;">${
-                  p.brand
-                }</span>
-                ${genderHtml}
-            </div>
-            <div class="scroll-card-price">
-                $${p.price} 
-                ${stockHtml}
-                <span style="font-size:0.75rem; color:#666; font-weight:normal; margin-left:5px;">
-                    ${p.ml ? formatSize(p) : ""}
-                </span>
-            </div>
-            <div class="scroll-card-add" onclick="addToCart('${
-              p.id
-            }'); event.stopPropagation();">Add To Cart</div>
           `;
           wrapper.appendChild(card);
         });
@@ -1723,13 +1712,8 @@
         const updateControls = () => {
           const maxScroll = wrapper.scrollWidth - wrapper.clientWidth;
           const scrollLeft = wrapper.scrollLeft;
-
-          if (scrollLeft > 10) leftBtn.classList.add("visible");
-          else leftBtn.classList.remove("visible");
-
-          if (scrollLeft < maxScroll - 10) rightBtn.classList.add("visible");
-          else rightBtn.classList.remove("visible");
-
+          leftBtn.classList.toggle("visible", scrollLeft > 10);
+          rightBtn.classList.toggle("visible", scrollLeft < maxScroll - 10);
           if (maxScroll > 0) {
             const percentage = (scrollLeft / maxScroll) * 100;
             progressBar.style.width = Math.max(10, percentage) + "%";
@@ -1742,13 +1726,13 @@
           wrapper.scrollBy({ left: -200, behavior: "smooth" });
         rightBtn.onclick = () =>
           wrapper.scrollBy({ left: 200, behavior: "smooth" });
-
         wrapper.addEventListener("scroll", updateControls);
         setTimeout(updateControls, 100);
 
         return section;
       }
 
+      // --- Brand & Search Logic ---
       const BRAND_ALIASES = {
         lv: "Louis Vuitton",
         "louis vuitton": "Louis Vuitton",
@@ -1790,7 +1774,6 @@
         }
         return null;
       }
-
       function normalizeAndTokenize(rawTerm) {
         return rawTerm
           .toLowerCase()
@@ -1798,13 +1781,11 @@
           .split(/\s+/)
           .filter((t) => t.length > 0);
       }
-
       function calculateRelevanceScore(product, searchTokens) {
         let score = 0;
         const pId = (product.id || "").toString().toLowerCase();
         const pName = (product.name || "").toLowerCase();
         const pBrand = (product.brand || "").toLowerCase();
-
         searchTokens.forEach((token) => {
           if (token.length < 1) return;
           if (pId.includes(token)) score += 100;
@@ -1814,7 +1795,7 @@
         return score;
       }
 
-      // --- 2. Grid 渲染 ---
+      // --- Grid Render ---
       function switchToGrid(criteria) {
         viewMode = "grid";
         document.getElementById("home-view").style.display = "none";
@@ -1822,7 +1803,7 @@
         window.scrollTo({ top: 0, behavior: "smooth" });
 
         const db = (window.perfumeDB || []).filter(
-          (p) => parseInt(p.stock) > 0, // 只有大于0才显示
+          (p) => parseInt(p.stock) > 0,
         );
         let filtered = [];
         let title = "";
@@ -1840,7 +1821,6 @@
           filtered = db.filter((p) => p.sale == 1);
           title = "On Sale";
         } else if (criteria === "Set") {
-          // NEW: Filter for sets in grid view
           filtered = db.filter((p) => p.name.toUpperCase().includes("SET"));
           title = "Gift Sets Collection";
         } else if (criteria.startsWith("Gender:")) {
@@ -1850,27 +1830,28 @@
             const gClass = getGenderClass(p.gender);
             return gClass === targetGender.toLowerCase();
           });
-          if (targetGender === "Women") title = "For Her (Women)";
-          else if (targetGender === "Men") title = "For Him (Men)";
-          else title = "Unisex Collection";
+          title =
+            targetGender === "Women"
+              ? "For Her (Women)"
+              : targetGender === "Men"
+                ? "For Him (Men)"
+                : "Unisex Collection";
         } else if (criteria.startsWith("Search:")) {
           const rawTerm = criteria.replace("Search:", "").trim();
           const targetBrand = detectBrandIntent(rawTerm);
           const searchTokens = normalizeAndTokenize(rawTerm);
-
           if (targetBrand) {
             let brandProducts = db.filter(
               (p) => p.brand.toLowerCase() === targetBrand.toLowerCase(),
             );
-
-            const brandKeywords = Object.keys(BRAND_ALIASES).filter(
-              (k) => BRAND_ALIASES[k] === targetBrand,
-            );
             let remainingTokens = searchTokens.filter(
               (t) =>
-                !brandKeywords.some((bk) => bk.includes(t) || t.includes(bk)),
+                !Object.keys(BRAND_ALIASES).some(
+                  (k) =>
+                    BRAND_ALIASES[k] === targetBrand &&
+                    (k.includes(t) || t.includes(k)),
+                ),
             );
-
             if (remainingTokens.length > 0) {
               let scored = brandProducts
                 .map((p) => ({
@@ -1915,7 +1896,6 @@
       function renderGridPage() {
         const gallery = document.getElementById("gallery");
         gallery.innerHTML = "";
-
         const totalPages = Math.ceil(currentGridData.length / itemsPerPage);
         renderPagination(totalPages, currentPage);
 
@@ -1924,14 +1904,12 @@
             "<div style='grid-column:1/-1;text-align:center;padding:50px;color:#999;'>No items found.</div>";
           return;
         }
-
         const start = (currentPage - 1) * itemsPerPage;
         const pageItems = currentGridData.slice(start, start + itemsPerPage);
 
         pageItems.forEach((p) => {
           const div = document.createElement("div");
           div.className = "item";
-
           let badgesHtml = "";
           if (p.top == 1)
             badgesHtml += '<div class="badge-tag badge-hot">HOT</div>';
@@ -1939,46 +1917,26 @@
             badgesHtml += '<div class="badge-tag badge-new">NEW</div>';
           if (p.sale == 1)
             badgesHtml += '<div class="badge-tag badge-sale">SALE</div>';
-
           const webpSrc = p.img.replace(/\.(jpg|png|jpeg)$/i, ".webp");
           const genderClass = getGenderClass(p.gender);
           const genderText = p.gender
             ? ` · <span class="gender-tag ${genderClass}">${p.gender}</span>`
             : "";
-
           const stockHtml = getStockHtml(p.inventory);
 
+          // Use NEW button logic
+          const buttonHtml = getAddButtonHtml(p.id);
+
           div.innerHTML = `
-              <div class="item-img-box skeleton-loader" onclick="openModalById('${
-                p.id
-              }')">
-                  <picture>
-                     <source srcset="${webpSrc}" type="image/webp">
-                     <img 
-                        src="${p.img}" 
-                        loading="lazy" 
-                        class="lazy-img"
-                        onload="this.classList.add('loaded'); this.parentElement.parentElement.classList.remove('skeleton-loader');"
-                        onerror="this.parentElement.parentElement.classList.remove('skeleton-loader');"
-                    >
-                  </picture>
+              <div class="item-img-box skeleton-loader" onclick="openModalById('${p.id}')">
+                  <picture><source srcset="${webpSrc}" type="image/webp"><img src="${p.img}" loading="lazy" class="lazy-img" onload="this.classList.add('loaded'); this.parentElement.parentElement.classList.remove('skeleton-loader');" onerror="this.parentElement.parentElement.classList.remove('skeleton-loader');"></picture>
                   <div class="badges-container">${badgesHtml}</div>
               </div>
               <div class="caption">
-                 <div style="font-size:0.85rem; height:2.4em; overflow:hidden; margin-bottom:5px; line-height:1.2;">
-                    ${p.id}-${p.name}
-                 </div>
-                 <div style="font-size:0.8rem; color:#888; margin-bottom:5px;">
-                    ${p.brand}${genderText} <br>
-                    ${formatSize(p)}
-                 </div>
-                 <div class="item-price">
-                    $${p.price}
-                    ${stockHtml}
-                 </div>
-                 <button class="grid-add-btn" onclick="addToCart('${
-                   p.id
-                 }')">ADD TO CART</button>
+                 <div style="font-size:0.85rem; height:2.4em; overflow:hidden; margin-bottom:5px; line-height:1.2;">${p.id}-${p.name}</div>
+                 <div style="font-size:0.8rem; color:#888; margin-bottom:5px;">${p.brand}${genderText} <br> ${formatSize(p)}</div>
+                 <div class="item-price">$${p.price} ${stockHtml}</div>
+                 <div class="btn-qty-wrapper" id="btn-wrap-grid-${p.id}">${buttonHtml}</div>
               </div>
            `;
           gallery.appendChild(div);
@@ -1989,7 +1947,6 @@
         const container = document.getElementById("pagination-controls");
         if (!container) return;
         container.innerHTML = "";
-
         if (totalPages <= 1) {
           container.style.display = "none";
           return;
@@ -2005,37 +1962,33 @@
           const btn = document.createElement("button");
           btn.className = `page-btn ${isActive ? "active" : ""}`;
           btn.textContent = text;
-          if (isDisabled) {
-            btn.disabled = true;
-          } else {
+          if (isDisabled) btn.disabled = true;
+          else
             btn.onclick = () => {
               currentPage = page;
               renderGridPage();
               window.scrollTo({ top: 0, behavior: "smooth" });
             };
-          }
           return btn;
         };
 
         container.appendChild(
           createBtn("Prev", activePage - 1, false, activePage === 1),
         );
-
         const pages = [];
         if (totalPages <= 7) {
           for (let i = 1; i <= totalPages; i++) pages.push(i);
         } else {
           pages.push(1);
           if (activePage > 3) pages.push("...");
-          let s = Math.max(2, activePage - 1);
-          let e = Math.min(totalPages - 1, activePage + 1);
+          let s = Math.max(2, activePage - 1),
+            e = Math.min(totalPages - 1, activePage + 1);
           if (activePage === 1) e = 3;
           if (activePage === totalPages) s = totalPages - 2;
           for (let i = s; i <= e; i++) pages.push(i);
           if (activePage < totalPages - 2) pages.push("...");
           pages.push(totalPages);
         }
-
         pages.forEach((p) => {
           if (p === "...") {
             const span = document.createElement("span");
@@ -2043,11 +1996,8 @@
             span.style.padding = "0 5px";
             span.style.color = "#999";
             container.appendChild(span);
-          } else {
-            container.appendChild(createBtn(p, p, p === activePage));
-          }
+          } else container.appendChild(createBtn(p, p, p === activePage));
         });
-
         container.appendChild(
           createBtn("Next", activePage + 1, false, activePage === totalPages),
         );
@@ -2058,32 +2008,14 @@
         document.getElementById("modal-img").src = product.img;
         document.getElementById("modal-title").textContent =
           `${product.id}-${product.name}`;
-
         const notesContent = product.Notes || product.notes;
         let notesHtml = "";
         if (notesContent && notesContent.trim() !== "") {
-          notesHtml = `
-            <div class="modal-notes-box">
-              <span class="modal-notes-title">Fragrance Notes</span>
-              <span class="modal-notes-text">${notesContent}</span>
-            </div>
-          `;
+          notesHtml = `<div class="modal-notes-box"><span class="modal-notes-title">Fragrance Notes</span><span class="modal-notes-text">${notesContent}</span></div>`;
         }
-
         const genderClass = getGenderClass(product.gender);
-        document.getElementById("modal-sub").innerHTML = `
-            <div style="font-size:1.1rem; color:#333; margin-bottom:5px;">${
-              product.brand
-            }</div>
-            <div style="margin-bottom:8px; font-size:0.85rem; color:#555; display:flex; align-items:center; justify-content:center;">
-              <span class="gender-tag ${genderClass}" style="font-size:0.8rem; margin:0 5px 0 0;">${
-                product.gender || "Unisex"
-              }</span>
-              <span style="color:#ccc">|</span> 
-              <span style="margin-left:5px">${formatSize(product)}</span>
-            </div>
-            ${notesHtml}
-        `;
+        document.getElementById("modal-sub").innerHTML =
+          `<div style="font-size:1.1rem; color:#333; margin-bottom:5px;">${product.brand}</div><div style="margin-bottom:8px; font-size:0.85rem; color:#555; display:flex; align-items:center; justify-content:center;"><span class="gender-tag ${genderClass}" style="font-size:0.8rem; margin:0 5px 0 0;">${product.gender || "Unisex"}</span><span style="color:#ccc">|</span> <span style="margin-left:5px">${formatSize(product)}</span></div>${notesHtml}`;
 
         const stockEl = document.getElementById("modal-stock");
         const stockVal = getStockHtml(product.inventory);
@@ -2121,9 +2053,7 @@
           document.getElementById("home-view").style.display = "block";
           document.getElementById("grid-view").style.display = "none";
           window.scrollTo({ top: 0 });
-        } else {
-          switchToGrid(action);
-        }
+        } else switchToGrid(action);
       };
 
       window.scrollToBrand = function (brandName) {
@@ -2134,7 +2064,6 @@
         }
         document.getElementById("sidebar").classList.remove("active");
         document.getElementById("sidebar-overlay").classList.remove("active");
-
         setTimeout(() => {
           const safeName =
             brandName === "Other" ? "Other" : brandName.replace(/\s+/g, "");
@@ -2146,9 +2075,7 @@
             const offsetPosition =
               elementPosition + window.pageYOffset - headerOffset;
             window.scrollTo({ top: offsetPosition, behavior: "smooth" });
-          } else {
-            switchToGrid(brandName === "Other" ? "Other" : brandName);
-          }
+          } else switchToGrid(brandName === "Other" ? "Other" : brandName);
         }, 50);
       };
 
@@ -2163,29 +2090,36 @@
         trigger.onclick = toggle;
         overlay.onclick = toggle;
       }
+      function showToast(msg) {
+        const t = document.getElementById("toast");
+        if (!t) {
+          // Prevent crash if #toast is missing on some page
+          console.warn("[showToast] Missing #toast element. Message:", msg);
+          return;
+        }
 
-      // 【修改处 2】 addToCart 函数，正确生成商品标题
-      window.addToCart = function (id) {
+        t.textContent = msg;
+        t.classList.add("show");
+
+        // Prevent stacked timers when called repeatedly
+        if (t._toastTimer) clearTimeout(t._toastTimer);
+        t._toastTimer = setTimeout(() => t.classList.remove("show"), 2000);
+      }
+
+      window.updateItemQty = function (id, delta) {
         const db = window.perfumeDB;
         const product = db.find((p) => p.id === id);
         if (!product) return;
 
-        // 【新增逻辑】判断容量显示的格式
-        let sizeLabel = "";
-        if (product.ml) {
-          // 如果是纯数字，就自动加 "ml"；如果是文字(如 30ml each)，就直接用
-          sizeLabel = isNaN(Number(product.ml))
-            ? `(${product.ml})`
-            : `(${product.ml}ml)`;
-        }
-
-        const existing = cartItems.find((c) => c.name === id);
-        if (existing) {
-          existing.quantity++;
-        } else {
+        let existing = cartItems.find((c) => c.name === id);
+        if (!existing && delta > 0) {
+          let sizeLabel = product.ml
+            ? isNaN(Number(product.ml))
+              ? `(${product.ml})`
+              : `(${product.ml}ml)`
+            : "";
           cartItems.push({
             name: id,
-            // 【关键修改】这里使用新的 sizeLabel 变量
             caption: `${id} - ${product.name} ${sizeLabel}`,
             img: product.img,
             price: Number(product.price),
@@ -2193,47 +2127,63 @@
             ml: product.ml,
             quantity: 1,
           });
-        }
-        saveCart();
-        showToast("Added to Cart! 🛒");
-        updateWholesaleBanner();
-        if (currentModalProductId === id) updateModalButtonState(id);
-      };
-
-      function updateModalButtonState(id) {
-        const container = document.getElementById("modal-action-area");
-        const existing = cartItems.find((c) => c.name === id);
-        if (!existing || existing.quantity === 0) {
-          container.innerHTML = `<button class="modal-btn" onclick="modalFirstAdd('${id}')">ADD TO CART</button>`;
-        } else {
-          container.innerHTML = `
-                <div class="qty-control-box">
-                    <div class="qty-btn" onclick="modalChangeQty('${id}', -1)">-</div>
-                    <div class="qty-val">${existing.quantity}</div>
-                    <div class="qty-btn" onclick="modalChangeQty('${id}', 1)">+</div>
-                </div>`;
-        }
-      }
-
-      window.modalFirstAdd = (id) => addToCart(id);
-      window.modalChangeQty = (id, delta) => {
-        const existing = cartItems.find((c) => c.name === id);
-        if (existing) {
+          showToast("Added to Cart! 🛒");
+        } else if (existing) {
           existing.quantity += delta;
           if (existing.quantity <= 0)
             cartItems = cartItems.filter((c) => c.name !== id);
-          saveCart();
-          updateWholesaleBanner();
-          updateModalButtonState(id);
         }
+        saveCart();
+        updateWholesaleBanner();
+        // Update both the LIST VIEW style button and Modal style button if they exist
+        const newBtnHtml = getAddButtonHtml(id);
+        const scrollBtnWrap = document.getElementById(`btn-wrap-${id}`);
+        if (scrollBtnWrap) scrollBtnWrap.innerHTML = newBtnHtml;
+        const gridBtnWrap = document.getElementById(`btn-wrap-grid-${id}`);
+        if (gridBtnWrap) gridBtnWrap.innerHTML = newBtnHtml;
+
+        // Also update modal state if open
+        if (currentModalProductId === id) updateModalButtonState(id);
       };
 
-      function showToast(msg) {
-        const t = document.getElementById("toast");
-        t.textContent = msg;
-        t.classList.add("show");
-        setTimeout(() => t.classList.remove("show"), 2000);
+      // Separate function for modal button state to ensure it keeps its own styling structure if needed
+      // (Though here we are using the same HTML structure for both, just in case you want to tweak one later)
+      function updateModalButtonState(id) {
+        const container = document.getElementById("modal-action-area");
+        // Reuse the logic, but we could also write specific HTML if the modal needed to look different
+        container.innerHTML = getAddButtonHtml(id);
       }
+
+      window.checkoutViaWhatsapp = function () {
+        if (cartItems.length === 0) return showToast("Cart is empty");
+        let totalQty = 0,
+          lvCount = 0,
+          otherCount = 0,
+          subtotal = 0;
+        cartItems.forEach((item) => {
+          const qty = item.quantity;
+          totalQty += qty;
+          subtotal += item.price * qty;
+          if (item.caption.toLowerCase().includes("louis vuitton"))
+            lvCount += qty;
+          else otherCount += qty;
+        });
+        const tier = discountTiers.find(
+          (t) => totalQty >= t.min && totalQty <= t.max,
+        );
+        const discountAmount = subtotal * (tier ? tier.percent : 0);
+        const finalTotal = subtotal - discountAmount;
+        let msg = `*New Order Request* 📦\n----------------------------\n`;
+        cartItems.forEach((item) => {
+          msg += `${item.caption} x *${item.quantity}*\n\n`;
+        });
+        msg += `----------------------------\nLV Quantity: ${lvCount}\nOther Quantity: ${otherCount}\n*Total Quantity: ${totalQty} pcs*\n----------------------------\n*Total Amount:* $${Math.round(finalTotal).toFixed(2)}`;
+        window.open(
+          `https://wa.me/16232027321?text=${encodeURIComponent(msg)}`,
+          "_blank",
+        );
+      };
+
       function loadCart() {
         cartItems = JSON.parse(localStorage.getItem("perfumeCart") || "[]");
         updateCartCount();
@@ -2247,7 +2197,6 @@
         const el = document.getElementById("header-cart-count");
         if (el) el.textContent = cartItems.reduce((s, i) => s + i.quantity, 0);
       }
-
       function setupModalBackdropClosing() {
         document.querySelectorAll(".modal").forEach((o) =>
           o.addEventListener("click", (e) => {
@@ -2259,5 +2208,8 @@
         );
       }
     </script>
+
+    <!-- Toast (auto-added to fix showToast null error) -->
+    <div id="toast"></div>
   </body>
 </html>
