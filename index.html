@@ -1208,7 +1208,7 @@
             margin-bottom: 15px;
             text-align: center;
           "
-          placeholder="e.g. 9546731114 or Jackson"
+          placeholder="e.g. 954****114 or Your Name"
         />
 
         <button
@@ -1232,24 +1232,51 @@
           "
         ></div>
       </div>
-    </div><!-- Product Modal (auto-added to restore product popup) -->
-<div id="modal" class="modal">
-  <div class="modal-content" style="max-width: 420px; text-align: center; padding: 22px;">
-    <div class="modal-close" onclick="document.getElementById('modal').classList.remove('open'); currentModalProductId = null;">&times;</div>
-
-    <img id="modal-img" src="" alt="Product image" style="width: 160px; height: 160px; object-fit: cover; border-radius: 12px; margin: 10px auto 12px; display:block;" />
-
-    <div id="modal-title" style="font-size: 1.15rem; font-weight: 700; margin-bottom: 6px;"></div>
-    <div id="modal-sub"></div>
-    <div id="modal-stock" style="margin: 10px 0 6px;"></div>
-
-    <div style="font-size: 1.35rem; font-weight: 800; margin: 10px 0 14px;">
-      <span id="modal-price"></span>
     </div>
+    <!-- Product Modal (auto-added to restore product popup) -->
+    <div id="modal" class="modal">
+      <div
+        class="modal-content"
+        style="max-width: 420px; text-align: center; padding: 22px"
+      >
+        <div
+          class="modal-close"
+          onclick="
+            document.getElementById('modal').classList.remove('open');
+            currentModalProductId = null;
+          "
+        >
+          &times;
+        </div>
 
-    <div id="modal-action-area"></div>
-  </div>
-</div>
+        <img
+          id="modal-img"
+          src=""
+          alt="Product image"
+          style="
+            width: 160px;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin: 10px auto 12px;
+            display: block;
+          "
+        />
+
+        <div
+          id="modal-title"
+          style="font-size: 1.15rem; font-weight: 700; margin-bottom: 6px"
+        ></div>
+        <div id="modal-sub"></div>
+        <div id="modal-stock" style="margin: 10px 0 6px"></div>
+
+        <div style="font-size: 1.35rem; font-weight: 800; margin: 10px 0 14px">
+          <span id="modal-price"></span>
+        </div>
+
+        <div id="modal-action-area"></div>
+      </div>
+    </div>
 
     <script src="db.js"></script>
     <script>
@@ -2031,7 +2058,9 @@
         const priceEl = document.getElementById("modal-price");
 
         if (!modalEl || !imgEl || !titleEl || !subEl || !stockEl || !priceEl) {
-          console.warn("[openModal] Modal DOM missing. Ensure product modal exists in HTML.");
+          console.warn(
+            "[openModal] Modal DOM missing. Ensure product modal exists in HTML.",
+          );
           return;
         }
 
@@ -2043,8 +2072,7 @@
           notesHtml = `<div class="modal-notes-box"><span class="modal-notes-title">Fragrance Notes</span><span class="modal-notes-text">${notesContent}</span></div>`;
         }
         const genderClass = getGenderClass(product.gender);
-        subEl.innerHTML =
-          `<div style="font-size:1.1rem; color:#333; margin-bottom:5px;">${product.brand}</div><div style="margin-bottom:8px; font-size:0.85rem; color:#555; display:flex; align-items:center; justify-content:center;"><span class="gender-tag ${genderClass}" style="font-size:0.8rem; margin:0 5px 0 0;">${product.gender || "Unisex"}</span><span style="color:#ccc">|</span> <span style="margin-left:5px">${formatSize(product)}</span></div>${notesHtml}`;
+        subEl.innerHTML = `<div style="font-size:1.1rem; color:#333; margin-bottom:5px;">${product.brand}</div><div style="margin-bottom:8px; font-size:0.85rem; color:#555; display:flex; align-items:center; justify-content:center;"><span class="gender-tag ${genderClass}" style="font-size:0.8rem; margin:0 5px 0 0;">${product.gender || "Unisex"}</span><span style="color:#ccc">|</span> <span style="margin-left:5px">${formatSize(product)}</span></div>${notesHtml}`;
 
         const stockVal = getStockHtml(product.inventory);
         if (stockVal) {
@@ -2118,20 +2146,20 @@
         overlay.onclick = toggle;
       }
       function showToast(msg) {
-  const t = document.getElementById("toast");
-  if (!t) {
-    // Prevent crash if #toast is missing on some page
-    console.warn('[showToast] Missing #toast element. Message:', msg);
-    return;
-  }
+        const t = document.getElementById("toast");
+        if (!t) {
+          // Prevent crash if #toast is missing on some page
+          console.warn("[showToast] Missing #toast element. Message:", msg);
+          return;
+        }
 
-  t.textContent = msg;
-  t.classList.add("show");
+        t.textContent = msg;
+        t.classList.add("show");
 
-  // Prevent stacked timers when called repeatedly
-  if (t._toastTimer) clearTimeout(t._toastTimer);
-  t._toastTimer = setTimeout(() => t.classList.remove("show"), 2000);
-}
+        // Prevent stacked timers when called repeatedly
+        if (t._toastTimer) clearTimeout(t._toastTimer);
+        t._toastTimer = setTimeout(() => t.classList.remove("show"), 2000);
+      }
 
       window.updateItemQty = function (id, delta) {
         const db = window.perfumeDB;
@@ -2235,9 +2263,8 @@
         );
       }
     </script>
-  
-  <!-- Toast (auto-added to fix showToast null error) -->
-  <div id="toast"></div>
 
-</body>
+    <!-- Toast (auto-added to fix showToast null error) -->
+    <div id="toast"></div>
+  </body>
 </html>
