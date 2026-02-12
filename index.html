@@ -1232,7 +1232,24 @@
           "
         ></div>
       </div>
+    </div><!-- Product Modal (auto-added to restore product popup) -->
+<div id="modal" class="modal">
+  <div class="modal-content" style="max-width: 420px; text-align: center; padding: 22px;">
+    <div class="modal-close" onclick="document.getElementById('modal').classList.remove('open'); currentModalProductId = null;">&times;</div>
+
+    <img id="modal-img" src="" alt="Product image" style="width: 160px; height: 160px; object-fit: cover; border-radius: 12px; margin: 10px auto 12px; display:block;" />
+
+    <div id="modal-title" style="font-size: 1.15rem; font-weight: 700; margin-bottom: 6px;"></div>
+    <div id="modal-sub"></div>
+    <div id="modal-stock" style="margin: 10px 0 6px;"></div>
+
+    <div style="font-size: 1.35rem; font-weight: 800; margin: 10px 0 14px;">
+      <span id="modal-price"></span>
     </div>
+
+    <div id="modal-action-area"></div>
+  </div>
+</div>
 
     <script src="db.js"></script>
     <script>
@@ -2005,19 +2022,30 @@
 
       window.openModal = function (product) {
         currentModalProductId = product.id;
-        document.getElementById("modal-img").src = product.img;
-        document.getElementById("modal-title").textContent =
-          `${product.id}-${product.name}`;
+
+        const modalEl = document.getElementById("modal");
+        const imgEl = document.getElementById("modal-img");
+        const titleEl = document.getElementById("modal-title");
+        const subEl = document.getElementById("modal-sub");
+        const stockEl = document.getElementById("modal-stock");
+        const priceEl = document.getElementById("modal-price");
+
+        if (!modalEl || !imgEl || !titleEl || !subEl || !stockEl || !priceEl) {
+          console.warn("[openModal] Modal DOM missing. Ensure product modal exists in HTML.");
+          return;
+        }
+
+        imgEl.src = product.img;
+        titleEl.textContent = `${product.id}-${product.name}`;
         const notesContent = product.Notes || product.notes;
         let notesHtml = "";
         if (notesContent && notesContent.trim() !== "") {
           notesHtml = `<div class="modal-notes-box"><span class="modal-notes-title">Fragrance Notes</span><span class="modal-notes-text">${notesContent}</span></div>`;
         }
         const genderClass = getGenderClass(product.gender);
-        document.getElementById("modal-sub").innerHTML =
+        subEl.innerHTML =
           `<div style="font-size:1.1rem; color:#333; margin-bottom:5px;">${product.brand}</div><div style="margin-bottom:8px; font-size:0.85rem; color:#555; display:flex; align-items:center; justify-content:center;"><span class="gender-tag ${genderClass}" style="font-size:0.8rem; margin:0 5px 0 0;">${product.gender || "Unisex"}</span><span style="color:#ccc">|</span> <span style="margin-left:5px">${formatSize(product)}</span></div>${notesHtml}`;
 
-        const stockEl = document.getElementById("modal-stock");
         const stockVal = getStockHtml(product.inventory);
         if (stockVal) {
           stockEl.innerHTML = `<div style="color:#d9534f; font-weight:bold; font-size:0.95rem; border:1px solid #d9534f; display:inline-block; padding:3px 10px; border-radius:4px; background:#fff0f0;">🔥 Fast Moving: Only ${product.inventory} Left!</div>`;
@@ -2026,10 +2054,9 @@
           stockEl.style.display = "none";
         }
 
-        document.getElementById("modal-price").textContent =
-          "$" + product.price;
+        priceEl.textContent = "$" + product.price;
         updateModalButtonState(product.id);
-        document.getElementById("modal").classList.add("open");
+        modalEl.classList.add("open");
       };
 
       window.openModalById = function (id) {
@@ -2091,20 +2118,20 @@
         overlay.onclick = toggle;
       }
       function showToast(msg) {
-        const t = document.getElementById("toast");
-        if (!t) {
-          // Prevent crash if #toast is missing on some page
-          console.warn("[showToast] Missing #toast element. Message:", msg);
-          return;
-        }
+  const t = document.getElementById("toast");
+  if (!t) {
+    // Prevent crash if #toast is missing on some page
+    console.warn('[showToast] Missing #toast element. Message:', msg);
+    return;
+  }
 
-        t.textContent = msg;
-        t.classList.add("show");
+  t.textContent = msg;
+  t.classList.add("show");
 
-        // Prevent stacked timers when called repeatedly
-        if (t._toastTimer) clearTimeout(t._toastTimer);
-        t._toastTimer = setTimeout(() => t.classList.remove("show"), 2000);
-      }
+  // Prevent stacked timers when called repeatedly
+  if (t._toastTimer) clearTimeout(t._toastTimer);
+  t._toastTimer = setTimeout(() => t.classList.remove("show"), 2000);
+}
 
       window.updateItemQty = function (id, delta) {
         const db = window.perfumeDB;
@@ -2208,8 +2235,9 @@
         );
       }
     </script>
+  
+  <!-- Toast (auto-added to fix showToast null error) -->
+  <div id="toast"></div>
 
-    <!-- Toast (auto-added to fix showToast null error) -->
-    <div id="toast"></div>
-  </body>
+</body>
 </html>
