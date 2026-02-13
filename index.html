@@ -294,7 +294,8 @@
         max-width: 500px;
         height: 70px;
         background: #ffffff;
-        z-index: 3000;
+        /* 核心修改：Z-index 降低到 980，低于 Header(1000)、Sidebar(2001) 和 Modal(2000) */
+        z-index: 980;
         display: flex;
         align-items: stretch; /* 撑满高度 */
         justify-content: space-between;
@@ -400,7 +401,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px; /* 图标文字间距 */
+        gap: 8px; /* 图标文字间距加大 */
         cursor: pointer;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -923,7 +924,7 @@
         border: 1px solid #cfd8dc;
       }
 
-      /* 核心修复：Toast 样式必须存在 */
+      /* Toast Message */
       #toast {
         visibility: hidden;
         min-width: 200px;
@@ -1273,7 +1274,7 @@
             margin-bottom: 15px;
             text-align: center;
           "
-          placeholder="e.g. 9546731114 or Jackson"
+          placeholder="e.g. 1234567890 or Jackson"
         />
 
         <button
@@ -1301,7 +1302,124 @@
 
     <script src="db.js"></script>
     <script>
-      // ================= Configuration =================
+      // ================= Tracking & Checkout Logic =================
+      const GOOGLE_SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbyTu1LHtseu7j_v40r9Sp2ZbqLZ3ZrlWexqVUjjQhouK6zZPxnBLwaCL9LAbawLIFI/exec";
+
+      function openTrackingModal() {
+        document.getElementById("sidebar").classList.remove("active");
+        document.getElementById("sidebar-overlay").classList.remove("active");
+        document.getElementById("tracking-modal").classList.add("open");
+      }
+
+      function closeTrackingModal() {
+        document.getElementById("tracking-modal").classList.remove("open");
+        document.getElementById("track-result").style.display = "none";
+        document.getElementById("track-input").value = "";
+      }
+
+      // 辅助函数：根据快递公司生成查询链接
+      function getTrackingUrl(carrier, num) {
+        if (!carrier) return "https://t.17track.net/en#nums=" + num;
+        let c = carrier.toLowerCase();
+        if (c.includes("ups"))
+          return `https://www.ups.com/track?tracknum=${num}`;
+        if (c.includes("usps"))
+          return `https://tools.usps.com/go/TrackConfirmAction?tLabels=${num}`;
+        if (c.includes("fedex"))
+          return `https://www.fedex.com/fedextrack/?trknbr=${num}`;
+        // GOFO Express 或其他未识别的，全部走 17TRACK
+        return `https://t.17track.net/en#nums=${num}`;
+      }
+
+      function performTracking() {
+        const input = document.getElementById("track-input").value.trim();
+        const btn = document.getElementById("track-btn");
+        const resultDiv = document.getElementById("track-result");
+
+        if (!input) return alert("Please enter a name or phone number.");
+
+        // UI Loading State
+        btn.textContent = "SEARCHING...";
+        btn.disabled = true;
+        resultDiv.style.display = "none";
+
+        // 发起请求
+        fetch(`${GOOGLE_SCRIPT_URL}?q=${encodeURIComponent(input)}`)
+          .then((response) => response.json())
+          .then((data) => {
+            btn.textContent = "CHECK NOW";
+            btn.disabled = false;
+            resultDiv.style.display = "block";
+
+            if (data.status === "success") {
+              // 处理多单号：按换行符或空格分割
+              let rawTracks = String(data.tracking).split(/[\n\s]+/);
+
+              // 生成每一个单号的 HTML
+              let trackHtml = rawTracks
+                .map((num) => {
+                  if (num.length < 5) return ""; // 过滤无效短字符
+
+                  // 获取跳转链接
+                  let trackLink = getTrackingUrl(data.carrier, num);
+
+                  return `
+                    <div style="background:#fff; border:1px dashed #ccc; border-radius:4px; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                        <div style="display:flex; flex-direction:column; gap:4px;">
+                           <span style="font-family:monospace; font-weight:bold; font-size:0.95rem; word-break:break-all;">${num}</span>
+                           <a href="${trackLink}" target="_blank" style="font-size:0.75rem; color:#007bff; text-decoration:none; font-weight:bold; display:flex; align-items:center; gap:3px;">
+                              🌐 TRACK
+                           </a>
+                        </div>
+                        <span onclick="navigator.clipboard.writeText('${num}').then(()=>alert('Copied!'))" style="cursor:pointer; font-size:1.2rem; padding:5px;" title="Copy">📋</span>
+                    </div>
+                  `;
+                })
+                .join("");
+
+              // 渲染结果
+              resultDiv.innerHTML = `
+                <div style="color:#28a745; font-weight:bold; margin-bottom:5px; font-size:1.1rem;">✅ Order Found!</div>
+                
+                <div style="background:#eee; height:1px; margin:10px 0;"></div>
+                
+                <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:#555; margin-bottom:10px;">
+                    <span>📅 Date: <b>${data.order_date || "N/A"}</b></span>
+                    <span>👤 <b>${data.customer_name}</b></span>
+                </div>
+
+                <div style="font-size:0.9rem; color:#333; margin-bottom:8px;">
+                    Carrier: <b>${data.carrier}</b>
+                </div>
+
+                <div style="text-align:left;">
+                    ${trackHtml}
+                </div>
+                
+                <div style="font-size:0.75rem; color:#999; margin-top:5px; text-align:center;">
+                    *Click icon to copy number
+                </div>
+              `;
+            } else {
+              // 没找到
+              resultDiv.innerHTML = `
+                <div style="color:#d9534f; font-weight:bold;">❌ Order Not Found</div>
+                <p style="font-size:0.85rem; color:#666; margin-top:5px;">
+                  We couldn't find an order with that info. Please try your <b>Phone Number (digits only)</b> or check if the order has been shipped yet.
+                </p>
+              `;
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            btn.textContent = "CHECK NOW";
+            btn.disabled = false;
+            alert("System Error. Please try again later.");
+          });
+      }
+
+      // ... (Rest of existing JS functions: loadCart, saveCart, updateWholesaleBanner, etc.)
       const FEATURED_BRANDS = [
         "Creed",
         "Dior",
@@ -1337,7 +1455,6 @@
         { min: 101, max: Infinity, percent: 0.35 },
       ];
 
-      // ================= State Variables =================
       let cartItems = [];
       let currentPage = 1;
       const itemsPerPage = 20;
@@ -2170,97 +2287,6 @@
             }
           }),
         );
-      }
-
-      // ================= TRACKING LOGIC =================
-      const GOOGLE_SCRIPT_URL =
-        "https://script.google.com/macros/s/AKfycbyTu1LHtseu7j_v40r9Sp2ZbqLZ3ZrlWexqVUjjQhouK6zZPxnBLwaCL9LAbawLIFI/exec";
-
-      function openTrackingModal() {
-        document.getElementById("sidebar").classList.remove("active");
-        document.getElementById("sidebar-overlay").classList.remove("active");
-        document.getElementById("tracking-modal").classList.add("open");
-      }
-
-      function closeTrackingModal() {
-        document.getElementById("tracking-modal").classList.remove("open");
-        document.getElementById("track-result").style.display = "none";
-        document.getElementById("track-input").value = "";
-      }
-
-      function performTracking() {
-        const input = document.getElementById("track-input").value.trim();
-        const btn = document.getElementById("track-btn");
-        const resultDiv = document.getElementById("track-result");
-
-        if (!input) return alert("Please enter a name or phone number.");
-
-        btn.textContent = "SEARCHING...";
-        btn.disabled = true;
-        resultDiv.style.display = "none";
-
-        fetch(`${GOOGLE_SCRIPT_URL}?q=${encodeURIComponent(input)}`)
-          .then((response) => response.json())
-          .then((data) => {
-            btn.textContent = "CHECK NOW";
-            btn.disabled = false;
-            resultDiv.style.display = "block";
-
-            if (data.status === "success") {
-              // 处理多单号：按换行符或空格分割
-              let rawTracks = String(data.tracking).split(/[\n\s]+/);
-              // 生成每一个单号的 HTML (每行一个，带复制按钮)
-              let trackHtml = rawTracks
-                .map((num) => {
-                  if (num.length < 5) return ""; // 过滤无效短字符
-                  return `
-                    <div style="background:#fff; border:1px dashed #ccc; border-radius:4px; padding:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-family:monospace; font-weight:bold; font-size:0.95rem; word-break:break-all;">${num}</span>
-                        <span onclick="navigator.clipboard.writeText('${num}').then(()=>alert('Copied!'))" style="cursor:pointer; font-size:1.2rem;" title="Copy">📋</span>
-                    </div>
-                  `;
-                })
-                .join("");
-
-              // 渲染结果
-              resultDiv.innerHTML = `
-                <div style="color:#28a745; font-weight:bold; margin-bottom:5px; font-size:1.1rem;">✅ Order Found!</div>
-                
-                <div style="background:#eee; height:1px; margin:10px 0;"></div>
-                
-                <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:#555; margin-bottom:10px;">
-                    <span>📅 Date: <b>${data.order_date || "N/A"}</b></span>
-                    <span>👤 <b>${data.customer_name}</b></span>
-                </div>
-
-                <div style="font-size:0.9rem; color:#333; margin-bottom:8px;">
-                    Carrier: <b>${data.carrier}</b>
-                </div>
-
-                <div style="text-align:left;">
-                    ${trackHtml}
-                </div>
-                
-                <div style="font-size:0.75rem; color:#999; margin-top:5px; text-align:center;">
-                    *Click icon to copy number
-                </div>
-              `;
-            } else {
-              // 没找到
-              resultDiv.innerHTML = `
-                <div style="color:#d9534f; font-weight:bold;">❌ Order Not Found</div>
-                <p style="font-size:0.85rem; color:#666; margin-top:5px;">
-                  We couldn't find an order with that info. Please try your <b>Phone Number (digits only)</b> or check if the order has been shipped yet.
-                </p>
-              `;
-            }
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-            btn.textContent = "CHECK NOW";
-            btn.disabled = false;
-            alert("System Error. Please try again later.");
-          });
       }
     </script>
   </body>
