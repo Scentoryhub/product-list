@@ -119,6 +119,7 @@
         border-color: #fff;
       }
 
+      /* 右上角 Tracking 模块样式 */
       .header-right {
         position: relative;
         cursor: pointer;
@@ -310,8 +311,8 @@
         display: flex;
         align-items: center;
         cursor: pointer;
-        padding-left: 15px; /* 左侧留白 */
-        gap: 8px; /* 减少间距 */
+        padding-left: 12px; /* 减少留白，让图标靠左 */
+        gap: 8px;
         background: #fff;
       }
 
@@ -323,18 +324,18 @@
       }
 
       .nav-cart-icon {
-        width: 28px;
-        height: 28px;
+        width: 34px; /* 大图标 */
+        height: 34px;
         stroke: #333;
         fill: none;
-        stroke-width: 2;
+        stroke-width: 1.8;
       }
 
       /* 角标 */
       .nav-badge {
         position: absolute;
-        top: -8px;
-        right: -10px;
+        top: -6px;
+        right: -8px;
         background-color: #d9534f;
         color: #fff;
         font-size: 0.75rem;
@@ -399,7 +400,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px; /* 图标文字间距加大 */
+        gap: 8px; /* 图标文字间距 */
         cursor: pointer;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -921,6 +922,8 @@
         background: #eceff1;
         border: 1px solid #cfd8dc;
       }
+
+      /* 核心修复：Toast 样式必须存在 */
       #toast {
         visibility: hidden;
         min-width: 200px;
@@ -1184,6 +1187,68 @@
       </div>
     </div>
 
+    <div id="toast">Added to Cart! 🛒</div>
+
+    <div id="modal" class="modal">
+      <div class="modal-content">
+        <div
+          class="modal-close"
+          onclick="document.getElementById('modal').classList.remove('open')"
+        >
+          &times;
+        </div>
+        <img id="modal-img" class="modal-img" src="" />
+        <div class="modal-info">
+          <h3
+            id="modal-title"
+            style="margin: 5px 0 2px 0; font-size: 1.1rem; line-height: 1.2"
+          ></h3>
+          <div
+            id="modal-sub"
+            style="color: #666; font-size: 0.85rem; margin-bottom: 8px"
+          ></div>
+          <div id="modal-stock" style="margin-bottom: 8px"></div>
+          <div
+            id="modal-price"
+            style="
+              font-weight: bold;
+              color: var(--accent-color);
+              font-size: 1.3rem;
+              margin-bottom: 8px;
+            "
+          ></div>
+          <div id="modal-action-area"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="policy-modal">
+      <div
+        class="modal-content"
+        style="padding: 25px; text-align: left; max-width: 90%"
+      >
+        <div
+          class="modal-close"
+          onclick="
+            document.getElementById('policy-modal').classList.remove('open')
+          "
+        >
+          &times;
+        </div>
+        <h3 style="text-align: center; margin-top: 0">Reshipment Policy</h3>
+        <p>If items arrive broken or leaked:</p>
+        <ul style="padding-left: 20px; color: #555">
+          <li style="margin-bottom: 10px">
+            Take a photo of the <strong>Shipping Label</strong>.
+          </li>
+          <li>Take a photo of the <strong>Damaged Item</strong>.</li>
+        </ul>
+        <p style="text-align: center; font-weight: bold; margin-top: 20px">
+          Send to WhatsApp for free reshipment.
+        </p>
+      </div>
+    </div>
+
     <div id="tracking-modal" class="modal">
       <div
         class="modal-content"
@@ -1208,7 +1273,7 @@
             margin-bottom: 15px;
             text-align: center;
           "
-          placeholder="e.g. 954****114 or Your Name On Package"
+          placeholder="e.g. 9546731114 or Jackson"
         />
 
         <button
@@ -1233,147 +1298,10 @@
         ></div>
       </div>
     </div>
-    <!-- Product Modal (auto-added to restore product popup) -->
-    <div id="modal" class="modal">
-      <div
-        class="modal-content"
-        style="max-width: 420px; text-align: center; padding: 22px"
-      >
-        <div
-          class="modal-close"
-          onclick="
-            document.getElementById('modal').classList.remove('open');
-            currentModalProductId = null;
-          "
-        >
-          &times;
-        </div>
-
-        <img
-          id="modal-img"
-          src=""
-          alt="Product image"
-          style="
-            width: 160px;
-            height: 160px;
-            object-fit: cover;
-            border-radius: 12px;
-            margin: 10px auto 12px;
-            display: block;
-          "
-        />
-
-        <div
-          id="modal-title"
-          style="font-size: 1.15rem; font-weight: 700; margin-bottom: 6px"
-        ></div>
-        <div id="modal-sub"></div>
-        <div id="modal-stock" style="margin: 10px 0 6px"></div>
-
-        <div style="font-size: 1.35rem; font-weight: 800; margin: 10px 0 14px">
-          <span id="modal-price"></span>
-        </div>
-
-        <div id="modal-action-area"></div>
-      </div>
-    </div>
 
     <script src="db.js"></script>
     <script>
-      // ================= Tracking & Checkout Logic =================
-      const GOOGLE_SCRIPT_URL =
-        "https://script.google.com/macros/s/AKfycbyTu1LHtseu7j_v40r9Sp2ZbqLZ3ZrlWexqVUjjQhouK6zZPxnBLwaCL9LAbawLIFI/exec";
-
-      function openTrackingModal() {
-        document.getElementById("sidebar").classList.remove("active");
-        document.getElementById("sidebar-overlay").classList.remove("active");
-        document.getElementById("tracking-modal").classList.add("open");
-      }
-
-      function closeTrackingModal() {
-        document.getElementById("tracking-modal").classList.remove("open");
-        document.getElementById("track-result").style.display = "none";
-        document.getElementById("track-input").value = "";
-      }
-
-      function performTracking() {
-        const input = document.getElementById("track-input").value.trim();
-        const btn = document.getElementById("track-btn");
-        const resultDiv = document.getElementById("track-result");
-
-        if (!input) return alert("Please enter a name or phone number.");
-
-        // UI Loading State
-        btn.textContent = "SEARCHING...";
-        btn.disabled = true;
-        resultDiv.style.display = "none";
-
-        // 发起请求
-        fetch(`${GOOGLE_SCRIPT_URL}?q=${encodeURIComponent(input)}`)
-          .then((response) => response.json())
-          .then((data) => {
-            btn.textContent = "CHECK NOW";
-            btn.disabled = false;
-            resultDiv.style.display = "block";
-
-            if (data.status === "success") {
-              // 处理多单号：按换行符或空格分割
-              let rawTracks = String(data.tracking).split(/[\n\s]+/);
-              // 生成每一个单号的 HTML (每行一个，带复制按钮)
-              let trackHtml = rawTracks
-                .map((num) => {
-                  if (num.length < 5) return ""; // 过滤无效短字符
-                  return `
-                    <div style="background:#fff; border:1px dashed #ccc; border-radius:4px; padding:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-family:monospace; font-weight:bold; font-size:0.95rem; word-break:break-all;">${num}</span>
-                        <span onclick="navigator.clipboard.writeText('${num}').then(()=>alert('Copied!'))" style="cursor:pointer; font-size:1.2rem;" title="Copy">📋</span>
-                    </div>
-                  `;
-                })
-                .join("");
-
-              // 渲染结果
-              resultDiv.innerHTML = `
-                <div style="color:#28a745; font-weight:bold; margin-bottom:5px; font-size:1.1rem;">✅ Order Found!</div>
-                
-                <div style="background:#eee; height:1px; margin:10px 0;"></div>
-                
-                <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:#555; margin-bottom:10px;">
-                    <span>📅 Date: <b>${data.order_date || "N/A"}</b></span>
-                    <span>👤 <b>${data.customer_name}</b></span>
-                </div>
-
-                <div style="font-size:0.9rem; color:#333; margin-bottom:8px;">
-                    Carrier: <b>${data.carrier}</b>
-                </div>
-
-                <div style="text-align:left;">
-                    ${trackHtml}
-                </div>
-                
-                <div style="font-size:0.75rem; color:#999; margin-top:5px; text-align:center;">
-                    *Click icon to copy number
-                </div>
-              `;
-            } else {
-              // 没找到
-              resultDiv.innerHTML = `
-                <div style="color:#d9534f; font-weight:bold;">❌ Order Not Found</div>
-                <p style="font-size:0.85rem; color:#666; margin-top:5px;">
-                  We couldn't find an order with that info. Please try your <b>Phone Number (digits only)</b> or check if the order has been shipped yet.
-                </p>
-              `;
-            }
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-            btn.textContent = "CHECK NOW";
-            btn.disabled = false;
-            alert("System Error. Please try again later.");
-          });
-      }
-
-      // ... (Rest of existing JS functions: loadCart, saveCart, updateWholesaleBanner, etc.)
+      // ================= Configuration =================
       const FEATURED_BRANDS = [
         "Creed",
         "Dior",
@@ -1409,6 +1337,7 @@
         { min: 101, max: Infinity, percent: 0.35 },
       ];
 
+      // ================= State Variables =================
       let cartItems = [];
       let currentPage = 1;
       const itemsPerPage = 20;
@@ -2049,31 +1978,19 @@
 
       window.openModal = function (product) {
         currentModalProductId = product.id;
-
-        const modalEl = document.getElementById("modal");
-        const imgEl = document.getElementById("modal-img");
-        const titleEl = document.getElementById("modal-title");
-        const subEl = document.getElementById("modal-sub");
-        const stockEl = document.getElementById("modal-stock");
-        const priceEl = document.getElementById("modal-price");
-
-        if (!modalEl || !imgEl || !titleEl || !subEl || !stockEl || !priceEl) {
-          console.warn(
-            "[openModal] Modal DOM missing. Ensure product modal exists in HTML.",
-          );
-          return;
-        }
-
-        imgEl.src = product.img;
-        titleEl.textContent = `${product.id}-${product.name}`;
+        document.getElementById("modal-img").src = product.img;
+        document.getElementById("modal-title").textContent =
+          `${product.id}-${product.name}`;
         const notesContent = product.Notes || product.notes;
         let notesHtml = "";
         if (notesContent && notesContent.trim() !== "") {
           notesHtml = `<div class="modal-notes-box"><span class="modal-notes-title">Fragrance Notes</span><span class="modal-notes-text">${notesContent}</span></div>`;
         }
         const genderClass = getGenderClass(product.gender);
-        subEl.innerHTML = `<div style="font-size:1.1rem; color:#333; margin-bottom:5px;">${product.brand}</div><div style="margin-bottom:8px; font-size:0.85rem; color:#555; display:flex; align-items:center; justify-content:center;"><span class="gender-tag ${genderClass}" style="font-size:0.8rem; margin:0 5px 0 0;">${product.gender || "Unisex"}</span><span style="color:#ccc">|</span> <span style="margin-left:5px">${formatSize(product)}</span></div>${notesHtml}`;
+        document.getElementById("modal-sub").innerHTML =
+          `<div style="font-size:1.1rem; color:#333; margin-bottom:5px;">${product.brand}</div><div style="margin-bottom:8px; font-size:0.85rem; color:#555; display:flex; align-items:center; justify-content:center;"><span class="gender-tag ${genderClass}" style="font-size:0.8rem; margin:0 5px 0 0;">${product.gender || "Unisex"}</span><span style="color:#ccc">|</span> <span style="margin-left:5px">${formatSize(product)}</span></div>${notesHtml}`;
 
+        const stockEl = document.getElementById("modal-stock");
         const stockVal = getStockHtml(product.inventory);
         if (stockVal) {
           stockEl.innerHTML = `<div style="color:#d9534f; font-weight:bold; font-size:0.95rem; border:1px solid #d9534f; display:inline-block; padding:3px 10px; border-radius:4px; background:#fff0f0;">🔥 Fast Moving: Only ${product.inventory} Left!</div>`;
@@ -2082,9 +1999,10 @@
           stockEl.style.display = "none";
         }
 
-        priceEl.textContent = "$" + product.price;
+        document.getElementById("modal-price").textContent =
+          "$" + product.price;
         updateModalButtonState(product.id);
-        modalEl.classList.add("open");
+        document.getElementById("modal").classList.add("open");
       };
 
       window.openModalById = function (id) {
@@ -2147,18 +2065,9 @@
       }
       function showToast(msg) {
         const t = document.getElementById("toast");
-        if (!t) {
-          // Prevent crash if #toast is missing on some page
-          console.warn("[showToast] Missing #toast element. Message:", msg);
-          return;
-        }
-
         t.textContent = msg;
         t.classList.add("show");
-
-        // Prevent stacked timers when called repeatedly
-        if (t._toastTimer) clearTimeout(t._toastTimer);
-        t._toastTimer = setTimeout(() => t.classList.remove("show"), 2000);
+        setTimeout(() => t.classList.remove("show"), 2000);
       }
 
       window.updateItemQty = function (id, delta) {
@@ -2262,9 +2171,97 @@
           }),
         );
       }
-    </script>
 
-    <!-- Toast (auto-added to fix showToast null error) -->
-    <div id="toast"></div>
+      // ================= TRACKING LOGIC =================
+      const GOOGLE_SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbyTu1LHtseu7j_v40r9Sp2ZbqLZ3ZrlWexqVUjjQhouK6zZPxnBLwaCL9LAbawLIFI/exec";
+
+      function openTrackingModal() {
+        document.getElementById("sidebar").classList.remove("active");
+        document.getElementById("sidebar-overlay").classList.remove("active");
+        document.getElementById("tracking-modal").classList.add("open");
+      }
+
+      function closeTrackingModal() {
+        document.getElementById("tracking-modal").classList.remove("open");
+        document.getElementById("track-result").style.display = "none";
+        document.getElementById("track-input").value = "";
+      }
+
+      function performTracking() {
+        const input = document.getElementById("track-input").value.trim();
+        const btn = document.getElementById("track-btn");
+        const resultDiv = document.getElementById("track-result");
+
+        if (!input) return alert("Please enter a name or phone number.");
+
+        btn.textContent = "SEARCHING...";
+        btn.disabled = true;
+        resultDiv.style.display = "none";
+
+        fetch(`${GOOGLE_SCRIPT_URL}?q=${encodeURIComponent(input)}`)
+          .then((response) => response.json())
+          .then((data) => {
+            btn.textContent = "CHECK NOW";
+            btn.disabled = false;
+            resultDiv.style.display = "block";
+
+            if (data.status === "success") {
+              // 处理多单号：按换行符或空格分割
+              let rawTracks = String(data.tracking).split(/[\n\s]+/);
+              // 生成每一个单号的 HTML (每行一个，带复制按钮)
+              let trackHtml = rawTracks
+                .map((num) => {
+                  if (num.length < 5) return ""; // 过滤无效短字符
+                  return `
+                    <div style="background:#fff; border:1px dashed #ccc; border-radius:4px; padding:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-family:monospace; font-weight:bold; font-size:0.95rem; word-break:break-all;">${num}</span>
+                        <span onclick="navigator.clipboard.writeText('${num}').then(()=>alert('Copied!'))" style="cursor:pointer; font-size:1.2rem;" title="Copy">📋</span>
+                    </div>
+                  `;
+                })
+                .join("");
+
+              // 渲染结果
+              resultDiv.innerHTML = `
+                <div style="color:#28a745; font-weight:bold; margin-bottom:5px; font-size:1.1rem;">✅ Order Found!</div>
+                
+                <div style="background:#eee; height:1px; margin:10px 0;"></div>
+                
+                <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:#555; margin-bottom:10px;">
+                    <span>📅 Date: <b>${data.order_date || "N/A"}</b></span>
+                    <span>👤 <b>${data.customer_name}</b></span>
+                </div>
+
+                <div style="font-size:0.9rem; color:#333; margin-bottom:8px;">
+                    Carrier: <b>${data.carrier}</b>
+                </div>
+
+                <div style="text-align:left;">
+                    ${trackHtml}
+                </div>
+                
+                <div style="font-size:0.75rem; color:#999; margin-top:5px; text-align:center;">
+                    *Click icon to copy number
+                </div>
+              `;
+            } else {
+              // 没找到
+              resultDiv.innerHTML = `
+                <div style="color:#d9534f; font-weight:bold;">❌ Order Not Found</div>
+                <p style="font-size:0.85rem; color:#666; margin-top:5px;">
+                  We couldn't find an order with that info. Please try your <b>Phone Number (digits only)</b> or check if the order has been shipped yet.
+                </p>
+              `;
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            btn.textContent = "CHECK NOW";
+            btn.disabled = false;
+            alert("System Error. Please try again later.");
+          });
+      }
+    </script>
   </body>
 </html>
