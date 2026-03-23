@@ -1171,7 +1171,10 @@
       </div>
 
       <div class="nav-right">
-        <button class="checkout-pill-btn" onclick="checkoutViaWhatsapp()">
+        <button
+          class="checkout-pill-btn"
+          onclick="window.location.href = 'cart.html'"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -1364,6 +1367,7 @@
                   // 获取跳转链接
                   let trackLink = getTrackingUrl(data.carrier, num);
 
+                  // 核心修改 1：移除 alert，改为触发无弹窗的 Toast 提示
                   return `
                     <div style="background:#fff; border:1px dashed #ccc; border-radius:4px; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
                         <div style="display:flex; flex-direction:column; gap:4px;">
@@ -1372,7 +1376,7 @@
                               🌐 TRACK
                            </a>
                         </div>
-                        <span onclick="navigator.clipboard.writeText('${num}').then(()=>alert('Copied!'))" style="cursor:pointer; font-size:1.2rem; padding:5px;" title="Copy">📋</span>
+                        <span onclick="navigator.clipboard.writeText('${num}').then(()=>showToast('Tracking Number Copied!'))" style="cursor:pointer; font-size:1.2rem; padding:5px;" title="Copy">📋</span>
                     </div>
                   `;
                 })
@@ -1621,14 +1625,11 @@
         return `<div class="img-wrapper skeleton-loader"><picture><source srcset="${webpSrc}" type="image/webp"><img src="${src}" alt="${alt}" loading="lazy" class="lazy-img" onload="this.classList.add('loaded'); this.parentElement.parentElement.classList.remove('skeleton-loader');" onerror="this.parentElement.parentElement.classList.remove('skeleton-loader');"></picture></div>`;
       }
 
-      // --- 4. Logic for "Modal Style" Add-to-Cart Buttons on Cards ---
-      // This is the updated function you requested to move outside
       function getCartQty(id) {
         const item = cartItems.find((c) => c.name === id);
         return item ? item.quantity : 0;
       }
 
-      // Updated: Returns Large Black Button or Rectangular Control Box
       function getAddButtonHtml(id) {
         const qty = getCartQty(id);
         if (qty === 0) {
@@ -1769,6 +1770,7 @@
           // Use NEW button logic
           const buttonHtml = getAddButtonHtml(p.id);
 
+          // 核心修改 2：给按钮包裹层统一增加 data-btn-wrap 属性，方便批量更新
           card.innerHTML = `
             <div style="position:relative;">${imgHtml}<div class="badges-container">${badgesHtml}</div></div>
             <div style="padding: 0 5px 5px 5px; display:flex; flex-direction:column; flex:1;">
@@ -1781,7 +1783,7 @@
                     $${p.price} ${stockHtml}
                     <span style="font-size:0.75rem; color:#666; font-weight:normal; margin-left:5px;">${p.ml ? formatSize(p) : ""}</span>
                 </div>
-                <div class="btn-qty-wrapper" id="btn-wrap-${p.id}">${buttonHtml}</div>
+                <div class="btn-qty-wrapper" data-btn-wrap="${p.id}">${buttonHtml}</div>
             </div>
           `;
           wrapper.appendChild(card);
@@ -2017,6 +2019,7 @@
           // Use NEW button logic
           const buttonHtml = getAddButtonHtml(p.id);
 
+          // 核心修改 2：给按钮包裹层统一增加 data-btn-wrap 属性
           div.innerHTML = `
               <div class="item-img-box skeleton-loader" onclick="openModalById('${p.id}')">
                   <picture><source srcset="${webpSrc}" type="image/webp"><img src="${p.img}" loading="lazy" class="lazy-img" onload="this.classList.add('loaded'); this.parentElement.parentElement.classList.remove('skeleton-loader');" onerror="this.parentElement.parentElement.classList.remove('skeleton-loader');"></picture>
@@ -2026,7 +2029,7 @@
                  <div style="font-size:0.85rem; height:2.4em; overflow:hidden; margin-bottom:5px; line-height:1.2;">${p.id}-${p.name}</div>
                  <div style="font-size:0.8rem; color:#888; margin-bottom:5px;">${p.brand}${genderText} <br> ${formatSize(p)}</div>
                  <div class="item-price">$${p.price} ${stockHtml}</div>
-                 <div class="btn-qty-wrapper" id="btn-wrap-grid-${p.id}">${buttonHtml}</div>
+                 <div class="btn-qty-wrapper" data-btn-wrap="${p.id}">${buttonHtml}</div>
               </div>
            `;
           gallery.appendChild(div);
@@ -2180,6 +2183,8 @@
         trigger.onclick = toggle;
         overlay.onclick = toggle;
       }
+
+      // Toast 函数供页面任何位置调用
       function showToast(msg) {
         const t = document.getElementById("toast");
         t.textContent = msg;
@@ -2214,56 +2219,24 @@
           if (existing.quantity <= 0)
             cartItems = cartItems.filter((c) => c.name !== id);
         }
+
         saveCart();
         updateWholesaleBanner();
-        // Update both the LIST VIEW style button and Modal style button if they exist
-        const newBtnHtml = getAddButtonHtml(id);
-        const scrollBtnWrap = document.getElementById(`btn-wrap-${id}`);
-        if (scrollBtnWrap) scrollBtnWrap.innerHTML = newBtnHtml;
-        const gridBtnWrap = document.getElementById(`btn-wrap-grid-${id}`);
-        if (gridBtnWrap) gridBtnWrap.innerHTML = newBtnHtml;
 
-        // Also update modal state if open
+        // 核心修改 2：通过 data-btn-wrap 找到所有对应这个商品ID的容器，统一批量更新！
+        const newBtnHtml = getAddButtonHtml(id);
+        document.querySelectorAll(`[data-btn-wrap="${id}"]`).forEach((wrap) => {
+          wrap.innerHTML = newBtnHtml;
+        });
+
+        // 弹窗内的独立更新逻辑
         if (currentModalProductId === id) updateModalButtonState(id);
       };
 
-      // Separate function for modal button state to ensure it keeps its own styling structure if needed
-      // (Though here we are using the same HTML structure for both, just in case you want to tweak one later)
       function updateModalButtonState(id) {
         const container = document.getElementById("modal-action-area");
-        // Reuse the logic, but we could also write specific HTML if the modal needed to look different
         container.innerHTML = getAddButtonHtml(id);
       }
-
-      window.checkoutViaWhatsapp = function () {
-        if (cartItems.length === 0) return showToast("Cart is empty");
-        let totalQty = 0,
-          lvCount = 0,
-          otherCount = 0,
-          subtotal = 0;
-        cartItems.forEach((item) => {
-          const qty = item.quantity;
-          totalQty += qty;
-          subtotal += item.price * qty;
-          if (item.caption.toLowerCase().includes("louis vuitton"))
-            lvCount += qty;
-          else otherCount += qty;
-        });
-        const tier = discountTiers.find(
-          (t) => totalQty >= t.min && totalQty <= t.max,
-        );
-        const discountAmount = subtotal * (tier ? tier.percent : 0);
-        const finalTotal = subtotal - discountAmount;
-        let msg = `*New Order Request* 📦\n----------------------------\n`;
-        cartItems.forEach((item) => {
-          msg += `${item.caption} x *${item.quantity}*\n\n`;
-        });
-        msg += `----------------------------\nLV Quantity: ${lvCount}\nOther Quantity: ${otherCount}\n*Total Quantity: ${totalQty} pcs*\n----------------------------\n*Total Amount:* $${Math.round(finalTotal).toFixed(2)}`;
-        window.open(
-          `https://wa.me/16232027321?text=${encodeURIComponent(msg)}`,
-          "_blank",
-        );
-      };
 
       function loadCart() {
         cartItems = JSON.parse(localStorage.getItem("perfumeCart") || "[]");
