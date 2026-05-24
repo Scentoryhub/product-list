@@ -461,6 +461,10 @@
           <span>Other Quantity</span>
           <span id="other-brands-count">0</span>
         </div>
+        <div class="summary-row">
+          <span>Total Quantity</span>
+          <span id="total-quantity-count">0</span>
+        </div>
         <div
           class="summary-row"
           style="border-top: 1px solid #eee; padding-top: 8px; margin-top: 8px"
@@ -559,6 +563,7 @@
         discount: document.getElementById("discount-amount"),
         lv: document.getElementById("lv-count"),
         other: document.getElementById("other-brands-count"),
+        totalQty: document.getElementById("total-quantity-count"),
         upsell: document.getElementById("upsell-message"),
         tiersList: document.getElementById("tiers-list"),
         container: document.getElementById("cart-summary"),
@@ -672,6 +677,7 @@
         // Render Summary
         summaryEls.lv.textContent = lv;
         summaryEls.other.textContent = other;
+        summaryEls.totalQty.textContent = totalQty;
         summaryEls.subtotal.textContent = `$${subtotal.toFixed(2)}`;
         summaryEls.discount.textContent = `-$${discountVal.toFixed(2)} (${(
           tier.percent * 100
