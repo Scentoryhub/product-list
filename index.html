@@ -1447,7 +1447,7 @@
       <div class="nav-right">
         <button
           class="checkout-pill-btn"
-          onclick="window.location.href = 'cart.html'"
+          onclick="sendOrderToWhatsApp()"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -1596,6 +1596,7 @@
       // ================= Tracking & Checkout Logic =================
       const GOOGLE_SCRIPT_URL =
         "https://script.google.com/macros/s/AKfycbyTu1LHtseu7j_v40r9Sp2ZbqLZ3ZrlWexqVUjjQhouK6zZPxnBLwaCL9LAbawLIFI/exec";
+      const WHATSAPP_NUMBER = "16232027321";
 
       function openTrackingModal() {
         document.getElementById("sidebar").classList.remove("active");
@@ -1882,6 +1883,69 @@
           }
         }
       }
+
+      function getCartOrderSummary() {
+        let totalQty = 0;
+        let lvCount = 0;
+        let otherCount = 0;
+        let subtotal = 0;
+
+        cartItems.forEach((item) => {
+          const qty = Number(item.quantity) || 0;
+          const price = Number(item.price) || 0;
+          totalQty += qty;
+          subtotal += price * qty;
+          if ((item.caption || "").toLowerCase().includes("louis vuitton")) {
+            lvCount += qty;
+          } else {
+            otherCount += qty;
+          }
+        });
+
+        const tier =
+          discountTiers.find((t) => totalQty >= t.min && totalQty <= t.max) ||
+          discountTiers[0];
+        const discountPercent = tier ? tier.percent : 0;
+        const finalTotal = subtotal - subtotal * discountPercent;
+
+        return {
+          totalQty,
+          lvCount,
+          otherCount,
+          finalTotal,
+        };
+      }
+
+      window.sendOrderToWhatsApp = function () {
+        loadCart();
+        if (cartItems.length === 0) {
+          alert("Cart is empty");
+          return;
+        }
+
+        const { totalQty, lvCount, otherCount, finalTotal } =
+          getCartOrderSummary();
+
+        let msg = `*New Order Request* 📦\n`;
+        msg += `----------------------------\n`;
+
+        cartItems.forEach((item) => {
+          msg += `${item.caption} x *${item.quantity}*\n\n`;
+        });
+
+        msg += `----------------------------\n`;
+        msg += `LV Quantity: ${lvCount}\n`;
+        msg += `Other Quantity: ${otherCount}\n`;
+        msg += `*Total Quantity: ${totalQty} pcs*\n`;
+        msg += `----------------------------\n`;
+        msg += `*Total Amount:* $${Math.round(finalTotal).toFixed(2)}`;
+
+        const encodedMsg = encodeURIComponent(msg);
+        window.open(
+          `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMsg}`,
+          "_blank",
+        );
+      };
 
       function formatSize(item) {
         if (!item.ml) return "";
