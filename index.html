@@ -1714,6 +1714,13 @@
         "Burberry",
         "Versace",
       ];
+      const QUICK_SEARCH_BRANDS = [
+        "Prada",
+        "Byredo",
+        "Dolce and Gabbana",
+        "Amouage",
+        "Ralph Lauren",
+      ];
       const FEATURED_BRANDS_LOWER = FEATURED_BRANDS.map((b) => b.toLowerCase());
       const discountTiers = [
         { min: 1, max: 1, percent: 0 },
@@ -1918,6 +1925,7 @@
           "Parfums de Marly": "PDM",
           "Jean Paul Gaultier": "JPG",
           "Bond No. 9": "BOND NO. 9",
+          "Dolce and Gabbana": "D&G",
         };
         return labelMap[brand] || brand.toUpperCase();
       }
@@ -1944,21 +1952,40 @@
         if (!grid || !moreBtn) return;
 
         grid.innerHTML = "";
-        const brands = quickBrandsShowAll
-          ? FEATURED_BRANDS
-          : FEATURED_BRANDS.slice(0, 10);
+        const featuredQuickItems = FEATURED_BRANDS.map((brand) => ({
+          brand,
+          mode: "scroll",
+          searchTerm: brand,
+        }));
+        const searchQuickItems = QUICK_SEARCH_BRANDS.map((brand) => ({
+          brand,
+          mode: "search",
+          searchTerm: brand,
+        }));
+        const quickBrandItems = [
+          ...featuredQuickItems.slice(0, 5),
+          ...searchQuickItems,
+          ...featuredQuickItems.slice(5),
+        ];
+        const visibleBrands = quickBrandsShowAll
+          ? quickBrandItems
+          : quickBrandItems.slice(0, 10);
 
-        brands.forEach((brand) => {
+        visibleBrands.forEach((item) => {
           const btn = document.createElement("button");
           btn.type = "button";
           btn.className = "quick-brand-btn";
-          btn.textContent = getQuickBrandLabel(brand);
-          btn.onclick = () => scrollToBrand(brand);
+          btn.textContent = getQuickBrandLabel(item.brand);
+          btn.onclick = () => {
+            if (item.mode === "search")
+              switchToGrid("Search:" + item.searchTerm);
+            else scrollToBrand(item.brand);
+          };
           grid.appendChild(btn);
         });
 
         moreBtn.style.display =
-          FEATURED_BRANDS.length > 10 ? "inline-block" : "none";
+          quickBrandItems.length > 10 ? "inline-block" : "none";
         moreBtn.textContent = quickBrandsShowAll
           ? "Show Less"
           : "Show More Brands";
@@ -2305,13 +2332,57 @@
         bond: "Bond No. 9",
         "bond no 9": "Bond No. 9",
         jpg: "JEAN PAUL GAULTIER",
+        prada: "Prada",
+        byredo: "Byredo",
+        amouage: "Amouage",
+        dolce: "Dolce & Gabbana",
+        gabbana: "Dolce & Gabbana",
+        ralph: "Ralph Lauren",
+        "ralph lauren": "Ralph Lauren",
+        "dolce gabbana": "Dolce & Gabbana",
+        "dolce and gabbana": "Dolce & Gabbana",
+        "d&g": "Dolce & Gabbana",
+        viktor: "Viktor & Rolf",
+        rolf: "Viktor & Rolf",
+        "viktor rolf": "Viktor & Rolf",
+        "viktor and rolf": "Viktor & Rolf",
+        "viktor & rolf": "Viktor & Rolf",
       };
+      const SEARCH_STOPWORDS = new Set([
+        "a",
+        "an",
+        "and",
+        "de",
+        "el",
+        "for",
+        "la",
+        "le",
+        "of",
+        "the",
+      ]);
+
+      function normalizeSearchText(text) {
+        return (text || "")
+          .toString()
+          .toLowerCase()
+          .replace(/&/g, " and ")
+          .replace(/[^a-z0-9]+/g, " ")
+          .trim()
+          .replace(/\s+/g, " ");
+      }
 
       function detectBrandIntent(rawTerm) {
-        const lowerTerm = rawTerm.toLowerCase().trim();
+        const lowerTerm = normalizeSearchText(rawTerm);
+        const compactTerm = lowerTerm
+          .replace(/\band\b/g, "")
+          .replace(/\s+/g, " ")
+          .trim();
         const tokens = lowerTerm.split(/\s+/);
         for (const [key, brandName] of Object.entries(BRAND_ALIASES)) {
-          if (lowerTerm.includes(key)) return brandName;
+          const normalizedKey = normalizeSearchText(key);
+          if (lowerTerm === normalizedKey || lowerTerm.includes(normalizedKey))
+            return brandName;
+          if (compactTerm && compactTerm === normalizedKey) return brandName;
         }
         for (const token of tokens) {
           if (BRAND_ALIASES[token]) return BRAND_ALIASES[token];
@@ -2319,17 +2390,15 @@
         return null;
       }
       function normalizeAndTokenize(rawTerm) {
-        return rawTerm
-          .toLowerCase()
-          .trim()
+        return normalizeSearchText(rawTerm)
           .split(/\s+/)
-          .filter((t) => t.length > 0);
+          .filter((t) => t.length > 0 && !SEARCH_STOPWORDS.has(t));
       }
       function calculateRelevanceScore(product, searchTokens) {
         let score = 0;
-        const pId = (product.id || "").toString().toLowerCase();
-        const pName = (product.name || "").toLowerCase();
-        const pBrand = (product.brand || "").toLowerCase();
+        const pId = normalizeSearchText(product.id);
+        const pName = normalizeSearchText(product.name);
+        const pBrand = normalizeSearchText(product.brand);
         searchTokens.forEach((token) => {
           if (token.length < 1) return;
           if (pId.includes(token)) score += 100;
@@ -2337,6 +2406,13 @@
           if (pName.includes(token)) score += 50;
         });
         return score;
+      }
+      function matchesAllSearchTokens(product, searchTokens) {
+        if (searchTokens.length === 0) return false;
+        const haystack = normalizeSearchText(
+          `${product.id || ""} ${product.brand || ""} ${product.name || ""}`,
+        );
+        return searchTokens.every((token) => haystack.includes(token));
       }
 
       // --- Grid Render ---
@@ -2395,14 +2471,20 @@
           const searchTokens = normalizeAndTokenize(rawTerm);
           if (targetBrand) {
             let brandProducts = db.filter(
-              (p) => p.brand.toLowerCase() === targetBrand.toLowerCase(),
+              (p) =>
+                normalizeSearchText(p.brand) ===
+                normalizeSearchText(targetBrand),
             );
             let remainingTokens = searchTokens.filter(
               (t) =>
                 !Object.keys(BRAND_ALIASES).some(
-                  (k) =>
-                    BRAND_ALIASES[k] === targetBrand &&
-                    (k.includes(t) || t.includes(k)),
+                  (k) => {
+                    const normalizedKey = normalizeSearchText(k);
+                    return (
+                      BRAND_ALIASES[k] === targetBrand &&
+                      (normalizedKey.includes(t) || t.includes(normalizedKey))
+                    );
+                  },
                 ),
             );
             if (remainingTokens.length > 0) {
@@ -2411,7 +2493,11 @@
                   product: p,
                   score: calculateRelevanceScore(p, remainingTokens),
                 }))
-                .filter((item) => item.score > 0);
+                .filter(
+                  (item) =>
+                    item.score > 0 &&
+                    matchesAllSearchTokens(item.product, remainingTokens),
+                );
               scored.sort((a, b) => b.score - a.score);
               filtered = scored.map((item) => item.product);
             } else {
@@ -2424,7 +2510,11 @@
                 product: p,
                 score: calculateRelevanceScore(p, searchTokens),
               }))
-              .filter((item) => item.score > 0);
+              .filter(
+                (item) =>
+                  item.score > 0 &&
+                  matchesAllSearchTokens(item.product, searchTokens),
+              );
             scoredProducts.sort((a, b) => b.score - a.score);
             filtered = scoredProducts.map((item) => item.product);
             title = `Results: "${rawTerm}"`;
@@ -2593,9 +2683,17 @@
 
       function setupSearch() {
         const globalSearch = document.getElementById("global-search-input");
-        globalSearch.addEventListener("change", (e) => {
+        const runSearch = (e) => {
           const val = e.target.value.trim();
           if (val) switchToGrid("Search:" + val);
+        };
+        globalSearch.addEventListener("change", runSearch);
+        globalSearch.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            runSearch(e);
+            globalSearch.blur();
+          }
         });
       }
 
