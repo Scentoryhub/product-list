@@ -1039,16 +1039,19 @@
       }
       .modal-close {
         position: absolute;
-        top: 10px;
-        right: 10px;
+        top: 8px;
+        right: 8px;
         font-size: 1.8rem;
         cursor: pointer;
         z-index: 10;
-        width: 36px;
-        height: 36px;
+        width: 48px;
+        height: 48px;
         background: rgba(0, 0, 0, 0.1);
         border-radius: 50%;
-        line-height: 34px;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       .modal-img {
         width: 100%;
@@ -1058,6 +1061,18 @@
       }
       .modal-info {
         padding: 8px 15px;
+      }
+      .modal-back-btn {
+        width: 100%;
+        min-height: 38px;
+        margin-top: 10px;
+        border-radius: 6px;
+        background: #000;
+        color: #fff;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 800;
+        letter-spacing: 0;
       }
       .modal-notes-box {
         background-color: #f7f7f7;
@@ -1464,10 +1479,7 @@
 
     <div id="modal" class="modal">
       <div class="modal-content">
-        <div
-          class="modal-close"
-          onclick="document.getElementById('modal').classList.remove('open')"
-        >
+        <div class="modal-close" onclick="closeProductModal()">
           &times;
         </div>
         <img id="modal-img" class="modal-img" src="" />
@@ -1491,6 +1503,13 @@
             "
           ></div>
           <div id="modal-action-area"></div>
+          <button
+            type="button"
+            class="modal-back-btn"
+            onclick="closeProductModal()"
+          >
+            Back
+          </button>
         </div>
       </div>
     </div>
@@ -1975,7 +1994,7 @@
           btn.onclick = () => {
             if (item.mode === "search")
               switchToGrid("Search:" + item.searchTerm);
-            else scrollToBrand(item.brand);
+            else window.scrollToBrand(item.brand);
           };
           grid.appendChild(btn);
         });
@@ -2718,7 +2737,12 @@
           const targetId = "brand-" + safeName;
           const element = document.getElementById(targetId);
           if (element) {
-            const headerOffset = 65;
+            const header = document.querySelector(".site-header");
+            const banner = document.getElementById("wholesale-banner");
+            const headerOffset =
+              (header ? header.offsetHeight : 0) +
+              (banner ? banner.offsetHeight : 0) +
+              16;
             const elementPosition = element.getBoundingClientRect().top;
             const offsetPosition =
               elementPosition + window.pageYOffset - headerOffset;
@@ -2738,6 +2762,11 @@
         trigger.onclick = toggle;
         overlay.onclick = toggle;
       }
+
+      window.closeProductModal = function () {
+        document.getElementById("modal").classList.remove("open");
+        currentModalProductId = null;
+      };
 
       // Toast 函数供页面任何位置调用
       function showToast(msg) {
