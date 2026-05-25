@@ -300,6 +300,26 @@
       .quick-guide.hidden {
         display: none;
       }
+      .quick-guide-restore {
+        display: none;
+        margin: 8px 10px;
+        text-align: right;
+      }
+      .quick-guide-restore.visible {
+        display: block;
+      }
+      .quick-guide-restore-btn {
+        min-height: 34px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(178, 137, 0, 0.45);
+        background: #fff;
+        color: #111;
+        cursor: pointer;
+        font-size: 0.78rem;
+        font-weight: 800;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
       .quick-guide-copy {
         padding-right: 64px;
       }
@@ -404,6 +424,10 @@
           max-width: 760px;
           margin: 12px auto 14px;
           padding: 14px 18px;
+        }
+        .quick-guide-restore {
+          max-width: 760px;
+          margin: 10px auto;
         }
         .quick-guide-action {
           font-size: 0.9rem;
@@ -1258,6 +1282,16 @@
         </div>
       </section>
 
+      <div id="quick-guide-restore" class="quick-guide-restore">
+        <button
+          type="button"
+          class="quick-guide-restore-btn"
+          onclick="showQuickGuide()"
+        >
+          Show Guide
+        </button>
+      </div>
+
       <div id="home-content">
         <div class="loading-container">
           <div class="spinner"></div>
@@ -1849,8 +1883,10 @@
 
       function setQuickGuideVisibility() {
         const guide = document.getElementById("mobile-quick-guide");
-        if (!guide) return;
-        guide.classList.toggle("hidden", getQuickGuideHidden());
+        const restore = document.getElementById("quick-guide-restore");
+        const hidden = getQuickGuideHidden();
+        if (guide) guide.classList.toggle("hidden", hidden);
+        if (restore) restore.classList.toggle("visible", hidden);
       }
 
       function setupQuickGuide() {
@@ -1945,16 +1981,24 @@
         window.hideQuickGuide();
       };
 
-      window.showQuickGuideFromMenu = function () {
+      window.showQuickGuide = function () {
         setQuickGuideHidden(false);
         setQuickGuideVisibility();
         ensureHomeView();
+        quickBrandsExpanded = false;
+        quickBrandsShowAll = false;
+        renderQuickGuideBrands();
+        updateQuickBrandPanel();
         document.getElementById("sidebar").classList.remove("active");
         document.getElementById("sidebar-overlay").classList.remove("active");
         const guide = document.getElementById("mobile-quick-guide");
         if (guide) {
           guide.scrollIntoView({ behavior: "smooth", block: "start" });
         }
+      };
+
+      window.showQuickGuideFromMenu = function () {
+        window.showQuickGuide();
       };
 
       function generatePictureHTML(src, alt) {
