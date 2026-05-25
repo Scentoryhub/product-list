@@ -1818,8 +1818,21 @@
         list.appendChild(otherDiv);
       }
 
-      function isQuickGuideHidden() {
-        return localStorage.getItem("quickGuideHidden") === "1";
+      function getQuickGuideHidden() {
+        try {
+          return localStorage.getItem("quickGuideHidden") === "1";
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function setQuickGuideHidden(hidden) {
+        try {
+          if (hidden) localStorage.setItem("quickGuideHidden", "1");
+          else localStorage.removeItem("quickGuideHidden");
+        } catch (e) {
+          // If localStorage is blocked, keep the guide usable for this page view.
+        }
       }
 
       function getQuickBrandLabel(brand) {
@@ -1837,7 +1850,7 @@
       function setQuickGuideVisibility() {
         const guide = document.getElementById("mobile-quick-guide");
         if (!guide) return;
-        guide.classList.toggle("hidden", isQuickGuideHidden());
+        guide.classList.toggle("hidden", getQuickGuideHidden());
       }
 
       function setupQuickGuide() {
@@ -1909,16 +1922,22 @@
 
       window.toggleQuickBrands = function () {
         quickBrandsExpanded = !quickBrandsExpanded;
+        if (quickBrandsExpanded) {
+          quickBrandsShowAll = false;
+          renderQuickGuideBrands();
+        }
         updateQuickBrandPanel();
       };
 
       window.toggleQuickBrandLimit = function () {
         quickBrandsShowAll = !quickBrandsShowAll;
+        quickBrandsExpanded = true;
         renderQuickGuideBrands();
+        updateQuickBrandPanel();
       };
 
       window.hideQuickGuide = function () {
-        localStorage.setItem("quickGuideHidden", "1");
+        setQuickGuideHidden(true);
         setQuickGuideVisibility();
       };
 
@@ -1927,7 +1946,7 @@
       };
 
       window.showQuickGuideFromMenu = function () {
-        localStorage.removeItem("quickGuideHidden");
+        setQuickGuideHidden(false);
         setQuickGuideVisibility();
         ensureHomeView();
         document.getElementById("sidebar").classList.remove("active");
