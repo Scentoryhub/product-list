@@ -439,6 +439,36 @@
         }
       }
 
+      .back-to-top-btn {
+        position: fixed;
+        right: 16px;
+        bottom: 108px;
+        z-index: 981;
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        background: #000;
+        color: #ffd700;
+        border: 1px solid rgba(255, 215, 0, 0.65);
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(8px);
+        transition:
+          opacity 0.2s ease,
+          transform 0.2s ease,
+          visibility 0.2s ease;
+      }
+      .back-to-top-btn.visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
       /* ================= NEW Floating Capsule Bottom Bar (Split Pill Design) ================= */
       .bottom-nav-bar {
         position: fixed;
@@ -1420,6 +1450,16 @@
       </div>
     </div>
 
+    <button
+      id="back-to-top-btn"
+      class="back-to-top-btn"
+      type="button"
+      aria-label="Back to top"
+      onclick="scrollToPageTop()"
+    >
+      TOP
+    </button>
+
     <div id="toast">Added to Cart! 🛒</div>
 
     <div id="modal" class="modal">
@@ -1694,13 +1734,14 @@
       let currentGridData = [];
       let viewMode = "home";
       let currentModalProductId = null;
-      let quickBrandsExpanded = false;
+      let quickBrandsExpanded = true;
       let quickBrandsShowAll = false;
 
       document.addEventListener("DOMContentLoaded", () => {
         loadCart();
         setupMenu();
         setupQuickGuide();
+        setupBackToTop();
         renderSidebarBrands();
         setupModalBackdropClosing();
         setupSearch();
@@ -1890,7 +1931,10 @@
       }
 
       function setupQuickGuide() {
+        quickBrandsExpanded = true;
+        quickBrandsShowAll = false;
         renderQuickGuideBrands();
+        updateQuickBrandPanel();
         setQuickGuideVisibility();
       }
 
@@ -1985,7 +2029,7 @@
         setQuickGuideHidden(false);
         setQuickGuideVisibility();
         ensureHomeView();
-        quickBrandsExpanded = false;
+        quickBrandsExpanded = true;
         quickBrandsShowAll = false;
         renderQuickGuideBrands();
         updateQuickBrandPanel();
@@ -1999,6 +2043,23 @@
 
       window.showQuickGuideFromMenu = function () {
         window.showQuickGuide();
+      };
+
+      function updateBackToTopVisibility() {
+        const btn = document.getElementById("back-to-top-btn");
+        if (!btn) return;
+        btn.classList.toggle("visible", window.scrollY > 650);
+      }
+
+      function setupBackToTop() {
+        updateBackToTopVisibility();
+        window.addEventListener("scroll", updateBackToTopVisibility, {
+          passive: true,
+        });
+      }
+
+      window.scrollToPageTop = function () {
+        window.scrollTo({ top: 0, behavior: "smooth" });
       };
 
       function generatePictureHTML(src, alt) {
