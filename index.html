@@ -284,6 +284,137 @@
         margin-left: 3px;
       }
 
+      /* ================= Mobile Quick Guide ================= */
+      .quick-guide {
+        margin: 8px 10px;
+        padding: 12px;
+        background:
+          linear-gradient(135deg, rgba(255, 215, 0, 0.12), transparent 42%),
+          #101010;
+        color: #fff;
+        border: 1px solid rgba(255, 215, 0, 0.32);
+        border-radius: 8px;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.16);
+        position: relative;
+      }
+      .quick-guide.hidden {
+        display: none;
+      }
+      .quick-guide-copy {
+        padding-right: 64px;
+      }
+      .quick-guide-title {
+        margin: 0 0 3px;
+        font-size: 1.05rem;
+        line-height: 1.15;
+        font-weight: 800;
+        letter-spacing: 0;
+      }
+      .quick-guide-subtitle {
+        margin: 0 0 10px;
+        color: #f2d166;
+        font-size: 0.82rem;
+        font-weight: 700;
+        line-height: 1.35;
+      }
+      .quick-guide-actions {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+      .quick-guide-action {
+        width: 100%;
+        min-height: 42px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0;
+        line-height: 1.15;
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.24);
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .quick-guide-action:active,
+      .quick-guide-action.active {
+        background: #ffd700;
+        color: #000;
+        border-color: #ffd700;
+      }
+      .quick-guide-hide {
+        position: absolute;
+        top: 10px;
+        right: 12px;
+        font-size: 0.78rem;
+        color: rgba(255, 255, 255, 0.68);
+        cursor: pointer;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+      .quick-brand-panel {
+        display: none;
+        margin-top: 12px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(255, 215, 0, 0.2);
+      }
+      .quick-brand-panel.expanded {
+        display: block;
+      }
+      .quick-brand-title {
+        margin: 0 0 8px;
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: #f2d166;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .quick-brand-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .quick-brand-btn {
+        min-height: 38px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 215, 0, 0.38);
+        background: rgba(255, 255, 255, 0.92);
+        color: #111;
+        cursor: pointer;
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0;
+        white-space: nowrap;
+      }
+      .quick-brand-more {
+        margin-top: 10px;
+        color: #ffd700;
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+      .menu-guide-link {
+        color: var(--accent-color);
+        border-bottom-color: #f1e0a5;
+      }
+      @media (min-width: 520px) {
+        .quick-guide {
+          max-width: 760px;
+          margin: 12px auto 14px;
+          padding: 14px 18px;
+        }
+        .quick-guide-action {
+          font-size: 0.9rem;
+        }
+      }
+      @media (max-width: 340px) {
+        .quick-guide-action {
+          font-size: 0.72rem;
+        }
+      }
+
       /* ================= NEW Floating Capsule Bottom Bar (Split Pill Design) ================= */
       .bottom-nav-bar {
         position: fixed;
@@ -994,6 +1125,9 @@
       <div class="sidebar-content">
         <nav>
           <a class="menu-link" onclick="handleMenuClick('Home')">Home</a>
+          <a class="menu-link menu-guide-link" onclick="showQuickGuideFromMenu()"
+            >Show Guide</a
+          >
           <a class="menu-link" onclick="handleMenuClick('All')">Shop All</a>
           <a
             class="menu-link"
@@ -1062,6 +1196,67 @@
       <div id="wholesale-banner" class="ws-banner">
         <div id="ws-content" class="ws-pills"></div>
       </div>
+
+      <section
+        id="mobile-quick-guide"
+        class="quick-guide"
+        aria-label="Order guide"
+      >
+        <button
+          type="button"
+          class="quick-guide-hide"
+          onclick="hideQuickGuide()"
+        >
+          Hide Guide
+        </button>
+        <div class="quick-guide-copy">
+          <h1 class="quick-guide-title">Build Your Order List</h1>
+          <p class="quick-guide-subtitle">
+            Add items to cart. Discounts calculate automatically. Checkout
+            sends your list to WhatsApp.
+          </p>
+        </div>
+        <div class="quick-guide-actions">
+          <button
+            type="button"
+            class="quick-guide-action"
+            onclick="scrollToBestSellers()"
+          >
+            Best Sellers
+          </button>
+          <button
+            type="button"
+            class="quick-guide-action"
+            onclick="scrollToNewArrivals()"
+          >
+            New Arrivals
+          </button>
+          <button
+            type="button"
+            id="quick-brands-toggle"
+            class="quick-guide-action"
+            onclick="toggleQuickBrands()"
+          >
+            Popular Brands
+          </button>
+        </div>
+        <div
+          id="quick-brand-panel"
+          class="quick-brand-panel"
+          aria-label="Popular Brands"
+        >
+          <h2 class="quick-brand-title">Popular Brands</h2>
+          <div id="quick-brand-grid" class="quick-brand-grid"></div>
+          <button
+            type="button"
+            id="quick-brand-more"
+            class="quick-brand-more"
+            onclick="toggleQuickBrandLimit()"
+          >
+            Show More Brands
+          </button>
+        </div>
+      </section>
 
       <div id="home-content">
         <div class="loading-container">
@@ -1465,10 +1660,13 @@
       let currentGridData = [];
       let viewMode = "home";
       let currentModalProductId = null;
+      let quickBrandsExpanded = false;
+      let quickBrandsShowAll = false;
 
       document.addEventListener("DOMContentLoaded", () => {
         loadCart();
         setupMenu();
+        setupQuickGuide();
         renderSidebarBrands();
         setupModalBackdropClosing();
         setupSearch();
@@ -1620,6 +1818,126 @@
         list.appendChild(otherDiv);
       }
 
+      function isQuickGuideHidden() {
+        return localStorage.getItem("quickGuideHidden") === "1";
+      }
+
+      function getQuickBrandLabel(brand) {
+        const labelMap = {
+          "Yves Saint Laurent": "YSL",
+          "Louis Vuitton": "LV",
+          "Maison Francis Kurkdjian": "MFK",
+          "Parfums de Marly": "PDM",
+          "Jean Paul Gaultier": "JPG",
+          "Bond No. 9": "BOND NO. 9",
+        };
+        return labelMap[brand] || brand.toUpperCase();
+      }
+
+      function setQuickGuideVisibility() {
+        const guide = document.getElementById("mobile-quick-guide");
+        if (!guide) return;
+        guide.classList.toggle("hidden", isQuickGuideHidden());
+      }
+
+      function setupQuickGuide() {
+        renderQuickGuideBrands();
+        setQuickGuideVisibility();
+      }
+
+      function renderQuickGuideBrands() {
+        const grid = document.getElementById("quick-brand-grid");
+        const moreBtn = document.getElementById("quick-brand-more");
+        if (!grid || !moreBtn) return;
+
+        grid.innerHTML = "";
+        const brands = quickBrandsShowAll
+          ? FEATURED_BRANDS
+          : FEATURED_BRANDS.slice(0, 10);
+
+        brands.forEach((brand) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "quick-brand-btn";
+          btn.textContent = getQuickBrandLabel(brand);
+          btn.onclick = () => scrollToBrand(brand);
+          grid.appendChild(btn);
+        });
+
+        moreBtn.style.display =
+          FEATURED_BRANDS.length > 10 ? "inline-block" : "none";
+        moreBtn.textContent = quickBrandsShowAll
+          ? "Show Less"
+          : "Show More Brands";
+      }
+
+      function updateQuickBrandPanel() {
+        const panel = document.getElementById("quick-brand-panel");
+        const toggle = document.getElementById("quick-brands-toggle");
+        if (!panel || !toggle) return;
+        panel.classList.toggle("expanded", quickBrandsExpanded);
+        toggle.classList.toggle("active", quickBrandsExpanded);
+      }
+
+      function ensureHomeView() {
+        if (viewMode !== "home") {
+          viewMode = "home";
+          document.getElementById("home-view").style.display = "block";
+          document.getElementById("grid-view").style.display = "none";
+        }
+      }
+
+      function scrollToHomeSection(sectionId, attempt = 0) {
+        ensureHomeView();
+        const section = document.getElementById(sectionId);
+        if (section) {
+          section.scrollIntoView({ behavior: "smooth", block: "start" });
+          return;
+        }
+        if (attempt < 12) {
+          setTimeout(() => scrollToHomeSection(sectionId, attempt + 1), 100);
+        }
+      }
+
+      window.scrollToBestSellers = function () {
+        scrollToHomeSection("best-sellers-section");
+      };
+
+      window.scrollToNewArrivals = function () {
+        scrollToHomeSection("new-arrivals-section");
+      };
+
+      window.toggleQuickBrands = function () {
+        quickBrandsExpanded = !quickBrandsExpanded;
+        updateQuickBrandPanel();
+      };
+
+      window.toggleQuickBrandLimit = function () {
+        quickBrandsShowAll = !quickBrandsShowAll;
+        renderQuickGuideBrands();
+      };
+
+      window.hideQuickGuide = function () {
+        localStorage.setItem("quickGuideHidden", "1");
+        setQuickGuideVisibility();
+      };
+
+      window.skipQuickGuide = function () {
+        window.hideQuickGuide();
+      };
+
+      window.showQuickGuideFromMenu = function () {
+        localStorage.removeItem("quickGuideHidden");
+        setQuickGuideVisibility();
+        ensureHomeView();
+        document.getElementById("sidebar").classList.remove("active");
+        document.getElementById("sidebar-overlay").classList.remove("active");
+        const guide = document.getElementById("mobile-quick-guide");
+        if (guide) {
+          guide.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      };
+
       function generatePictureHTML(src, alt) {
         const webpSrc = src.replace(/\.(jpg|png|jpeg)$/i, ".webp");
         return `<div class="img-wrapper skeleton-loader"><picture><source srcset="${webpSrc}" type="image/webp"><img src="${src}" alt="${alt}" loading="lazy" class="lazy-img" onload="this.classList.add('loaded'); this.parentElement.parentElement.classList.remove('skeleton-loader');" onerror="this.parentElement.parentElement.classList.remove('skeleton-loader');"></picture></div>`;
@@ -1657,10 +1975,11 @@
 
         const renderSection = (title, items, filterKey) => {
           const section = createBrandSection(title, items, filterKey);
-          if (
-            filterKey &&
-            !["BestSellers", "New", "Sale"].includes(filterKey)
-          ) {
+          if (filterKey === "BestSellers") {
+            section.id = "best-sellers-section";
+          } else if (filterKey === "New") {
+            section.id = "new-arrivals-section";
+          } else if (filterKey && !["Sale"].includes(filterKey)) {
             section.id = "brand-" + filterKey.replace(/\s+/g, "");
           }
           container.appendChild(section);
