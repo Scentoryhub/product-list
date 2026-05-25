@@ -1962,11 +1962,7 @@
           mode: "search",
           searchTerm: brand,
         }));
-        const quickBrandItems = [
-          ...featuredQuickItems.slice(0, 5),
-          ...searchQuickItems,
-          ...featuredQuickItems.slice(5),
-        ];
+        const quickBrandItems = [...featuredQuickItems, ...searchQuickItems];
         const visibleBrands = quickBrandsShowAll
           ? quickBrandItems
           : quickBrandItems.slice(0, 10);
