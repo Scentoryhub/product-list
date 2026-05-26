@@ -1222,6 +1222,12 @@
             style="color: #6a1b9a"
             >Gift Sets 🎁</a
           >
+          <a
+            class="menu-link"
+            onclick="scrollToBrand('Other')"
+            style="color: #b28900"
+            >Other Brands</a
+          >
           <a class="menu-link" onclick="handleMenuClick('BestSellers')"
             >Best Sellers 🔥</a
           >
@@ -1974,10 +1980,18 @@
           div.onclick = () => scrollToBrand(brand);
           list.appendChild(div);
         });
+        const giftSetsDiv = document.createElement("div");
+        giftSetsDiv.className = "brand-item";
+        giftSetsDiv.style.cssText =
+          "font-weight: bold; margin-top: 10px; color: #6a1b9a;";
+        giftSetsDiv.textContent = "GIFT SETS";
+        giftSetsDiv.onclick = () => scrollToBrand("Set");
+        list.appendChild(giftSetsDiv);
+
         const otherDiv = document.createElement("div");
         otherDiv.className = "brand-item";
         otherDiv.style.cssText =
-          "font-weight: bold; margin-top: 10px; color: var(--accent-color); border-bottom: none;";
+          "font-weight: bold; color: var(--accent-color); border-bottom: none;";
         otherDiv.textContent = "OTHER BRANDS";
         otherDiv.onclick = () => scrollToBrand("Other");
         list.appendChild(otherDiv);
@@ -2009,6 +2023,8 @@
           "Jean Paul Gaultier": "JPG",
           "Bond No. 9": "BOND NO. 9",
           "Dolce and Gabbana": "D&G",
+          "Gift Sets": "GIFT SETS",
+          "Other Brands": "OTHER BRANDS",
         };
         return labelMap[brand] || brand.toUpperCase();
       }
@@ -2045,10 +2061,18 @@
           mode: "search",
           searchTerm: brand,
         }));
-        const quickBrandItems = [...featuredQuickItems, ...searchQuickItems];
+        const specialQuickItems = [
+          { brand: "Gift Sets", mode: "scroll", target: "Set" },
+          { brand: "Other Brands", mode: "scroll", target: "Other" },
+        ];
+        const quickBrandItems = [
+          ...featuredQuickItems,
+          ...specialQuickItems,
+          ...searchQuickItems,
+        ];
         const visibleBrands = quickBrandsShowAll
           ? quickBrandItems
-          : quickBrandItems.slice(0, 10);
+          : [...featuredQuickItems.slice(0, 8), ...specialQuickItems];
 
         visibleBrands.forEach((item) => {
           const btn = document.createElement("button");
@@ -2058,7 +2082,7 @@
           btn.onclick = () => {
             if (item.mode === "search")
               switchToGrid("Search:" + item.searchTerm);
-            else window.scrollToBrand(item.brand);
+            else window.scrollToBrand(item.target || item.brand);
           };
           grid.appendChild(btn);
         });
@@ -2267,13 +2291,25 @@
         if (saleItems.length > 0)
           renderSection("🏷️ On Sale", saleItems, "Sale");
 
-        const setItems = db.filter((p) => p.name.toUpperCase().includes("SET"));
+        const setItems = db.filter(isGiftSetProduct);
         if (setItems.length > 0) renderSection("🎁 Gift Sets", setItems, "Set");
 
         const shopAllContainer = document.createElement("div");
         shopAllContainer.className = "shop-all-section";
         shopAllContainer.innerHTML = `<button class="shop-all-btn" onclick="handleMenuClick('All')">Shop All Products</button>`;
         container.appendChild(shopAllContainer);
+      }
+
+      function isGiftSetProduct(product) {
+        const id = String(product.id || "").trim().toUpperCase();
+        const name = String(product.name || "").toUpperCase();
+        const size = String(product.ml || "").toUpperCase();
+        return (
+          id === "A282" ||
+          name.includes("SET") ||
+          name.includes("GIFT BOX") ||
+          size.includes("30ML X 4")
+        );
       }
 
       function createBrandSection(title, products, filterKey) {
@@ -2529,7 +2565,7 @@
             .sort((a, b) => Number(a.sale) - Number(b.sale));
           title = "On Sale";
         } else if (criteria === "Set") {
-          filtered = db.filter((p) => p.name.toUpperCase().includes("SET"));
+          filtered = db.filter(isGiftSetProduct);
           title = "Gift Sets Collection";
         } else if (criteria.startsWith("Gender:")) {
           const targetGender = criteria.split(":")[1];
