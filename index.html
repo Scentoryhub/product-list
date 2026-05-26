@@ -2067,12 +2067,12 @@
         ];
         const quickBrandItems = [
           ...featuredQuickItems,
-          ...specialQuickItems,
           ...searchQuickItems,
+          ...specialQuickItems,
         ];
         const visibleBrands = quickBrandsShowAll
           ? quickBrandItems
-          : [...featuredQuickItems.slice(0, 8), ...specialQuickItems];
+          : quickBrandItems.slice(0, 10);
 
         visibleBrands.forEach((item) => {
           const btn = document.createElement("button");
